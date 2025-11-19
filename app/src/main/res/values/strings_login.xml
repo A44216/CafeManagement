@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_title">ĐĂNG NHẬP</string>
+    <string name="remember_password">Ghi nhớ mật khẩu</string>
+    <string name="forgot_password">Quên mật khẩu</string>
+    <string name="login_button">Đăng nhập</string>
+    <string name="no_account">Chưa có tài khoản?</string>
+    <string name="register">Đăng ký</string>
+
+    <string name="hint_username_or_email">Tên tài khoản hoặc Email</string>
+    <string name="autofill_username_or_email">username|emailAddress</string>
+
+
+</resources>

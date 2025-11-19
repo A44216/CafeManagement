@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">CafeManagement</string>
+    <string name="desc_back_button">Quay lại</string>
+    <string name="desc__cafe_logo">Logo quán cà phê</string>
+
+    <string name="hint_password">Mật khẩu</string>
+    <string name="autofill_password">password</string>
+    <string name="title_activity_forgot_password">activity_forgot_password</string>
+
+    <string name="large_text">Large text placeholder</string>
+    <string name="action_settings">Settings</string>
+
+</resources>
