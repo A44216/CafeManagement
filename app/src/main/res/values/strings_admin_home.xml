@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_category">Danh mục</string>
+    <string name="nav_product">Sản phẩm</string>
+    <string name="nav_order">Đơn hàng</string>
+    <string name="nav_setting">Cài đặt</string>
+
+    <string name="hint_category_name">Nhập tên cần tìm</string>
+
+    <string name="desc_add_new">Thêm mới</string>
+    <string name="desc_edit">Sửa</string>
+    <string name="desc_delete">Xóa</string>
+
+</resources>

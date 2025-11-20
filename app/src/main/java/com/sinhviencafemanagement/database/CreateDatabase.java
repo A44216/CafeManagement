@@ -45,8 +45,6 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public static final String TABLE_CATEGORIES = "categories"; // Bảng loại món
     public static final String COLUMN_CATEGORY_ID = "category_id"; // Mã loại
     public static final String COLUMN_CATEGORY_NAME = "category_name"; // Tên loại
-    public static final String COLUMN_CATEGORY_IMAGE = "image"; // Hình ảnh
-
     // Bảng bàn
     public static final String TABLE_TABLES = "tables"; // Bảng bàn
     public static final String COLUMN_TABLE_ID = "table_id"; // Mã bàn
@@ -117,8 +115,7 @@ public class CreateDatabase extends SQLiteOpenHelper {
         // Bảng categories
         String tblCategories = "CREATE TABLE " + TABLE_CATEGORIES + " (" +
                 COLUMN_CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_CATEGORY_NAME + " TEXT NOT NULL UNIQUE, " +
-                COLUMN_CATEGORY_IMAGE + " TEXT);";
+                COLUMN_CATEGORY_NAME + " TEXT NOT NULL UNIQUE" + ");";
 
         // Bảng products
         String tblProducts = "CREATE TABLE " + TABLE_PRODUCTS + " (" +

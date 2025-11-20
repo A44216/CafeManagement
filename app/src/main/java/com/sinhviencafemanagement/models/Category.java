@@ -5,23 +5,20 @@ import androidx.annotation.NonNull;
 public class Category {
     private int categoryId;           // category_id
     private String categoryName;      // category_name
-    private String image;             // image URL hoặc path
 
     public Category() {
 
     }
 
     // Constructor đầy đủ
-    public Category(int categoryId, String categoryName, String image) {
+    public Category(int categoryId, String categoryName) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
-        this.image = image;
     }
 
     // Constructor thêm mới (không cần categoryId)
-    public Category(String categoryName, String image) {
+    public Category(String categoryName) {
         this.categoryName = categoryName;
-        this.image = image;
     }
 
     // Getter và Setter
@@ -31,8 +28,6 @@ public class Category {
     public String getCategoryName() { return categoryName; }
     public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
 
-    public String getImage() { return image; }
-    public void setImage(String image) { this.image = image; }
 
     @NonNull
     @Override
@@ -40,7 +35,6 @@ public class Category {
         return "Category{" +
                 "categoryId=" + categoryId +
                 ", categoryName='" + categoryName + '\'' +
-                ", image='" + image + '\'' +
                 '}';
     }
 

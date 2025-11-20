@@ -35,8 +35,7 @@ public class CategoryDAO {
                 do {
                     Category category = new Category(
                             cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_CATEGORY_ID)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_CATEGORY_NAME)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_CATEGORY_IMAGE))
+                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_CATEGORY_NAME))
                     );
                     categoryList.add(category);
                 } while (cursor.moveToNext());
@@ -50,7 +49,7 @@ public class CategoryDAO {
     }
 
     // Thêm category mới
-    public long addCategory(String name, String image) {
+    public long addCategory(String name) {
         if (name == null || name.trim().isEmpty()) {
             Log.e("CategoryDAO", "Tên category không hợp lệ");
             return -1;
@@ -60,7 +59,6 @@ public class CategoryDAO {
         try {
             ContentValues values = new ContentValues();
             values.put(CreateDatabase.COLUMN_CATEGORY_NAME, name.trim());
-            values.put(CreateDatabase.COLUMN_CATEGORY_IMAGE, image);
             result = db.insert(CreateDatabase.TABLE_CATEGORIES, null, values);
         } catch (Exception e) {
             Log.e("CategoryDAO", "Lỗi khi thêm category", e);
@@ -71,11 +69,11 @@ public class CategoryDAO {
 
     public long addCategory(Category category) {
         if (category == null) return -1;
-        return addCategory(category.getCategoryName(), category.getImage());
+        return addCategory(category.getCategoryName());
     }
 
     // Cập nhật category
-    public int updateCategory(int categoryId, String newName, String newImage) {
+    public int updateCategory(int categoryId, String newName) {
         if (categoryId <= 0) {
             Log.e("CategoryDAO", "categoryId không hợp lệ: " + categoryId);
             return 0;
@@ -85,11 +83,8 @@ public class CategoryDAO {
         if (newName != null && !newName.trim().isEmpty()) {
             values.put(CreateDatabase.COLUMN_CATEGORY_NAME, newName.trim());
         }
-        if (newImage != null) {
-            values.put(CreateDatabase.COLUMN_CATEGORY_IMAGE, newImage);
-        }
 
-        if (values.size() == 0) return 0; // không có gì để update
+        if (values.size() == 0) return 0;
 
         int result = 0;
         try {
@@ -108,7 +103,7 @@ public class CategoryDAO {
 
     public int updateCategory(Category category) {
         if (category == null) return 0;
-        return updateCategory(category.getCategoryId(), category.getCategoryName(), category.getImage());
+        return updateCategory(category.getCategoryId(), category.getCategoryName());
     }
 
     // Xóa category
