@@ -1,8 +1,12 @@
 package com.sinhviencafemanagement.activities.home;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -15,6 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.sinhviencafemanagement.R;
+import com.sinhviencafemanagement.activities.home.category.AddCategoryActivity;
 import com.sinhviencafemanagement.dao.CategoryDAO;
 import com.sinhviencafemanagement.fragments.admin.CategoryAdminFragment;
 
@@ -30,6 +35,17 @@ public class AdminHomeActivity extends AppCompatActivity {
     FloatingActionButton fabAddNew;
 
     FragmentContainerView listFragmentContainer;
+
+    // ActivityResultLauncher để nhận kết quả từ AddCategoryActivity
+    public final ActivityResultLauncher<Intent> categoryLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    // Reload fragment sau khi thêm category
+                    CategoryAdminFragment fragment = (CategoryAdminFragment)
+                            getSupportFragmentManager().findFragmentById(R.id.listFragmentContainer);
+                    if (fragment != null) fragment.loadCategories();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,14 +67,6 @@ public class AdminHomeActivity extends AppCompatActivity {
 
     }
 
-    // Hàm riêng để hiển thị fragment Category mặc định
-    private void showDefaultCategoryFragment() {
-        if (getSupportFragmentManager().findFragmentById(R.id.listFragmentContainer) == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.listFragmentContainer, new CategoryAdminFragment())
-            .commit();
-        }
-    }
-
     private void initViews() {
         etSearch = findViewById(R.id.etSearch);
         layoutSearch = findViewById(R.id.layoutSearch);
@@ -68,41 +76,22 @@ public class AdminHomeActivity extends AppCompatActivity {
     }
 
     private void setUpListeners() {
-        fabAddNew.setOnClickListener(v -> handleAddNew());
+        fabAddNew.setOnClickListener(v -> handleAddCategory());
     }
 
-    private void handleAddNew() {
-        showAddCategoryDialog();
-    }
 
-    // AlertDialog thông báo để nhập thông tin
-    private void showAddCategoryDialog() {
-        TextInputEditText input = new TextInputEditText(this);
-        input.setHint("Nhập tên danh mục");
-
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("Thêm danh mục mới")
-                .setView(input)
-                .setPositiveButton("Lưu", (dialog, which) -> {
-                    String name = Objects.requireNonNull(input.getText()).toString().trim();
-                    if (!name.isEmpty())
-                        saveCategory(name);
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
-    }
-
-    // Lưu category và load lại danh sách
-    private void saveCategory(String name) {
-        CategoryDAO categoryDAO = new CategoryDAO(this);
-        categoryDAO.addCategory(name);
-
-        // Refresh fragment
-        CategoryAdminFragment categoryAdminFragment = (CategoryAdminFragment)
-                getSupportFragmentManager().findFragmentById(R.id.listFragmentContainer);
-        if (categoryAdminFragment != null) {
-            categoryAdminFragment.loadCategories();
+    // Hàm riêng để hiển thị fragment Category mặc định
+    private void showDefaultCategoryFragment() {
+        if (getSupportFragmentManager().findFragmentById(R.id.listFragmentContainer) == null) {
+            getSupportFragmentManager().beginTransaction()
+                .replace(R.id.listFragmentContainer, new CategoryAdminFragment())
+                .commit();
         }
+    }
+
+    private void handleAddCategory() {
+        Intent intent = new Intent(this, AddCategoryActivity.class);
+        categoryLauncher.launch(intent);
     }
 
 }

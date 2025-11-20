@@ -1,6 +1,7 @@
 package com.sinhviencafemanagement.adapter.admin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sinhviencafemanagement.R;
+import com.sinhviencafemanagement.activities.home.AdminHomeActivity;
+import com.sinhviencafemanagement.activities.home.category.UpdateCategoryActivity;
 import com.sinhviencafemanagement.adapter.admin.viewholder.CategoryAdminVH;
 import com.sinhviencafemanagement.dao.CategoryDAO;
 import com.sinhviencafemanagement.models.Category;
@@ -47,7 +50,10 @@ public class CategoryAdminAdapter extends RecyclerView.Adapter<CategoryAdminVH> 
 
         // Xử lý sự kiện Edit
         holder.ivEditCategory.setOnClickListener(v -> {
-
+            Intent intent = new Intent(context, UpdateCategoryActivity.class);
+            intent.putExtra("category_id", category.getCategoryId());
+            intent.putExtra("category_name", category.getCategoryName());
+            ((AdminHomeActivity) context).categoryLauncher.launch(intent);
         });
 
         // Xử lý sự kiện Delete
@@ -71,7 +77,6 @@ public class CategoryAdminAdapter extends RecyclerView.Adapter<CategoryAdminVH> 
                 })
                 .show();
         });
-
     }
 
     // Trả về số lượng item trong danh sách

@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CafeManagement">
         <activity
+            android:name=".activities.home.category.UpdateCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.home.category.AddCategoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.home.UserHomeActivity"
             android:exported="false" />
         <activity

@@ -11,4 +11,10 @@
     <string name="desc_edit">Sửa</string>
     <string name="desc_delete">Xóa</string>
 
+    <string name="category_name">Tên danh mục</string>
+    <string name="add_category">Thêm</string>
+    <string name="add_category_title">THÊM DANH MỤC</string>
+    <string name="update_category">Cập nhật</string>
+    <string name="update_category_title">CẬP NHẬT DANH MỤC</string>
+
 </resources>

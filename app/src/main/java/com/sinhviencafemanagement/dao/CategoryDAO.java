@@ -67,6 +67,25 @@ public class CategoryDAO {
         return result;
     }
 
+    // Kiểm tra category đã tồn tại chưa
+    public boolean categoryExists(String categoryName) {
+        if (categoryName == null || categoryName.trim().isEmpty()) return false;
+
+        try (Cursor cursor = db.query(
+                CreateDatabase.TABLE_CATEGORIES,
+                new String[]{CreateDatabase.COLUMN_CATEGORY_ID},
+                CreateDatabase.COLUMN_CATEGORY_NAME + " = ?",
+                new String[]{categoryName.trim()},
+                null, null, null)) {
+
+            return cursor.getCount() > 0;
+
+        } catch (Exception e) {
+            Log.e("CategoryDAO", "Lỗi khi kiểm tra tồn tại category", e);
+            return false;
+        }
+    }
+
     public long addCategory(Category category) {
         if (category == null) return -1;
         return addCategory(category.getCategoryName());
