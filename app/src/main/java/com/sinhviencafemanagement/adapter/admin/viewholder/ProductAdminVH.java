@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.sinhviencafemanagement.R;
 
 public class ProductAdminVH extends RecyclerView.ViewHolder {
-    public ImageView imgProduct, ivEdit, ivDelete;
+    public ImageView imgProduct, ivEditProduct, ivDeleteProduct;
 
     public TextView tvProductName, tvProductPrice, tvProductCategory, tvProductStatus;
 
@@ -19,8 +19,8 @@ public class ProductAdminVH extends RecyclerView.ViewHolder {
         super(itemView);
 
         imgProduct = itemView.findViewById(R.id.imgProductAdmin);
-        ivEdit = itemView.findViewById(R.id.ivEditProductAdmin);
-        ivDelete = itemView.findViewById(R.id.ivDeleteProductAdmin);
+        ivEditProduct = itemView.findViewById(R.id.ivEditProductAdmin);
+        ivDeleteProduct = itemView.findViewById(R.id.ivDeleteProductAdmin);
 
         tvProductName = itemView.findViewById(R.id.tvProductNameAdmin);
         tvProductPrice = itemView.findViewById(R.id.tvProductPriceAdmin);

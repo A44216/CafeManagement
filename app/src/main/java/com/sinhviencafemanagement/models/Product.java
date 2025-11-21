@@ -7,7 +7,7 @@ public class Product implements Clonable<Product>{
     private String productName;      // product_name
     private double price;            // price
     private String status;           // status (mặc định "available")
-    private String image;            // image URL hoặc path
+    private int imageResId;          // lưu id ảnh trực tiếp
     private Integer categoryId;      // category_id (có thể null)
     private String description;      // description (có thể null)
 
@@ -17,23 +17,23 @@ public class Product implements Clonable<Product>{
 
     // Constructor đầy đủ
     public Product(int productId, String productName, double price, String status,
-                   String image, Integer categoryId, String description) {
+                   int imageResId, Integer categoryId, String description) {
         this.productId = productId;
         this.productName = productName;
         this.price = price;
         this.status = status != null ? status : "available"; // mặc định
-        this.image = image;
+        this.imageResId = imageResId;
         this.categoryId = categoryId;
         this.description = description;
     }
 
     // Constructor thêm mới (không cần productId, SQLite tự sinh)
     public Product(String productName, double price, String status,
-                   String image, Integer categoryId, String description) {
+                   int imageResId, Integer categoryId, String description) {
         this.productName = productName;
         this.price = price;
         this.status = status != null ? status : "available"; // mặc định
-        this.image = image;
+        this.imageResId = imageResId;
         this.categoryId = categoryId;
         this.description = description;
     }
@@ -67,11 +67,9 @@ public class Product implements Clonable<Product>{
         this.status = status != null ? status : "available";
     }
 
-    public String getImage() {
-        return image;
-    }
-    public void setImage(String image) {
-        this.image = image;
+    public int getImageResId() { return imageResId; }
+    public void setImageResId(int imageResId) {
+        this.imageResId = imageResId;
     }
 
     public Integer getCategoryId() {
@@ -96,7 +94,7 @@ public class Product implements Clonable<Product>{
                 ", productName='" + productName + '\'' +
                 ", price=" + price +
                 ", status='" + status + '\'' +
-                ", image='" + image + '\'' +
+                ", imageResId='" + imageResId + '\'' +
                 ", categoryId=" + categoryId +
                 ", description='" + description + '\'' +
                 '}';
@@ -110,7 +108,7 @@ public class Product implements Clonable<Product>{
                 this.productName,
                 this.price,
                 this.status,
-                this.image,
+                this.imageResId,
                 this.categoryId,
                 this.description
         );

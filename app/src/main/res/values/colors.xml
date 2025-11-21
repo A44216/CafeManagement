@@ -5,4 +5,9 @@
     <color name="blue">#1976D2</color>
     <color name="red">#F44336</color>
 
+    <color name="light_blue_600">#039BE5</color>
+    <color name="light_blue_A200">#40C4FF</color>
+    <color name="light_blue_900">#01579B</color>
+    <color name="light_blue_A400">#00B0FF</color>
+
 </resources>

@@ -27,7 +27,7 @@ import java.util.List;
 public class CategoryAdminFragment extends Fragment {
     private RecyclerView rvCategoryAdmin; // RecyclerView hiển thị danh sách
     private CategoryDAO categoryDAO;       // DAO truy xuất database
-    private CategoryAdminAdapter adapter;  // Adapter kết nối dữ liệu với RecyclerView
+    private CategoryAdminAdapter adapterCategoryAdmin;  // Adapter kết nối dữ liệu với RecyclerView
 
     private List<Category> categoryList;
 
@@ -61,18 +61,18 @@ public class CategoryAdminFragment extends Fragment {
         rvCategoryAdmin = view.findViewById(R.id.rvCategoryAdmin);
         rvCategoryAdmin.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        loadCategories(); // Load dữ liệu từ DB
+        loadCategoriesAdmin(); // Load dữ liệu từ DB
     }
 
     // Load dữ liệu từ database và set Adapter
-    public void loadCategories() {
+    public void loadCategoriesAdmin() {
         categoryList = categoryDAO.getAllCategories(); // Lấy danh sách từ DB
 
-        adapter = new CategoryAdminAdapter(getContext(), categoryList); // Tạo Adapter
-        rvCategoryAdmin.setAdapter(adapter); // Gán Adapter cho RecyclerView
+        adapterCategoryAdmin = new CategoryAdminAdapter(getContext(), categoryList); // Tạo Adapter
+        rvCategoryAdmin.setAdapter(adapterCategoryAdmin); // Gán Adapter cho RecyclerView
 
         // Thiết lập callback cho edit/delete
-        adapter.setOnCategoryActionListener(new CategoryAdminAdapter.OnCategoryActionListener() {
+        adapterCategoryAdmin.setOnCategoryActionListener(new CategoryAdminAdapter.OnCategoryActionListener() {
             @Override
             public void onEdit(Category category) {
                 // Mở Activity update category
@@ -97,7 +97,7 @@ public class CategoryAdminFragment extends Fragment {
                                     // Cập nhật UI trên main thread
                                     requireActivity().runOnUiThread(() -> {
                                         categoryList.remove(pos);
-                                        adapter.notifyItemRemoved(pos);
+                                        adapterCategoryAdmin.notifyItemRemoved(pos);
                                     });
                                 }).start(); // Thông báo RecyclerView rằng 1 item đã bị xóa
                             }
@@ -109,17 +109,17 @@ public class CategoryAdminFragment extends Fragment {
     }
 
     // Thêm category mới vào RecyclerView
-    public void addCategory(Category category) {
-        categoryList.add(category);
-        adapter.notifyItemInserted(categoryList.size() - 1);
+    public void addCategoryAdmin(Category newCategory) {
+        categoryList.add(newCategory);
+        adapterCategoryAdmin.notifyItemInserted(categoryList.size() - 1);
     }
 
     // Cập nhật category đã edit trong RecyclerView
-    public void updateCategory(Category updatedCategory) {
+    public void updateCategoryAdmin(Category updatedCategory) {
         for (int i = 0; i < categoryList.size(); i++) {
             if (categoryList.get(i).getCategoryId() == updatedCategory.getCategoryId()) {
                 categoryList.set(i, updatedCategory);
-                adapter.notifyItemChanged(i);
+                adapterCategoryAdmin.notifyItemChanged(i);
                 break;
             }
         }

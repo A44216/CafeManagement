@@ -40,7 +40,7 @@ public class ProductDAO {
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_NAME)),
                             cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_PRICE)),
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_STATUS)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_IMAGE)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_IMAGE)),
                             cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_CATEGORY_ID)),
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_DESCRIPTION))
                     );
@@ -72,7 +72,7 @@ public class ProductDAO {
                         cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_NAME)),
                         cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_PRICE)),
                         cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_STATUS)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_IMAGE)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_IMAGE)),
                         cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_CATEGORY_ID)),
                         cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_DESCRIPTION))
                 );
@@ -91,7 +91,7 @@ public class ProductDAO {
         values.put(CreateDatabase.COLUMN_PRODUCT_NAME, product.getProductName());
         values.put(CreateDatabase.COLUMN_PRODUCT_PRICE, product.getPrice());
         values.put(CreateDatabase.COLUMN_PRODUCT_STATUS, product.getStatus());
-        values.put(CreateDatabase.COLUMN_PRODUCT_IMAGE, product.getImage());
+        values.put(CreateDatabase.COLUMN_PRODUCT_IMAGE, product.getImageResId());
         values.put(CreateDatabase.COLUMN_PRODUCT_CATEGORY_ID, product.getCategoryId());
         values.put(CreateDatabase.COLUMN_PRODUCT_DESCRIPTION, product.getDescription());
         return values;
@@ -165,7 +165,7 @@ public class ProductDAO {
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_NAME)),
                             cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_PRICE)),
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_STATUS)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_IMAGE)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_IMAGE)),
                             cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_CATEGORY_ID)),
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_DESCRIPTION))
                     );
@@ -198,7 +198,7 @@ public class ProductDAO {
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_NAME)),
                             cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_PRICE)),
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_STATUS)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_IMAGE)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_IMAGE)),
                             cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_CATEGORY_ID)),
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_PRODUCT_DESCRIPTION))
                     );

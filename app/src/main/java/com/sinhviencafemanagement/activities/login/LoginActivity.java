@@ -1,6 +1,7 @@
 package com.sinhviencafemanagement.activities.login;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.CheckBox;
 import android.widget.Toast;
@@ -40,11 +41,16 @@ public class LoginActivity extends AppCompatActivity {
 
     private CheckBox chkRememberLogin;
 
+    private SharedPreferences prefs; // SharedPreferences chung
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
+
+        prefs = getSharedPreferences("app_prefs", MODE_PRIVATE); // khởi tạo 1 lần
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -59,8 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         setUpListeners(); // Thiết lập các listener cho Button và EditText
 
         // Load username đã lưu vào EditText
-        String savedUsername = getSharedPreferences("app_prefs", MODE_PRIVATE)
-                .getString("saved_username", "");
+        String savedUsername = prefs.getString("saved_username", "");
         if (!savedUsername.isEmpty()) {
             etUsernameOrEmail.setText(savedUsername);
         }
@@ -125,6 +130,8 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
+            SharedPreferences.Editor editor = prefs.edit(); // chỉ dùng editor 1 lần
+
             // Chỉ lưu SharedPreferences nếu checkbox được tick
             if (chkRememberLogin.isChecked()) {
                 int userId = user.getUserId(); // lấy id
@@ -137,18 +144,13 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                getSharedPreferences("app_prefs", MODE_PRIVATE)
-                        .edit()
-                        .putInt("user_id", userId)
-                        .putString("session_token", token)
-                        .apply();
+                editor.putInt("user_id", userId)
+                        .putString("session_token", token);
             }
 
             // Luôn lưu username sau khi login thành công
-            getSharedPreferences("app_prefs", MODE_PRIVATE)
-                    .edit()
-                    .putString("saved_username", input)
-                    .apply();
+            editor.putString("saved_username", input);
+            editor.apply();
 
             showToast("Đăng nhập thành công!");
 
@@ -194,8 +196,7 @@ public class LoginActivity extends AppCompatActivity {
 
     // Kiểm tra tự động đăng nhập
     private boolean checkAutoLogin() {
-        String savedToken = getSharedPreferences("app_prefs", MODE_PRIVATE)
-                .getString("session_token", null);
+        String savedToken = prefs.getString("session_token", null);
 
         if (savedToken != null) {
             Session session = sessionDAO.getSessionByToken(savedToken);
@@ -210,10 +211,7 @@ public class LoginActivity extends AppCompatActivity {
                     return true;
                 }
             } else {
-                getSharedPreferences("app_prefs", MODE_PRIVATE)
-                        .edit()
-                        .remove("session_token")
-                        .apply();
+                prefs.edit().remove("session_token").apply();
             }
         }
         return false;

@@ -92,7 +92,7 @@ public class CreateDatabase extends SQLiteOpenHelper {
         String tblTables = "CREATE TABLE " + TABLE_TABLES + " (" +
                 COLUMN_TABLE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_TABLE_NAME + " TEXT NOT NULL UNIQUE, " +
-                COLUMN_TABLE_STATUS + " TEXT DEFAULT '" + TABLE_STATUS_AVAILABLE + "');";
+                COLUMN_TABLE_STATUS + " TEXT NOT NULL DEFAULT '" + TABLE_STATUS_AVAILABLE + "');";
 
         // Bảng roles
         String tblRoles = "CREATE TABLE " + TABLE_ROLES + " ("
@@ -122,8 +122,8 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 COLUMN_PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_PRODUCT_NAME + " TEXT NOT NULL UNIQUE, " +
                 COLUMN_PRODUCT_PRICE + " REAL NOT NULL, " +
-                COLUMN_PRODUCT_STATUS + " TEXT DEFAULT '" + PRODUCT_STATUS_AVAILABLE + "', " +
-                COLUMN_PRODUCT_IMAGE + " TEXT, " +
+                COLUMN_PRODUCT_STATUS + " TEXT NOT NULL DEFAULT '" + PRODUCT_STATUS_AVAILABLE + "', " +
+                COLUMN_PRODUCT_IMAGE + " INTEGER, " +
                 COLUMN_PRODUCT_CATEGORY_ID + " INTEGER, " +
                 COLUMN_PRODUCT_DESCRIPTION + " TEXT, " +
                 "FOREIGN KEY(" + COLUMN_PRODUCT_CATEGORY_ID + ") REFERENCES " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY_ID + "));";
@@ -133,7 +133,7 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 COLUMN_ORDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_ORDER_USER_ID + " INTEGER, " +
                 COLUMN_ORDER_DATE + " TEXT, " +
-                COLUMN_ORDER_STATUS + " TEXT DEFAULT '" + ORDER_STATUS_PENDING + "', " +
+                COLUMN_ORDER_STATUS + " TEXT NOT NULL DEFAULT '" + ORDER_STATUS_PENDING + "', " +
                 COLUMN_ORDER_TOTAL + " REAL DEFAULT 0, " +
                 COLUMN_ORDER_TABLE_ID + " INTEGER, " +
                 "FOREIGN KEY(" + COLUMN_ORDER_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "), " +

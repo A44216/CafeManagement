@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.Theme.CafeManagement.ActionBar.Fullscreen" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
+        <item name="fullscreenTextColor">@color/white</item>
+    </style>
+
+</resources>

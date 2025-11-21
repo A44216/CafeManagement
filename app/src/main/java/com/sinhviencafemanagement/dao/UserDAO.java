@@ -224,28 +224,24 @@ public class UserDAO {
 
     // Hàm mã hóa mật khẩu bằng bcrypt
     public String hashPassword(String password) {
+        password = trimOrEmpty(password);
+        if (password.isEmpty()) {
+            Log.e("UserDAO", "Password null hoặc rỗng!");
+            return null; // Tránh throw, trả về null cho DAO xử lý
+        }
         try {
-            password = trimOrEmpty(password);
-            if (password.isEmpty()) {
-                Log.e("UserDAO", "Password null hoặc rỗng!");
-                return null; // Trả về null để DAO biết là lỗi
-            }
-
-            // Mã hóa password bằng BCrypt
             return BCrypt.hashpw(password, BCrypt.gensalt(12));
-
         } catch (Exception e) {
             Log.e("UserDAO", "Lỗi khi hash mật khẩu", e);
+            return null;
         }
-
-        return null;
-    }
+        }
 
     // Hàm kiểm tra password nhập vào với hash trong DB
     public boolean checkPassword(String password, String hashed) {
         password = trimOrEmpty(password);
+        if (hashed == null || hashed.isEmpty()) return false;
         try {
-            if (hashed == null || hashed.isEmpty()) return false;
             return BCrypt.checkpw(password, hashed);
         } catch (Exception e) {
             Log.e("UserDAO", "Lỗi khi kiểm tra mật khẩu", e);
@@ -442,13 +438,16 @@ public class UserDAO {
 
         // Tạo ContentValues và insert
         ContentValues values = getContentValues(user);
-        long newId = db.insert(CreateDatabase.TABLE_USERS, null, values);
-
-        if (newId == -1) {
-            Log.e("UserDAO", "Insert user thất bại");
+        try {
+            long newId = db.insert(CreateDatabase.TABLE_USERS, null, values);
+            if (newId == -1) {
+                Log.e("UserDAO", "Insert user thất bại");
+            }
+            return newId;
+        } catch (Exception e) {
+            Log.e("UserDAO", "Lỗi khi insert user", e);
+            return -1;
         }
-
-        return newId;
     }
 
     // Cập nhật thông tin người dùng
@@ -480,20 +479,16 @@ public class UserDAO {
                 return -1;
             }
 
-            // Hash password nếu người dùng nhập password mới
-            if (!trimOrEmpty(user.getPassword()).isEmpty()) {
-                if (!checkPassword(user.getPassword(), currentUser.getPassword())) {
-                    String hashedPassword = hashPassword(user.getPassword());
-                    if (hashedPassword == null) return -1;
-                    user.setPassword(hashedPassword);
-                } else {
-                    user.setPassword(currentUser.getPassword());
-                }
+            // Hash password nếu người dùng nhập password mới và khác password hiện tại
+            String newPassword = trimOrEmpty(user.getPassword());
+            if (!newPassword.isEmpty() && !checkPassword(newPassword, currentUser.getPassword())) {
+                String hashedPassword = hashPassword(newPassword);
+                if (hashedPassword == null) return -1;
+                user.setPassword(hashedPassword);
             } else {
                 user.setPassword(currentUser.getPassword());
             }
 
-            // Tạo ContentValues và update DB
             ContentValues values = getContentValues(user);
             return db.update(CreateDatabase.TABLE_USERS, values,
                     CreateDatabase.COLUMN_USER_ID + " = ?",
