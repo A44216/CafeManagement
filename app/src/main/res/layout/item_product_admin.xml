@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:background="@drawable/border"
+    android:layout_marginBottom="12dp">
+
+    <!-- Ảnh sản phẩm -->
+    <ImageView
+        android:id="@+id/imgProductAdmin"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <!-- Nhóm thông tin (xếp dọc) -->
+    <LinearLayout
+        android:id="@+id/infoLayoutProductAdmin"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="10dp"
+        app:layout_constraintStart_toEndOf="@id/imgProductAdmin"
+        app:layout_constraintTop_toTopOf="@id/imgProductAdmin"
+        app:layout_constraintBottom_toBottomOf="@id/imgProductAdmin"
+        app:layout_constraintEnd_toStartOf="@id/actionsLayoutProductAdmin">
+
+        <TextView
+            android:id="@+id/tvProductNameAdmin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Coffee Marshmallow"
+            android:textStyle="bold"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/tvProductPriceAdmin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30.000 VND"
+            android:textColor="@color/red"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/tvProductCategoryAdmin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thể loại: Cà phê"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/tvProductStatusAdmin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trạng thái: Có sẵn"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"/>
+
+    </LinearLayout>
+
+    <!-- Nhóm nút Edit/Delete -->
+    <LinearLayout
+        android:id="@+id/actionsLayoutProductAdmin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imgProductAdmin"
+        app:layout_constraintBottom_toBottomOf="@id/imgProductAdmin"
+        app:layout_constraintStart_toEndOf="@id/infoLayoutProductAdmin"
+        android:layout_marginStart="10dp">
+
+        <ImageView
+            android:id="@+id/ivEditProductAdmin"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:contentDescription="@string/desc_edit"
+            android:src="@drawable/ic_edit"
+            android:layout_marginBottom="8dp"/>
+
+        <ImageView
+            android:id="@+id/ivDeleteProductAdmin"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:contentDescription="@string/desc_delete"
+            android:src="@drawable/ic_delete"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -55,7 +55,7 @@ public class UpdateCategoryActivity extends AppCompatActivity {
 
     private void initViews() {
         layout = findViewById(R.id.layoutCategoryNameAdmin);
-        etCategoryName = findViewById(R.id.etNameCategoryAdmin);
+        etCategoryName = findViewById(R.id.etCategoryNameAdmin);
         ivBack = findViewById(R.id.ivBack);
         btnUpdateCategory = findViewById(R.id.btnUpdateCategoryAdmin);
     }

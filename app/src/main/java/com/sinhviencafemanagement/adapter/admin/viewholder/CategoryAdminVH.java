@@ -9,16 +9,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.sinhviencafemanagement.R;
 
-// ViewHolder dùng cho RecyclerView để hiển thị từng item Category trong giao diện admin
+// ViewHolder giữ các view trong item RecyclerView
 public class CategoryAdminVH extends RecyclerView.ViewHolder {
-    public TextView tvNameCategory;
+    public TextView tvCategoryName;
     public ImageView ivEditCategory, ivDeleteCategory;
 
     // Constructor nhận vào view của từng item trong RecyclerView
     public CategoryAdminVH(@NonNull View itemView) {
         super(itemView);
 
-        tvNameCategory = itemView.findViewById(R.id.tvNameCategoryAdmin);
+        tvCategoryName = itemView.findViewById(R.id.tvCategoryNameAdmin);
         ivEditCategory = itemView.findViewById(R.id.ivEditCategoryAdmin);
         ivDeleteCategory = itemView.findViewById(R.id.ivDeleteCategoryAdmin);
 

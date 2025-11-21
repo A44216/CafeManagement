@@ -1,7 +1,6 @@
 package com.sinhviencafemanagement.activities.home.category;
 
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -75,7 +74,7 @@ public class AddCategoryActivity extends AppCompatActivity {
 
     private void initViews() {
         layout = findViewById(R.id.layoutCategoryNameAdmin);
-        etCategoryName = findViewById(R.id.etNameCategoryAdmin);
+        etCategoryName = findViewById(R.id.etCategoryNameAdmin);
         ivBack = findViewById(R.id.ivBack);
         btnAddCategory = findViewById(R.id.btnAddCategoryAdmin);
     }

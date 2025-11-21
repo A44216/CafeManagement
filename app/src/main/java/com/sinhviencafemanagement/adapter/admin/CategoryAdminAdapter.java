@@ -1,7 +1,6 @@
 package com.sinhviencafemanagement.adapter.admin;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,25 +8,36 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sinhviencafemanagement.R;
-import com.sinhviencafemanagement.activities.home.AdminHomeActivity;
-import com.sinhviencafemanagement.activities.home.category.UpdateCategoryActivity;
 import com.sinhviencafemanagement.adapter.admin.viewholder.CategoryAdminVH;
-import com.sinhviencafemanagement.dao.CategoryDAO;
 import com.sinhviencafemanagement.models.Category;
 
 import java.util.List;
 
+// Adapter RecyclerView hiển thị danh sách Category
 public class CategoryAdminAdapter extends RecyclerView.Adapter<CategoryAdminVH> {
 
     private final List<Category> categoryList; // Danh sách Category
-    private final Context context; // Context để inflate layout và dùng DAO
+    private final Context context; // Context để inflate layout
+
+    // Interface callback cho Edit/Delete
+    public interface OnCategoryActionListener {
+        void onEdit(Category category);
+        void onDelete(Category category);
+    }
+
+    private OnCategoryActionListener listener; // Biến listener
+
+    // Setter listener
+    public void setOnCategoryActionListener(OnCategoryActionListener listener) {
+        this.listener = listener;
+    }
 
     public CategoryAdminAdapter(Context context, List<Category> categoryList) {
         this.context = context;
         this.categoryList = categoryList;
     }
+
 
     // Tạo ViewHolder mới khi RecyclerView cần hiển thị 1 item
     @NonNull
@@ -35,7 +45,6 @@ public class CategoryAdminAdapter extends RecyclerView.Adapter<CategoryAdminVH> 
     public CategoryAdminVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Inflate layout item_category_admin.xml thành View
         View view = LayoutInflater.from(context).inflate(R.layout.item_category_admin, parent, false);
-
         // Tạo ViewHolder và trả về
         return new CategoryAdminVH(view);
     }
@@ -46,36 +55,16 @@ public class CategoryAdminAdapter extends RecyclerView.Adapter<CategoryAdminVH> 
         // Lấy dữ liệu category tại vị trí position
         Category category = categoryList.get(position);
         // Gán tên category vào TextView trong ViewHolder
-        holder.tvNameCategory.setText(category.getCategoryName());
+        holder.tvCategoryName.setText(category.getCategoryName());
 
-        // Xử lý sự kiện Edit
+        // Click Edit
         holder.ivEditCategory.setOnClickListener(v -> {
-            Intent intent = new Intent(context, UpdateCategoryActivity.class);
-            intent.putExtra("category_id", category.getCategoryId());
-            intent.putExtra("category_name", category.getCategoryName());
-            ((AdminHomeActivity) context).categoryLauncher.launch(intent);
+            if (listener != null) listener.onEdit(category);
         });
 
-        // Xử lý sự kiện Delete
+        // Click Delete
         holder.ivDeleteCategory.setOnClickListener(v -> {
-            new MaterialAlertDialogBuilder(context)
-                .setTitle("Xác nhận xóa")
-                .setMessage("Bạn có chắc muốn xóa danh mục \"" + category.getCategoryName() + "\" không?")
-                .setPositiveButton("Xóa", (dialog, which) -> {
-                    // Thực hiện xóa
-                    int result = new CategoryDAO(context).deleteCategory(category.getCategoryId());
-                    if (result > 0) {
-                        int pos = holder.getBindingAdapterPosition();
-                        if (pos != RecyclerView.NO_POSITION) {
-                            categoryList.remove(pos);
-                            notifyItemRemoved(pos);
-                        }
-                    }
-                })
-                .setNegativeButton("Hủy", (dialog, which) -> {
-                    dialog.dismiss();
-                })
-                .show();
+            if (listener != null) listener.onDelete(category);
         });
     }
 

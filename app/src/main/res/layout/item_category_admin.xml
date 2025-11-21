@@ -18,7 +18,7 @@
         android:layout_margin="15dp">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvNameCategoryAdmin"
+            android:id="@+id/tvCategoryNameAdmin"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -27,20 +27,18 @@
 
         <ImageView
             android:id="@+id/ivEditCategoryAdmin"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/ic_edit"
             android:contentDescription="@string/desc_edit"
-            android:padding="4dp"
             android:layout_marginStart="8dp" />
 
         <ImageView
             android:id="@+id/ivDeleteCategoryAdmin"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/ic_delete"
             android:contentDescription="@string/desc_delete"
-            android:padding="4dp"
             android:layout_marginStart="8dp"/>
 
     </LinearLayout>

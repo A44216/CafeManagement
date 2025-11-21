@@ -44,7 +44,7 @@
         android:layout_marginEnd="12dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etNameCategoryAdmin"
+            android:id="@+id/etCategoryNameAdmin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"

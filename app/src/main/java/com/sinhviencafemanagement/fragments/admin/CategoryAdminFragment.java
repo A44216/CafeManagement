@@ -1,6 +1,10 @@
 package com.sinhviencafemanagement.fragments.admin;
 
+import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -8,23 +12,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sinhviencafemanagement.R;
+import com.sinhviencafemanagement.activities.home.AdminHomeActivity;
+import com.sinhviencafemanagement.activities.home.category.UpdateCategoryActivity;
 import com.sinhviencafemanagement.adapter.admin.CategoryAdminAdapter;
 import com.sinhviencafemanagement.dao.CategoryDAO;
 import com.sinhviencafemanagement.models.Category;
 
-import java.util.ArrayList;
 import java.util.List;
 
+// Fragment hiển thị danh sách Category cho Admin
 public class CategoryAdminFragment extends Fragment {
-    // RecyclerView hiển thị danh sách category
-    private RecyclerView rvCategoryAdmin;
-    // Adapter kết nối dữ liệu category với RecyclerView
-    private CategoryAdminAdapter categoryAdminAdapter;
-    // DAO để truy xuất dữ liệu từ SQLite
-    private CategoryDAO categoryDAO;
-    // Danh sách Category
-    private List<Category> categoryList = new ArrayList<>();
+    private RecyclerView rvCategoryAdmin; // RecyclerView hiển thị danh sách
+    private CategoryDAO categoryDAO;       // DAO truy xuất database
+    private CategoryAdminAdapter adapter;  // Adapter kết nối dữ liệu với RecyclerView
 
     public CategoryAdminFragment() {
 
@@ -34,36 +37,63 @@ public class CategoryAdminFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    // Gọi để tạo giao diện của Fragment
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate layout fragment_category_admin.xml thành View
-        View view = inflater.inflate(R.layout.fragment_category_admin, container, false);
-        // Lấy RecyclerView từ layout
-        rvCategoryAdmin = view.findViewById(R.id.rvCategoryAdmin);
 
         // Khởi tạo DAO
         categoryDAO = new CategoryDAO(getContext());
 
-        // Load danh sách category từ SQLite và gán vào RecyclerView
-        loadCategories();
-        // Trả về View đã inflate để hiển thị
-        return view;
     }
 
-    // Hàm load danh sách category từ database và hiển thị lên RecyclerView
-    public void loadCategories() {
-        categoryList = categoryDAO.getAllCategories();
-        // Tạo Adapter với danh sách category vừa lấy
-        categoryAdminAdapter = new CategoryAdminAdapter(getContext(), categoryList);
-        // Set LayoutManager cho RecyclerView (dạng danh sách dọc)
-        rvCategoryAdmin.setLayoutManager(new LinearLayoutManager(getContext()));
-        // Gán Adapter cho RecyclerView
-        rvCategoryAdmin.setAdapter(categoryAdminAdapter);
+    // Tạo giao diện (inflate layout) của Fragment
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate layout fragment_category_admin.xml thành View và trả về
+        return inflater.inflate(R.layout.fragment_category_admin, container, false);
+    }
 
+    // View đã tạo xong → thao tác UI tại đây
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        rvCategoryAdmin = view.findViewById(R.id.rvCategoryAdmin);
+        rvCategoryAdmin.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        loadCategories(); // Load dữ liệu từ DB
+    }
+
+    // Load dữ liệu từ database và set Adapter
+    public void loadCategories() {
+        List<Category> categoryList = categoryDAO.getAllCategories(); // Lấy danh sách từ DB
+
+        adapter = new CategoryAdminAdapter(getContext(), categoryList); // Tạo Adapter
+        rvCategoryAdmin.setAdapter(adapter); // Gán Adapter cho RecyclerView
+
+        // Thiết lập callback cho edit/delete
+        adapter.setOnCategoryActionListener(new CategoryAdminAdapter.OnCategoryActionListener() {
+            @Override
+            public void onEdit(Category category) {
+                // Mở Activity update category
+                Intent intent = new Intent(getContext(), UpdateCategoryActivity.class);
+                intent.putExtra("category_id", category.getCategoryId());
+                intent.putExtra("category_name", category.getCategoryName());
+                ((AdminHomeActivity) getActivity()).categoryLauncher.launch(intent);
+            }
+
+            @Override
+            public void onDelete(Category category) {
+                // Dialog xác nhận xóa
+                new MaterialAlertDialogBuilder(getContext())
+                        .setTitle("Xác nhận xóa")
+                        .setMessage("Bạn có chắc muốn xóa danh mục \"" + category.getCategoryName() + "\" không?")
+                        .setPositiveButton("Xóa", (dialog, which) -> {
+                            categoryDAO.deleteCategory(category.getCategoryId()); // Xóa DB
+                            loadCategories(); // Reload list
+                        })
+                        .setNegativeButton("Hủy", null)
+                        .show();
+            }
+        });
     }
 
 }
