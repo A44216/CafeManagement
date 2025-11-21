@@ -1,6 +1,8 @@
 package com.sinhviencafemanagement.activities.home.category;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -15,6 +17,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.dao.CategoryDAO;
+import com.sinhviencafemanagement.models.Category;
 
 public class UpdateCategoryActivity extends AppCompatActivity {
 
@@ -62,9 +65,7 @@ public class UpdateCategoryActivity extends AppCompatActivity {
 
     private void setUpListeners() {
         ivBack.setOnClickListener(v -> finish());
-
         btnUpdateCategory.setOnClickListener(v -> handleUpdateCategory());
-
     }
 
     // Xóa lỗi cũ
@@ -104,12 +105,15 @@ public class UpdateCategoryActivity extends AppCompatActivity {
         int result = categoryDAO.updateCategory(categoryId, categoryName);
 
         if (result > 0) {
-            Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
-
-            // Trả kết quả về AdminHomeActivity
-            setResult(RESULT_OK);
+            // Tạo Category mới để trả về fragment
+            Category updatedCategory = new Category(categoryId, categoryName);
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("updatedCategory", updatedCategory); // Category implements Serializable/Parcelable
+            setResult(RESULT_OK, resultIntent);
             finish();
+
         } else {
+            Log.e("UpdateCategory", "Cập nhật thất bại: " + categoryName);
             Toast.makeText(this, "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
         }
 

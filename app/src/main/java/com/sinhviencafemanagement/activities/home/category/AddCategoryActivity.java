@@ -1,6 +1,8 @@
 package com.sinhviencafemanagement.activities.home.category;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -15,6 +17,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.dao.CategoryDAO;
+import com.sinhviencafemanagement.models.Category;
 
 public class AddCategoryActivity extends AppCompatActivity {
 
@@ -55,22 +58,31 @@ public class AddCategoryActivity extends AppCompatActivity {
         String categoryName = etCategoryName.getText() != null ? etCategoryName.getText().toString().trim() : "";
 
         // Kiểm tra dữ liệu nhập
-        if (!validateInput(categoryName)) {
-            return;
-        }
+        if (!validateInput(categoryName)) return;
+
         // Kiểm tra tồn tại
         if (categoryDAO.categoryExists(categoryName)) {
             layout.setError("Danh mục này đã tồn tại");
             return;
         }
-        categoryDAO.addCategory(categoryName);
-        Toast.makeText(this, "Thêm danh mục thành công", Toast.LENGTH_SHORT).show();
 
-        // Trả kết quả về AdminHomeActivity
-        setResult(RESULT_OK);
-        finish();
+        // Thêm vào DB và lấy ID mới
+        long id = categoryDAO.addCategory(categoryName); // giả sử trả về ID
+        if (id > 0) {
+            // Tạo Category mới
+            Category newCategory = new Category((int) id, categoryName);
 
+            // Trả kết quả về AdminHomeActivity
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("newCategory", newCategory); // Category implements Serializable
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        } else {
+            Log.e("AddCategory", "Thêm thất bại: " + categoryName);
+            Toast.makeText(this, "Thêm thất bại", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     private void initViews() {
         layout = findViewById(R.id.layoutCategoryNameAdmin);

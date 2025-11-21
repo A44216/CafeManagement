@@ -29,6 +29,8 @@ public class CategoryAdminFragment extends Fragment {
     private CategoryDAO categoryDAO;       // DAO truy xuất database
     private CategoryAdminAdapter adapter;  // Adapter kết nối dữ liệu với RecyclerView
 
+    private List<Category> categoryList;
+
     public CategoryAdminFragment() {
 
     }
@@ -64,7 +66,7 @@ public class CategoryAdminFragment extends Fragment {
 
     // Load dữ liệu từ database và set Adapter
     public void loadCategories() {
-        List<Category> categoryList = categoryDAO.getAllCategories(); // Lấy danh sách từ DB
+        categoryList = categoryDAO.getAllCategories(); // Lấy danh sách từ DB
 
         adapter = new CategoryAdminAdapter(getContext(), categoryList); // Tạo Adapter
         rvCategoryAdmin.setAdapter(adapter); // Gán Adapter cho RecyclerView
@@ -77,23 +79,50 @@ public class CategoryAdminFragment extends Fragment {
                 Intent intent = new Intent(getContext(), UpdateCategoryActivity.class);
                 intent.putExtra("category_id", category.getCategoryId());
                 intent.putExtra("category_name", category.getCategoryName());
-                ((AdminHomeActivity) getActivity()).categoryLauncher.launch(intent);
+                ((AdminHomeActivity) requireActivity()).categoryLauncher.launch(intent);
             }
 
             @Override
             public void onDelete(Category category) {
                 // Dialog xác nhận xóa
-                new MaterialAlertDialogBuilder(getContext())
+                new MaterialAlertDialogBuilder(requireContext())
                         .setTitle("Xác nhận xóa")
                         .setMessage("Bạn có chắc muốn xóa danh mục \"" + category.getCategoryName() + "\" không?")
                         .setPositiveButton("Xóa", (dialog, which) -> {
-                            categoryDAO.deleteCategory(category.getCategoryId()); // Xóa DB
-                            loadCategories(); // Reload list
+                            int pos = categoryList.indexOf(category);
+                            if (pos >= 0) {
+                                new Thread(() -> {
+                                    // Xóa DB trên background thread
+                                    categoryDAO.deleteCategory(category.getCategoryId());
+                                    // Cập nhật UI trên main thread
+                                    requireActivity().runOnUiThread(() -> {
+                                        categoryList.remove(pos);
+                                        adapter.notifyItemRemoved(pos);
+                                    });
+                                }).start(); // Thông báo RecyclerView rằng 1 item đã bị xóa
+                            }
                         })
                         .setNegativeButton("Hủy", null)
                         .show();
             }
         });
+    }
+
+    // Thêm category mới vào RecyclerView
+    public void addCategory(Category category) {
+        categoryList.add(category);
+        adapter.notifyItemInserted(categoryList.size() - 1);
+    }
+
+    // Cập nhật category đã edit trong RecyclerView
+    public void updateCategory(Category updatedCategory) {
+        for (int i = 0; i < categoryList.size(); i++) {
+            if (categoryList.get(i).getCategoryId() == updatedCategory.getCategoryId()) {
+                categoryList.set(i, updatedCategory);
+                adapter.notifyItemChanged(i);
+                break;
+            }
+        }
     }
 
 }

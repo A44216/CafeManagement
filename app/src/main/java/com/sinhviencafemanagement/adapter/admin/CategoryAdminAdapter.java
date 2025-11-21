@@ -44,7 +44,7 @@ public class CategoryAdminAdapter extends RecyclerView.Adapter<CategoryAdminVH> 
     @Override
     public CategoryAdminVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Inflate layout item_category_admin.xml thành View
-        View view = LayoutInflater.from(context).inflate(R.layout.item_category_admin, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_category_admin, parent, false);
         // Tạo ViewHolder và trả về
         return new CategoryAdminVH(view);
     }

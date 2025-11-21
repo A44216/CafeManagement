@@ -2,7 +2,9 @@ package com.sinhviencafemanagement.models;
 
 import androidx.annotation.NonNull;
 
-public class Category {
+import java.io.Serializable;
+
+public class Category implements Serializable {
     private int categoryId;           // category_id
     private String categoryName;      // category_name
 

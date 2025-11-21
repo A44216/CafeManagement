@@ -22,6 +22,7 @@ import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.home.category.AddCategoryActivity;
 import com.sinhviencafemanagement.dao.CategoryDAO;
 import com.sinhviencafemanagement.fragments.admin.CategoryAdminFragment;
+import com.sinhviencafemanagement.models.Category;
 
 import java.util.Objects;
 
@@ -36,16 +37,27 @@ public class AdminHomeActivity extends AppCompatActivity {
 
     FragmentContainerView listFragmentContainer;
 
-    // ActivityResultLauncher để nhận kết quả từ AddCategoryActivity
     public final ActivityResultLauncher<Intent> categoryLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == RESULT_OK) {
-                    // Reload fragment sau khi thêm category
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     CategoryAdminFragment fragment = (CategoryAdminFragment)
                             getSupportFragmentManager().findFragmentById(R.id.listFragmentContainer);
-                    if (fragment != null) fragment.loadCategories();
+                    if (fragment != null) {
+                        // Nếu nhận được category mới
+                        Category newCategory = (Category) result.getData().getSerializableExtra("newCategory");
+                        if (newCategory != null) {
+                            fragment.addCategory(newCategory); // Thêm item mới vào RecyclerView
+                            return;
+                        }
+                        // Nếu nhận được category đã update
+                        Category updatedCategory = (Category) result.getData().getSerializableExtra("updatedCategory");
+                        if (updatedCategory != null) {
+                            fragment.updateCategory(updatedCategory); // Cập nhật trực tiếp item
+                        }
+                    }
                 }
             });
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
