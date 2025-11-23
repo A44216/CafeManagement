@@ -172,4 +172,31 @@ public class CategoryDAO {
         return category;
     }
 
+    // Lấy Category theo tên
+    public Category getCategoryByName(String categoryName) {
+        if (categoryName == null || categoryName.trim().isEmpty()) return null;
+
+        Category category = null;
+
+        try (Cursor cursor = db.query(
+                CreateDatabase.TABLE_CATEGORIES,
+                null,
+                CreateDatabase.COLUMN_CATEGORY_NAME + " = ?",
+                new String[]{categoryName.trim()},
+                null, null, null
+        )) {
+            if (cursor.moveToFirst()) {
+                category = new Category(
+                        cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_CATEGORY_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_CATEGORY_NAME))
+                );
+            }
+        } catch (Exception e) {
+            Log.e("CategoryDAO", "Lỗi khi lấy category theo name", e);
+        }
+
+        return category;
+    }
+
+
 }

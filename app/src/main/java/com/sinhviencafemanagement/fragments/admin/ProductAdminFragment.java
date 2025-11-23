@@ -138,6 +138,7 @@ public class ProductAdminFragment extends Fragment {
                     @Override
                     public void onEdit(Product product) {
                         Intent intent = new Intent(getContext(), UpdateProductActivity.class);
+                        intent.putExtra("product", product);
                         ((AdminHomeActivity) requireActivity()).productLauncher.launch(intent);
                     }
 

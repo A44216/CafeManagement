@@ -164,4 +164,22 @@ public class ProductDAO {
         );
     }
 
+    public boolean nameExists(String name) {
+        boolean exists = false;
+
+        try (Cursor cursor = db.query(
+                CreateDatabase.TABLE_PRODUCTS,
+                new String[]{CreateDatabase.COLUMN_PRODUCT_ID},
+                CreateDatabase.COLUMN_PRODUCT_NAME + " = ?",
+                new String[]{name},
+                null, null, null
+        )) {
+            exists = cursor.moveToFirst(); // Có bản ghi nghĩa là tồn tại
+        } catch (Exception e) {
+            Log.e("ProductDAO", "Lỗi khi kiểm tra tên", e);
+        }
+
+        return exists;
+    }
+
 }

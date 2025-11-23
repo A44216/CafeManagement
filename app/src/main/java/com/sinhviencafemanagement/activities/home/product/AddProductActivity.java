@@ -3,6 +3,7 @@ package com.sinhviencafemanagement.activities.home.product;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
@@ -154,6 +155,7 @@ public class AddProductActivity extends AppCompatActivity {
             setResult(RESULT_OK, resultIntent);
             finish();
         } else {
+            Log.e("AddProduct", "Thêm thất bại: " + categoryName);
             Toast.makeText(this, "Thêm sản phẩm thất bại", Toast.LENGTH_SHORT).show();
         }
     }
