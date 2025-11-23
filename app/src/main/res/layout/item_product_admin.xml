@@ -9,7 +9,7 @@
 
     <!-- Ảnh sản phẩm -->
     <ImageView
-        android:id="@+id/imgProductAdmin"
+        android:id="@+id/imgPathProductAdmin"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:scaleType="centerCrop"
@@ -25,9 +25,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginStart="10dp"
-        app:layout_constraintStart_toEndOf="@id/imgProductAdmin"
-        app:layout_constraintTop_toTopOf="@id/imgProductAdmin"
-        app:layout_constraintBottom_toBottomOf="@id/imgProductAdmin"
+        app:layout_constraintStart_toEndOf="@id/imgPathProductAdmin"
+        app:layout_constraintTop_toTopOf="@id/imgPathProductAdmin"
+        app:layout_constraintBottom_toBottomOf="@id/imgPathProductAdmin"
         app:layout_constraintEnd_toStartOf="@id/actionsLayoutProductAdmin">
 
         <TextView
@@ -73,8 +73,8 @@
         android:orientation="vertical"
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/imgProductAdmin"
-        app:layout_constraintBottom_toBottomOf="@id/imgProductAdmin"
+        app:layout_constraintTop_toTopOf="@id/imgPathProductAdmin"
+        app:layout_constraintBottom_toBottomOf="@id/imgPathProductAdmin"
         app:layout_constraintStart_toEndOf="@id/infoLayoutProductAdmin"
         android:layout_marginStart="10dp">
 

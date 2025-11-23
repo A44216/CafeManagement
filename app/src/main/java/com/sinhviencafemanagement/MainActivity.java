@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 25000,
                 CreateDatabase.PRODUCT_STATUS_AVAILABLE,
                 R.drawable.cappuccino,
+                "",
                 1,
                 "Cappuccino ngon"
         ));
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 35000,
                 CreateDatabase.PRODUCT_STATUS_AVAILABLE,
                 R.drawable.milk_coffee,
+                "",
                 1,
                 "Cà phê sữa ngon"
         ));
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 20000,
                 CreateDatabase.PRODUCT_STATUS_AVAILABLE,
                 R.drawable.matcha_latte,
+                "",
                 2,
                 "Trà xanh thanh mát"
         ));
@@ -89,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 30000,
                 CreateDatabase.PRODUCT_STATUS_AVAILABLE,
                 R.drawable.strawberry_smoothie,
+                "",
                 3,
                 "Sinh tố dâu ngon"
         ));
@@ -99,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 30000,
                 CreateDatabase.PRODUCT_STATUS_AVAILABLE,
                 R.drawable.strawberry_tea,
+                "",
                 4,
                 "Trà dâu tây ngon"
         ));
@@ -109,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     30000,
                     CreateDatabase.PRODUCT_STATUS_AVAILABLE,
                     R.drawable.strawberry_tea,
+                    "",
                     4,
                     "Trà dâu tây ngon"
             ));

@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.adapter.admin.viewholder.ProductAdminVH;
 import com.sinhviencafemanagement.dao.CategoryDAO;
@@ -71,13 +72,28 @@ public class ProductAdminAdapter extends RecyclerView.Adapter<ProductAdminVH> {
         Product product = productList.get(position);
         if (product == null) return;
 
-        // Load ảnh bằng Glide để tránh lag
         int imageResId = product.getImageResId();
-        Glide.with(context)
-                .load(imageResId != 0 ? imageResId : R.drawable.ic_broken_image)
-                .placeholder(R.drawable.ic_broken_image) // hiển thị tạm
-                .error(R.drawable.ic_broken_image)       // lỗi cũng hiển thị
-                .into(holder.imgProduct);
+        String imagePath = product.getImagePath();
+
+        if (imageResId != 0) {
+            // Load ảnh drawable, bỏ qua imagePath
+            Glide.with(context)
+                    .load(imageResId)
+                    .placeholder(R.drawable.ic_broken_image)
+                    .error(R.drawable.ic_broken_image)
+                    .into(holder.imgProduct);
+        } else if (imagePath != null && !imagePath.isEmpty()) {
+            // Load ảnh từ path nếu drawable không tồn tại
+            Glide.with(context)
+                    .load(imagePath)
+                    .placeholder(R.drawable.ic_broken_image)
+                    .error(R.drawable.ic_broken_image)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .into(holder.imgProduct);
+        } else {
+            // Cả 2 không có thì load ảnh mặc định lỗi
+            holder.imgProduct.setImageResource(R.drawable.ic_broken_image);
+        }
 
         // Tên sản phẩm
         String name = product.getProductName();

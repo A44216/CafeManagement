@@ -34,7 +34,8 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_PRODUCT_NAME = "product_name"; // Tên món
     public static final String COLUMN_PRODUCT_PRICE = "price"; // Giá tiền
     public static final String COLUMN_PRODUCT_STATUS = "status"; // Tình trạng
-    public static final String COLUMN_PRODUCT_IMAGE = "image"; // Hình ảnh
+    public static final String COLUMN_PRODUCT_IMAGE_RES_ID = "imageResId"; // ID ảnh mặc định lưu ở drawable
+    public static final String COLUMN_PRODUCT_IMAGE_PATH = "imagePath"; // Đường dẫn ảnh khi admin thêm
     public static final String COLUMN_PRODUCT_CATEGORY_ID = "category_id"; // Mã loại món
     public static final String COLUMN_PRODUCT_DESCRIPTION = "description"; // Mô tả sản phẩm
     // Trạng thái sản phẩm
@@ -123,7 +124,8 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 COLUMN_PRODUCT_NAME + " TEXT NOT NULL UNIQUE, " +
                 COLUMN_PRODUCT_PRICE + " REAL NOT NULL, " +
                 COLUMN_PRODUCT_STATUS + " TEXT NOT NULL DEFAULT '" + PRODUCT_STATUS_AVAILABLE + "', " +
-                COLUMN_PRODUCT_IMAGE + " INTEGER, " +
+                COLUMN_PRODUCT_IMAGE_RES_ID + " INTEGER, " +
+                COLUMN_PRODUCT_IMAGE_PATH + " TEXT, " +
                 COLUMN_PRODUCT_CATEGORY_ID + " INTEGER, " +
                 COLUMN_PRODUCT_DESCRIPTION + " TEXT, " +
                 "FOREIGN KEY(" + COLUMN_PRODUCT_CATEGORY_ID + ") REFERENCES " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY_ID + "));";

@@ -2,12 +2,17 @@ package com.sinhviencafemanagement.models;
 
 import androidx.annotation.NonNull;
 
-public class Product implements Clonable<Product>{
+import com.sinhviencafemanagement.database.CreateDatabase;
+
+import java.io.Serializable;
+
+public class Product implements Serializable, Clonable<Product>{
     private int productId;           // product_id
     private String productName;      // product_name
     private double price;            // price
     private String status;           // status (mặc định "available")
-    private int imageResId;          // lưu id ảnh trực tiếp
+    private int imageResId;          // lưu id ảnh có sẵn (trong drawable)
+    private String imagePath;       // đường dẫn ảnh admin thêm runtime
     private Integer categoryId;      // category_id (có thể null)
     private String description;      // description (có thể null)
 
@@ -17,26 +22,29 @@ public class Product implements Clonable<Product>{
 
     // Constructor đầy đủ
     public Product(int productId, String productName, double price, String status,
-                   int imageResId, Integer categoryId, String description) {
+                   int imageResId, String imagePath, Integer categoryId, String description) {
         this.productId = productId;
         this.productName = productName;
         this.price = price;
-        this.status = status != null ? status : "available"; // mặc định
+        this.status = status != null ? status : CreateDatabase.PRODUCT_STATUS_AVAILABLE;
         this.imageResId = imageResId;
+        this.imagePath = imagePath;
         this.categoryId = categoryId;
         this.description = description;
     }
 
     // Constructor thêm mới (không cần productId, SQLite tự sinh)
     public Product(String productName, double price, String status,
-                   int imageResId, Integer categoryId, String description) {
+                   int imageResId, String imagePath, Integer categoryId, String description) {
         this.productName = productName;
         this.price = price;
-        this.status = status != null ? status : "available"; // mặc định
+        this.status = status != null ? status : CreateDatabase.PRODUCT_STATUS_AVAILABLE;
         this.imageResId = imageResId;
+        this.imagePath = imagePath;
         this.categoryId = categoryId;
         this.description = description;
     }
+
 
     // Getter và Setter
     public int getProductId() {
@@ -64,7 +72,7 @@ public class Product implements Clonable<Product>{
         return status;
     }
     public void setStatus(String status) {
-        this.status = status != null ? status : "available";
+        this.status = status != null ? status : CreateDatabase.PRODUCT_STATUS_AVAILABLE;
     }
 
     public int getImageResId() { return imageResId; }
@@ -86,6 +94,9 @@ public class Product implements Clonable<Product>{
         this.description = description;
     }
 
+    public String getImagePath() { return imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+
     @NonNull
     @Override
     public String toString() {
@@ -94,7 +105,8 @@ public class Product implements Clonable<Product>{
                 ", productName='" + productName + '\'' +
                 ", price=" + price +
                 ", status='" + status + '\'' +
-                ", imageResId='" + imageResId + '\'' +
+                ", imageResId=" + imageResId +
+                ", imagePath='" + imagePath + '\'' +
                 ", categoryId=" + categoryId +
                 ", description='" + description + '\'' +
                 '}';
@@ -109,6 +121,7 @@ public class Product implements Clonable<Product>{
                 this.price,
                 this.status,
                 this.imageResId,
+                this.imagePath,
                 this.categoryId,
                 this.description
         );

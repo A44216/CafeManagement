@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 
-public class Category implements Serializable {
+public class Category implements Serializable, Clonable<Category> {
     private int categoryId;           // category_id
     private String categoryName;      // category_name
 
@@ -40,4 +40,9 @@ public class Category implements Serializable {
                 '}';
     }
 
+    @NonNull
+    @Override
+    public Category clone() {
+        return new Category(this.categoryId, this.categoryName);
+    }
 }

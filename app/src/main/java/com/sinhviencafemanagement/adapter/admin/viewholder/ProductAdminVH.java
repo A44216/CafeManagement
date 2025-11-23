@@ -18,7 +18,7 @@ public class ProductAdminVH extends RecyclerView.ViewHolder {
     public ProductAdminVH(@NonNull View itemView) {
         super(itemView);
 
-        imgProduct = itemView.findViewById(R.id.imgProductAdmin);
+        imgProduct = itemView.findViewById(R.id.imgPathProductAdmin);
         ivEditProduct = itemView.findViewById(R.id.ivEditProductAdmin);
         ivDeleteProduct = itemView.findViewById(R.id.ivDeleteProductAdmin);
 
