@@ -2,6 +2,8 @@ package com.sinhviencafemanagement.activities.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -20,6 +22,7 @@ import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.home.category.AddCategoryActivity;
 import com.sinhviencafemanagement.activities.home.product.AddProductActivity;
 import com.sinhviencafemanagement.fragments.admin.CategoryAdminFragment;
+import com.sinhviencafemanagement.fragments.admin.OrderAdminFragment;
 import com.sinhviencafemanagement.fragments.admin.ProductAdminFragment;
 import com.sinhviencafemanagement.models.Category;
 import com.sinhviencafemanagement.models.Product;
@@ -109,6 +112,7 @@ public class AdminHomeActivity extends AppCompatActivity {
     }
 
     private void setUpListeners() {
+        // Xử lý sự kiện thêm mới
         fabAddNew.setOnClickListener(v -> {
             int selectedId = bnvMenu.getSelectedItemId(); // Lấy tab đang chọn
 
@@ -119,6 +123,7 @@ public class AdminHomeActivity extends AppCompatActivity {
             }
         });
 
+        // Xử lý chuyển gia giữa các tab
         bnvMenu.setOnItemSelectedListener(item -> {
             int selectedId = item.getItemId();
 
@@ -128,16 +133,33 @@ public class AdminHomeActivity extends AppCompatActivity {
             else if (selectedId == R.id.menu_product) {
                 switchToProductFragment();
             }
-//            else if (selectedId == R.id.menu_order) {
-//                switchToOrderFragment();
-//            }
+            else if (selectedId == R.id.menu_order) {
+                switchToOrderFragment();
+            }
 //            else if (selectedId == R.id.menu_setting) {
 //                switchToSettingFragment();
 //            }
-
             return true;
-
         });
+
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterCurrentFragment(s.toString());
+
+            }
+        });
+
     }
 
     // Chuyển sang Category Fragment
@@ -156,13 +178,13 @@ public class AdminHomeActivity extends AppCompatActivity {
                 .commit();
     }
 
-//    // Chuyển sang Order (tạo fragment rỗng trước cũng được)
-//    private void switchToOrderFragment() {
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.listFragmentContainer, new OrderAdminFragment())
-//                .commit();
-//    }
+    // Chuyển sang Order (tạo fragment rỗng trước cũng được)
+    private void switchToOrderFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.listFragmentContainer, new OrderAdminFragment())
+                .commit();
+    }
 //
 //    // Chuyển sang Setting
 //    private void switchToSettingFragment() {
@@ -192,5 +214,26 @@ public class AdminHomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AddProductActivity.class);
         productLauncher.launch(intent);
     }
+
+    // Lọc dữ liệu trong fragment đang hiển thị theo từ khóa
+    private void filterCurrentFragment(String query) {
+        int selectedId = bnvMenu.getSelectedItemId();
+
+        if (selectedId == R.id.menu_category) {
+            CategoryAdminFragment fragment = (CategoryAdminFragment)
+                    getSupportFragmentManager().findFragmentById(R.id.listFragmentContainer);
+            if (fragment != null) {
+                fragment.filterCategory(query);
+            }
+        }
+//        else if (selectedId == R.id.menu_product) {
+//            ProductAdminFragment fragment = (ProductAdminFragment)
+//                    getSupportFragmentManager().findFragmentById(R.id.listFragmentContainer);
+//            if (fragment != null) {
+//                fragment.filterProduct(query);
+//            }
+//        }
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.sinhviencafemanagement.fragments.admin;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -21,6 +22,7 @@ import com.sinhviencafemanagement.adapter.admin.CategoryAdminAdapter;
 import com.sinhviencafemanagement.dao.CategoryDAO;
 import com.sinhviencafemanagement.models.Category;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // Fragment hiển thị danh sách Category cho Admin
@@ -29,11 +31,11 @@ public class CategoryAdminFragment extends Fragment {
     private CategoryDAO categoryDAO;       // DAO truy xuất database
     private CategoryAdminAdapter adapterCategoryAdmin;  // Adapter kết nối dữ liệu với RecyclerView
 
-    private List<Category> categoryList;
+    private List<Category> categoryList;       // danh sách gốc
+    private List<Category> displayedCategories; // danh sách hiển thị, dùng cho RecyclerView
+    private String currentKeyword = "";
 
-    public CategoryAdminFragment() {
-
-    }
+    public CategoryAdminFragment() { }
 
     // Gọi khi Fragment được tạo (trước khi tạo view)
     @Override
@@ -67,8 +69,9 @@ public class CategoryAdminFragment extends Fragment {
     // Load dữ liệu từ database và set Adapter
     public void loadCategoriesAdmin() {
         categoryList = categoryDAO.getAllCategories(); // Lấy danh sách từ DB
+        displayedCategories = new ArrayList<>(categoryList);    // danh sách hiển thị
 
-        adapterCategoryAdmin = new CategoryAdminAdapter(getContext(), categoryList); // Tạo Adapter
+        adapterCategoryAdmin = new CategoryAdminAdapter(getContext(), displayedCategories); // Tạo Adapter
         rvCategoryAdmin.setAdapter(adapterCategoryAdmin); // Gán Adapter cho RecyclerView
 
         // Thiết lập callback cho edit/delete
@@ -89,14 +92,15 @@ public class CategoryAdminFragment extends Fragment {
                         .setTitle("Xác nhận xóa")
                         .setMessage("Bạn có chắc muốn xóa danh mục \"" + category.getCategoryName() + "\" không?")
                         .setPositiveButton("Xóa", (dialog, which) -> {
-                            int pos = categoryList.indexOf(category);
+                            int pos = displayedCategories.indexOf(category);
                             if (pos >= 0) {
                                 new Thread(() -> {
                                     // Xóa DB trên background thread
                                     categoryDAO.deleteCategory(category.getCategoryId());
                                     // Cập nhật UI trên main thread
                                     requireActivity().runOnUiThread(() -> {
-                                        categoryList.remove(pos);
+                                        categoryList.remove(category);       // xóa khỏi danh sách gốc
+                                        displayedCategories.remove(pos);     // xóa khỏi danh sách hiển thị
                                         adapterCategoryAdmin.notifyItemRemoved(pos);
                                     });
                                 }).start(); // Thông báo RecyclerView rằng 1 item đã bị xóa
@@ -111,18 +115,68 @@ public class CategoryAdminFragment extends Fragment {
     // Thêm category mới vào RecyclerView
     public void addCategoryAdmin(Category newCategory) {
         categoryList.add(newCategory);
-        adapterCategoryAdmin.notifyItemInserted(categoryList.size() - 1);
+        if (newCategory.getCategoryName().toLowerCase().contains(currentKeyword.toLowerCase())) {
+            displayedCategories.add(newCategory);
+            adapterCategoryAdmin.notifyItemInserted(displayedCategories.size() - 1);
+        }
     }
 
     // Cập nhật category đã edit trong RecyclerView
     public void updateCategoryAdmin(Category updatedCategory) {
+        // Cập nhật danh sách gốc
         for (int i = 0; i < categoryList.size(); i++) {
             if (categoryList.get(i).getCategoryId() == updatedCategory.getCategoryId()) {
                 categoryList.set(i, updatedCategory);
-                adapterCategoryAdmin.notifyItemChanged(i);
                 break;
             }
         }
+        // Kiểm tra xem item có match filter hiện tại không
+        boolean match = updatedCategory.getCategoryName().toLowerCase()
+                .contains(currentKeyword.toLowerCase());
+
+        int posInDisplayed = -1;
+        for (int i = 0; i < displayedCategories.size(); i++) {
+            if (displayedCategories.get(i).getCategoryId() == updatedCategory.getCategoryId()) {
+                posInDisplayed = i;
+                break;
+            }
+        }
+
+        if (match) {
+            if (posInDisplayed >= 0) {
+                // Update trực tiếp
+                displayedCategories.set(posInDisplayed, updatedCategory);
+                adapterCategoryAdmin.notifyItemChanged(posInDisplayed);
+            } else {
+                // Thêm mới vì trước đó không match filter
+                displayedCategories.add(updatedCategory);
+                adapterCategoryAdmin.notifyItemInserted(displayedCategories.size() - 1);
+            }
+        } else {
+            if (posInDisplayed >= 0) {
+                // Xóa khỏi displayed vì không match filter nữa
+                displayedCategories.remove(posInDisplayed);
+                adapterCategoryAdmin.notifyItemRemoved(posInDisplayed);
+            }
+        }
+
+    }
+
+    // Lọc danh sách Category theo từ khóa tìm kiếm
+    @SuppressLint("NotifyDataSetChanged")
+    public void filterCategory(String keyword) {
+        currentKeyword = keyword; // lưu keyword hiện tại
+        displayedCategories.clear();
+        if (keyword.isEmpty()) {
+            displayedCategories.addAll(categoryList); // categoryList là danh sách gốc
+        } else {
+            for (Category c : categoryList) {
+                if (c.getCategoryName().toLowerCase().contains(keyword.toLowerCase())) {
+                    displayedCategories.add(c);
+                }
+            }
+        }
+        adapterCategoryAdmin.notifyDataSetChanged();
     }
 
 }

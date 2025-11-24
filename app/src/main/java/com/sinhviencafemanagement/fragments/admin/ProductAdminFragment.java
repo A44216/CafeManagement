@@ -1,5 +1,6 @@
 package com.sinhviencafemanagement.fragments.admin;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -33,6 +34,7 @@ public class ProductAdminFragment extends Fragment {
     private ProductDAO productDAO;
 
     private List<Product> productList = new ArrayList<>();
+    private List<Product> displayedProducts = new ArrayList<>();
 
     public ProductAdminFragment() {
         // Required empty public constructor
@@ -66,6 +68,8 @@ public class ProductAdminFragment extends Fragment {
 
     private void loadProducts() {
         productList = productDAO.getAllProducts(); // Lấy danh sách từ DB
+        displayedProducts = new ArrayList<>(productList);
+
         adapterProductAdmin = new ProductAdminAdapter(getContext(), productList);
         rvProductAdmin.setAdapter(adapterProductAdmin);
 
@@ -167,5 +171,22 @@ public class ProductAdminFragment extends Fragment {
         }).start();
     }
 
+//    @SuppressLint("NotifyDataSetChanged")
+//    public void filterProduct(String keyword) {
+//        displayedProducts.clear();
+//
+//        if (keyword == null || keyword.trim().isEmpty()) {
+//            displayedProducts.addAll(productList);
+//        } else {
+//            String key = keyword.toLowerCase();
+//            for (Product p : productList) {
+//                if (p.getProductName().toLowerCase().contains(key)) {
+//                    displayedProducts.add(p);
+//                }
+//            }
+//        }
+//
+//        adapterProductAdmin.notifyDataSetChanged();
+//    }
 
 }
