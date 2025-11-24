@@ -138,31 +138,32 @@ public class UpdateProductActivity extends AppCompatActivity {
             layoutProductPrice.setError("Vui lòng nhập giá");
             isValid = false;
         }
+        if (status.isEmpty()) {
+            layoutProductStatus.setError("Vui lòng chọn trạng thái");
+            isValid = false;
+        }
         if (categoryName.isEmpty()) {
             layoutProductCategory.setError("Vui lòng chọn danh mục");
             isValid = false;
         }
 
-        // Nếu tên mới không đổi thì không cần update
-        if (productName.equalsIgnoreCase(oldProduct.getProductName())) {
-            layoutProductName.setError("Tên không thay đổi");
-            return;
-        }
-
-        // Kiểm tra trùng
-        if (productDAO.nameExists(productName)) {
-            layoutProductName.setError("Tên sản phẩm đã tồn tại");
-            isValid = false;
+        // Kiểm tra trùng tên chỉ khi tên mới khác tên cũ
+        if (!productName.equalsIgnoreCase(oldProduct.getProductName())) {
+            if (productDAO.nameExists(productName)) {
+                layoutProductName.setError("Tên sản phẩm đã tồn tại");
+                etProductName.requestFocus();
+                isValid = false;
+            }
         }
 
         if (!isValid) return;
 
-        // Parse price
-        int price;
+        double price;
         try {
-            price = Integer.parseInt(priceStr);
+            price = Double.parseDouble(priceStr);
         } catch (NumberFormatException e) {
             layoutProductPrice.setError("Giá không hợp lệ");
+            etProductPrice.requestFocus();
             return;
         }
 

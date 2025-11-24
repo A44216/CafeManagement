@@ -112,10 +112,22 @@ public class AddProductActivity extends AppCompatActivity {
             layoutProductPrice.setError("Vui lòng nhập giá");
             isValid = false;
         }
+        if (status.isEmpty()) {
+            layoutProductStatus.setError("Vui lòng chọn trạng thái sản phẩm");
+            isValid = false;
+        }
         if (categoryName.isEmpty()) {
             layoutProductCategory.setError("Vui lòng chọn danh mục");
             isValid = false;
         }
+
+        // Kiểm tra tên sản phẩm trùng
+        if (productDAO.nameExists(name)) {
+            layoutProductName.setError("Tên sản phẩm đã tồn tại");
+            etProductName.requestFocus(); // đưa con trỏ vào ô nhập tên
+            isValid = false;
+        }
+
 
         if (!isValid) return;
 
