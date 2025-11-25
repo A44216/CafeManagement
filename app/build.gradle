@@ -3,8 +3,8 @@ plugins {
 }
 
 android {
-    namespace 'com.sinhviencafemanagement'
-    compileSdk 36
+    namespace = 'com.sinhviencafemanagement'
+    compileSdkVersion 36
 
     defaultConfig {
         applicationId "com.sinhviencafemanagement"
@@ -23,11 +23,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
     buildFeatures {
-        viewBinding true
+        viewBinding = true
     }
 }
 

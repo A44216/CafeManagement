@@ -14,9 +14,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CafeManagement">
         <activity
-            android:name=".fragments.admin.OrderAdminFragment"
-            android:exported="false" />
-        <activity
             android:name=".activities.home.product.UpdateProductActivity"
             android:exported="false" />
         <activity
