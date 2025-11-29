@@ -72,6 +72,9 @@ public class ProductAdminAdapter extends RecyclerView.Adapter<ProductAdminVH> {
         Product product = productList.get(position);
         if (product == null) return;
 
+        // Reset trước khi load
+        holder.imgProduct.setImageDrawable(null);
+
         int imageResId = product.getImageResId();
         String imagePath = product.getImagePath();
 
@@ -81,6 +84,8 @@ public class ProductAdminAdapter extends RecyclerView.Adapter<ProductAdminVH> {
                     .load(imageResId)
                     .placeholder(R.drawable.ic_broken_image)
                     .error(R.drawable.ic_broken_image)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE) // tắt cache file để tránh nhầm drawable
+                    .skipMemoryCache(true)                     // tắt cache memory để tránh nhầm drawable
                     .into(holder.imgProduct);
         } else if (imagePath != null && !imagePath.isEmpty()) {
             // Load ảnh từ path nếu drawable không tồn tại

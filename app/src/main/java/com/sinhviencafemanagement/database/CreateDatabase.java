@@ -3,6 +3,10 @@ package com.sinhviencafemanagement.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import com.sinhviencafemanagement.R;
+import com.sinhviencafemanagement.dao.UserDAO;
 
 // Lớp CreateDatabase dùng để tạo và quản lý cơ sở dữ liệu SQLite cho ứng dụng quản lý quán cafe
 public class CreateDatabase extends SQLiteOpenHelper {
@@ -170,10 +174,67 @@ public class CreateDatabase extends SQLiteOpenHelper {
         db.execSQL(tblOrderDetails);
         db.execSQL(tblSessions);
 
-        // Chèn role mặc định (sử dụng đúng tên bảng và cột)
+        // Gọi hàm khởi tạo dữ liệu mặc định
+        insertDefaultData(db);
+
+    }
+
+    // Hàm chèn dữ liệu mặc định
+    private void insertDefaultData(SQLiteDatabase db) {
+        // Role mặc định
         db.execSQL("INSERT INTO " + TABLE_ROLES + " (" + COLUMN_ROLE_ID + ", " + COLUMN_ROLE_NAME + ") VALUES (" + ROLE_ADMIN + ", 'admin')");
         db.execSQL("INSERT INTO " + TABLE_ROLES + " (" + COLUMN_ROLE_ID + ", " + COLUMN_ROLE_NAME + ") VALUES (" + ROLE_STAFF + ", 'staff')");
         db.execSQL("INSERT INTO " + TABLE_ROLES + " (" + COLUMN_ROLE_ID + ", " + COLUMN_ROLE_NAME + ") VALUES (" + ROLE_CUSTOMER + ", 'customer')");
+
+
+        // Categories mặc định
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " (" + COLUMN_CATEGORY_NAME + ") VALUES ('Cà phê')");
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " (" + COLUMN_CATEGORY_NAME + ") VALUES ('Trà sữa')");
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " (" + COLUMN_CATEGORY_NAME + ") VALUES ('Sinh tố')");
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " (" + COLUMN_CATEGORY_NAME + ") VALUES ('Trà')");
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " (" + COLUMN_CATEGORY_NAME + ") VALUES ('Nước ép')");
+
+        // Admin mặc định
+        String hashedPassword = UserDAO.hashPassword("admin123");
+        if (hashedPassword == null) {
+            Log.e("CreateDatabase", "Lỗi khi mã hóa mật khẩu");
+            return;
+        }
+        db.execSQL("INSERT INTO " + TABLE_USERS + " (" +
+                COLUMN_USER_NAME + "," + COLUMN_USER_DISPLAY_NAME + "," +
+                COLUMN_USER_USERNAME + "," + COLUMN_USER_PASSWORD + "," +
+                COLUMN_USER_EMAIL + "," + COLUMN_USER_PHONE + "," + COLUMN_USER_ROLE_ID + ") VALUES (" +
+                "'Administrator', 'Admin', 'admin123', '" + hashedPassword + "', 'admin@example.com', '0123456789', " + ROLE_ADMIN + ")");
+
+        //Product mặc định
+        // Cà phê
+        db.execSQL("INSERT INTO " + TABLE_PRODUCTS + " (" +
+                COLUMN_PRODUCT_NAME + "," + COLUMN_PRODUCT_PRICE + "," + COLUMN_PRODUCT_STATUS + "," +
+                COLUMN_PRODUCT_IMAGE_RES_ID + "," + COLUMN_PRODUCT_IMAGE_PATH + "," + COLUMN_PRODUCT_CATEGORY_ID + "," +
+                COLUMN_PRODUCT_DESCRIPTION + ") VALUES ('Cappuccino', 35000, '" + PRODUCT_STATUS_AVAILABLE + "', " + R.drawable.cappuccino + ", '', 1, 'Cappuccino ngon')");
+
+        db.execSQL("INSERT INTO " + TABLE_PRODUCTS + " (" +
+                COLUMN_PRODUCT_NAME + "," + COLUMN_PRODUCT_PRICE + "," + COLUMN_PRODUCT_STATUS + "," +
+                COLUMN_PRODUCT_IMAGE_RES_ID + "," + COLUMN_PRODUCT_IMAGE_PATH + "," + COLUMN_PRODUCT_CATEGORY_ID + "," +
+                COLUMN_PRODUCT_DESCRIPTION + ") VALUES ('Cà phê sữa', 25000, '" + PRODUCT_STATUS_AVAILABLE + "', " + R.drawable.milk_coffee + ", '', 1, 'Cà phê sữa ngon')");
+
+        // Trà sữa
+        db.execSQL("INSERT INTO " + TABLE_PRODUCTS + " (" +
+                COLUMN_PRODUCT_NAME + "," + COLUMN_PRODUCT_PRICE + "," + COLUMN_PRODUCT_STATUS + "," +
+                COLUMN_PRODUCT_IMAGE_RES_ID + "," + COLUMN_PRODUCT_IMAGE_PATH + "," + COLUMN_PRODUCT_CATEGORY_ID + "," +
+                COLUMN_PRODUCT_DESCRIPTION + ") VALUES ('Matcha Latte', 30000, '" + PRODUCT_STATUS_AVAILABLE + "', " + R.drawable.matcha_latte + ", '', 2, 'Trà xanh thanh mát')");
+
+        // Sinh tố
+        db.execSQL("INSERT INTO " + TABLE_PRODUCTS + " (" +
+                COLUMN_PRODUCT_NAME + "," + COLUMN_PRODUCT_PRICE + "," + COLUMN_PRODUCT_STATUS + "," +
+                COLUMN_PRODUCT_IMAGE_RES_ID + "," + COLUMN_PRODUCT_IMAGE_PATH + "," + COLUMN_PRODUCT_CATEGORY_ID + "," +
+                COLUMN_PRODUCT_DESCRIPTION + ") VALUES ('Sinh tố dâu', 30000, '" + PRODUCT_STATUS_AVAILABLE + "', " + R.drawable.strawberry_smoothie + ", '', 3, 'Sinh tố dâu ngon')");
+
+        // Trà
+        db.execSQL("INSERT INTO " + TABLE_PRODUCTS + " (" +
+                COLUMN_PRODUCT_NAME + "," + COLUMN_PRODUCT_PRICE + "," + COLUMN_PRODUCT_STATUS + "," +
+                COLUMN_PRODUCT_IMAGE_RES_ID + "," + COLUMN_PRODUCT_IMAGE_PATH + "," + COLUMN_PRODUCT_CATEGORY_ID + "," +
+                COLUMN_PRODUCT_DESCRIPTION + ") VALUES ('Trà dâu tây', 25000, '" + PRODUCT_STATUS_AVAILABLE + "', " + R.drawable.strawberry_tea + ", '', 4, 'Trà dâu tây ngon')");
 
     }
 

@@ -39,7 +39,7 @@ public class UserDAO {
         if (user.getBirthdate() != null) user.setBirthdate(user.getBirthdate().trim());
     }
 
-    private String trimOrEmpty(String s) {
+    private static String trimOrEmpty(String s) {
         return (s == null) ? "" : s.trim();
     }
 
@@ -223,7 +223,7 @@ public class UserDAO {
     }
 
     // Hàm mã hóa mật khẩu bằng bcrypt
-    public String hashPassword(String password) {
+    public static String hashPassword(String password) {
         password = trimOrEmpty(password);
         if (password.isEmpty()) {
             Log.e("UserDAO", "Password null hoặc rỗng!");
