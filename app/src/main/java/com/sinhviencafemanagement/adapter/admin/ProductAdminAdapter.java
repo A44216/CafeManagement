@@ -72,8 +72,9 @@ public class ProductAdminAdapter extends RecyclerView.Adapter<ProductAdminVH> {
         Product product = productList.get(position);
         if (product == null) return;
 
-        // Reset trước khi load
-        holder.imgProduct.setImageDrawable(null);
+        // Clear request Glide cũ để tránh hiển thị nhầm ảnh
+        Glide.with(context).clear(holder.imgProduct);
+        holder.imgProduct.setImageResource(R.drawable.ic_broken_image); // reset ngay
 
         int imageResId = product.getImageResId();
         String imagePath = product.getImagePath();
@@ -84,8 +85,8 @@ public class ProductAdminAdapter extends RecyclerView.Adapter<ProductAdminVH> {
                     .load(imageResId)
                     .placeholder(R.drawable.ic_broken_image)
                     .error(R.drawable.ic_broken_image)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE) // tắt cache file để tránh nhầm drawable
-                    .skipMemoryCache(true)                     // tắt cache memory để tránh nhầm drawable
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .signature(new com.bumptech.glide.signature.ObjectKey(product.getProductId()))
                     .into(holder.imgProduct);
         } else if (imagePath != null && !imagePath.isEmpty()) {
             // Load ảnh từ path nếu drawable không tồn tại
@@ -94,6 +95,7 @@ public class ProductAdminAdapter extends RecyclerView.Adapter<ProductAdminVH> {
                     .placeholder(R.drawable.ic_broken_image)
                     .error(R.drawable.ic_broken_image)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .signature(new com.bumptech.glide.signature.ObjectKey(product.getProductId()))
                     .into(holder.imgProduct);
         } else {
             // Cả 2 không có thì load ảnh mặc định lỗi
@@ -128,14 +130,11 @@ public class ProductAdminAdapter extends RecyclerView.Adapter<ProductAdminVH> {
     }
 
     private String getStatusVietnamese(String status) {
-        switch (status.toLowerCase()) {
-            case CreateDatabase.PRODUCT_STATUS_AVAILABLE:
-                return "Có sẵn";
-            case CreateDatabase.PRODUCT_STATUS_UNAVAILABLE:
-                return "Hết hàng";
-            default:
-                return "Không xác định";
-        }
+        return switch (status.toLowerCase()) {
+            case CreateDatabase.PRODUCT_STATUS_AVAILABLE -> "Có sẵn";
+            case CreateDatabase.PRODUCT_STATUS_UNAVAILABLE -> "Hết hàng";
+            default -> "Không xác định";
+        };
     }
 
     @Override
