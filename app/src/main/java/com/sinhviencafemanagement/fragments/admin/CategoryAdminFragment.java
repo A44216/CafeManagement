@@ -33,7 +33,7 @@ public class CategoryAdminFragment extends Fragment {
 
     private List<Category> categoryList;       // danh sách gốc
     private List<Category> displayedCategories; // danh sách hiển thị, dùng cho RecyclerView
-    private String currentKeyword = "";
+    private String currentKeyword = ""; // để giữ keyword khi update list
 
     public CategoryAdminFragment() { }
 
@@ -123,17 +123,18 @@ public class CategoryAdminFragment extends Fragment {
 
     // Cập nhật category đã edit trong RecyclerView
     public void updateCategoryAdmin(Category updatedCategory) {
-        // Cập nhật danh sách gốc
+        // Cập nhật lại danh sách gốc (categoryList)
         for (int i = 0; i < categoryList.size(); i++) {
             if (categoryList.get(i).getCategoryId() == updatedCategory.getCategoryId()) {
                 categoryList.set(i, updatedCategory);
                 break;
             }
         }
-        // Kiểm tra xem item có match filter hiện tại không
+        // Kiểm tra xem category vừa update có còn phù hợp với filter đang áp dụng hay không
         boolean match = updatedCategory.getCategoryName().toLowerCase()
                 .contains(currentKeyword.toLowerCase());
 
+        // Tìm vị trí của category này trong danh sách đang hiển thị (displayedCategories)
         int posInDisplayed = -1;
         for (int i = 0; i < displayedCategories.size(); i++) {
             if (displayedCategories.get(i).getCategoryId() == updatedCategory.getCategoryId()) {
@@ -142,19 +143,22 @@ public class CategoryAdminFragment extends Fragment {
             }
         }
 
+        // Nếu category phù hợp từ khóa tìm kiếm
         if (match) {
+            // Nếu có trong danh sách hiển thị -> gọi notifyItemChanged để RecyclerView load lại item đó
             if (posInDisplayed >= 0) {
-                // Update trực tiếp
                 displayedCategories.set(posInDisplayed, updatedCategory);
                 adapterCategoryAdmin.notifyItemChanged(posInDisplayed);
-            } else {
-                // Thêm mới vì trước đó không match filter
+            }
+            // Nếu danh mục chưa có trong danh sách hiển (Giờ đổi tên lại khớp từ khóa)
+            else {
                 displayedCategories.add(updatedCategory);
                 adapterCategoryAdmin.notifyItemInserted(displayedCategories.size() - 1);
             }
-        } else {
+        }
+        // Nếu sản phẩm sau khi đổi ko khớp từ khóa tìm kiếm
+        else {
             if (posInDisplayed >= 0) {
-                // Xóa khỏi displayed vì không match filter nữa
                 displayedCategories.remove(posInDisplayed);
                 adapterCategoryAdmin.notifyItemRemoved(posInDisplayed);
             }

@@ -226,13 +226,13 @@ public class AdminHomeActivity extends AppCompatActivity {
                 fragment.filterCategory(query);
             }
         }
-//        else if (selectedId == R.id.menu_product) {
-//            ProductAdminFragment fragment = (ProductAdminFragment)
-//                    getSupportFragmentManager().findFragmentById(R.id.listFragmentContainer);
-//            if (fragment != null) {
-//                fragment.filterProduct(query);
-//            }
-//        }
+        else if (selectedId == R.id.menu_product) {
+            ProductAdminFragment fragment = (ProductAdminFragment)
+                    getSupportFragmentManager().findFragmentById(R.id.listFragmentContainer);
+            if (fragment != null) {
+                fragment.filterProduct(query);
+            }
+        }
     }
 
 
