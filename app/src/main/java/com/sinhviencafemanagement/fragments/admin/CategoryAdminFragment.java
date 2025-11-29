@@ -27,12 +27,11 @@ import java.util.List;
 
 // Fragment hiển thị danh sách Category cho Admin
 public class CategoryAdminFragment extends Fragment {
-    private RecyclerView rvCategoryAdmin; // RecyclerView hiển thị danh sách
     private CategoryDAO categoryDAO;       // DAO truy xuất database
     private CategoryAdminAdapter adapterCategoryAdmin;  // Adapter kết nối dữ liệu với RecyclerView
 
-    private List<Category> categoryList;       // danh sách gốc
-    private List<Category> displayedCategories; // danh sách hiển thị, dùng cho RecyclerView
+    private List<Category> categoryList = new ArrayList<>();       // danh sách gốc
+    private final List<Category> displayedCategories = new ArrayList<>(); // danh sách hiển thị, dùng cho RecyclerView
     private String currentKeyword = ""; // để giữ keyword khi update list
 
     public CategoryAdminFragment() { }
@@ -60,19 +59,13 @@ public class CategoryAdminFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rvCategoryAdmin = view.findViewById(R.id.rvCategoryAdmin);
+        // RecyclerView hiển thị danh sách
+        RecyclerView rvCategoryAdmin = view.findViewById(R.id.rvCategoryAdmin);
         rvCategoryAdmin.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        loadCategoriesAdmin(); // Load dữ liệu từ DB
-    }
-
-    // Load dữ liệu từ database và set Adapter
-    public void loadCategoriesAdmin() {
-        categoryList = categoryDAO.getAllCategories(); // Lấy danh sách từ DB
-        displayedCategories = new ArrayList<>(categoryList);    // danh sách hiển thị
-
-        adapterCategoryAdmin = new CategoryAdminAdapter(getContext(), displayedCategories); // Tạo Adapter
-        rvCategoryAdmin.setAdapter(adapterCategoryAdmin); // Gán Adapter cho RecyclerView
+        // Khởi tạo adapter 1 lần, dùng displayedCategory
+        adapterCategoryAdmin = new CategoryAdminAdapter(getContext(), displayedCategories);
+        rvCategoryAdmin.setAdapter(adapterCategoryAdmin);
 
         // Thiết lập callback cho edit/delete
         adapterCategoryAdmin.setOnCategoryActionListener(new CategoryAdminAdapter.OnCategoryActionListener() {
@@ -110,6 +103,24 @@ public class CategoryAdminFragment extends Fragment {
                         .show();
             }
         });
+
+        loadCategoriesAdmin(); // Load dữ liệu từ DB
+    }
+
+    // Load dữ liệu từ database và set Adapter
+    @SuppressLint("NotifyDataSetChanged")
+    public void loadCategoriesAdmin() {
+        new Thread(() -> {
+            // Lấy dữ liệu category từ database ở background thread
+            categoryList = categoryDAO.getAllCategories();
+
+            requireActivity().runOnUiThread(() -> {
+                // Cập nhật RecyclerView trên main thread
+                displayedCategories.clear();           // Xóa dữ liệu cũ
+                displayedCategories.addAll(categoryList); // Thêm dữ liệu mới
+                adapterCategoryAdmin.notifyDataSetChanged(); // Reload RecyclerView
+            });
+        }).start();
     }
 
     // Thêm category mới vào RecyclerView

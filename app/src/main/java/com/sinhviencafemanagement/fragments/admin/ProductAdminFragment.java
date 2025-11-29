@@ -42,6 +42,8 @@ public class ProductAdminFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Khởi tạo DAO
+        productDAO = new ProductDAO(getContext());
     }
 
     @Override
@@ -60,14 +62,11 @@ public class ProductAdminFragment extends Fragment {
         RecyclerView rvProductAdmin = view.findViewById(R.id.rvProductAdmin);
         rvProductAdmin.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Khởi tạo DAO
-        productDAO = new ProductDAO(getContext());
-
-//        // Khởi tạo adapter 1 lần, dùng displayedProducts
+        // Khởi tạo adapter 1 lần, dùng displayedProducts
         adapterProductAdmin = new ProductAdminAdapter(getContext(), displayedProducts);
         rvProductAdmin.setAdapter(adapterProductAdmin);
 
-        // Đặt listener edit/delete ngay trong onViewCreated
+        // Thiết lập callback cho edit/delete
         adapterProductAdmin.setOnProductActionListener(new ProductAdminAdapter.OnProductActionListener() {
             @Override
             public void onEdit(Product product) {
