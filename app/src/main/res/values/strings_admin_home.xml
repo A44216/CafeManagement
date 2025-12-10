@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_category">Danh mục</string>
+    <string name="nav_product">Sản phẩm</string>
+    <string name="nav_order">Đơn hàng</string>
+    <string name="nav_setting">Cài đặt</string>
+
+    <string name="hint_category_name">Nhập tên cần tìm</string>
+
+    <string name="desc_add_new">Thêm mới</string>
+    <string name="desc_edit">Sửa</string>
+    <string name="desc_delete">Xóa</string>
+
+    <string name="category_name">Tên danh mục</string>
+    <string name="add_category">Thêm</string>
+    <string name="add_category_title">THÊM DANH MỤC</string>
+    <string name="update_category">Cập nhật</string>
+    <string name="update_category_title">CẬP NHẬT DANH MỤC</string>
+
+    <string name="add_product">Thêm</string>
+    <string name="add_product_title">THÊM SẢN PHẨM</string>
+    <string name="update_product">Cập nhật</string>
+    <string name="update_product_title">CẬP NHẬT SẢN PHẨM</string>
+    <string name="product_name">Tên sản phẩm</string>
+    <string name="product_price">Giá</string>
+    <string name="product_status">Trạng thái</string>
+    <string name="product_image">Ảnh</string>
+    <string name="product_category">Danh mục</string>
+    <string name="product_description">Mô tả</string>
+    <string name="product_image_path">Đường dẫn ảnh</string>
+
+</resources>
