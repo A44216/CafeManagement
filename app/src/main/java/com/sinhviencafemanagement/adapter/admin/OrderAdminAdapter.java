@@ -86,7 +86,7 @@ public class OrderAdminAdapter extends RecyclerView.Adapter<OrderAdminVH> {
 
         // Hiển thị
         holder.tvOrderId.setText("Hóa đơn: " + String.valueOf(order.getOrderId()));
-        holder.tvEmail.setText("Người đặt: " + email);
+        holder.tvEmail.setText(email);
         holder.tvTotalPrice.setText(order.getTotalPrice() + " VND");
         holder.tvDescription.setText(description.toString());
 
