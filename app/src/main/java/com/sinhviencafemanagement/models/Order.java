@@ -7,7 +7,7 @@ public class Order implements Clonable<Order>{
     private int userId;          // user_id (người phụ trách)
     private String orderDate;    // order_date
     private String status;       // status (mặc định "pending")
-    private double total;        // total (tổng tiền)
+    private double totalPrice;        // total (tổng tiền)
     private Integer tableId;     // table_id (null nếu mua mang về)
 
     public Order() {
@@ -15,21 +15,21 @@ public class Order implements Clonable<Order>{
     }
 
     // Constructor đầy đủ (dùng khi đọc từ DB)
-    public Order(int orderId, int userId, String orderDate, String status, double total, Integer tableId) {
+    public Order(int orderId, int userId, String orderDate, String status, double totalPrice, Integer tableId) {
         this.orderId = orderId;
         this.userId = userId;
         this.orderDate = orderDate;
         this.status = status != null ? status : "pending";
-        this.total = total;
+        this.totalPrice = totalPrice;
         this.tableId = tableId;
     }
 
     // Constructor thêm mới (không cần orderId, SQLite tự sinh)
-    public Order(int userId, String orderDate, String status, double total, Integer tableId) {
+    public Order(int userId, String orderDate, String status, double totalPrice, Integer tableId) {
         this.userId = userId;
         this.orderDate = orderDate;
         this.status = status != null ? status : "pending";
-        this.total = total;
+        this.totalPrice = totalPrice;
         this.tableId = tableId;
     }
 
@@ -46,8 +46,8 @@ public class Order implements Clonable<Order>{
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status != null ? status : "pending"; }
 
-    public double getTotal() { return total; }
-    public void setTotal(double total) { this.total = total; }
+    public double getTotalPrice() { return totalPrice; }
+    public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
 
     public Integer getTableId() { return tableId; }
     public void setTableId(Integer tableId) { this.tableId = tableId; }
@@ -60,7 +60,7 @@ public class Order implements Clonable<Order>{
                 ", userId=" + userId +
                 ", orderDate='" + orderDate + '\'' +
                 ", status='" + status + '\'' +
-                ", total=" + total +
+                ", total=" + totalPrice +
                 ", tableId=" + tableId +
                 '}';
     }
@@ -74,7 +74,7 @@ public class Order implements Clonable<Order>{
                 this.userId,
                 this.orderDate,
                 this.status,
-                this.total,
+                this.totalPrice,
                 this.tableId
         );
 

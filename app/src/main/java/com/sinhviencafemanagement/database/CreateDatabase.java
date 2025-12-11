@@ -205,6 +205,11 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 COLUMN_USER_USERNAME + "," + COLUMN_USER_PASSWORD + "," +
                 COLUMN_USER_EMAIL + "," + COLUMN_USER_PHONE + "," + COLUMN_USER_ROLE_ID + ") VALUES (" +
                 "'Administrator', 'Admin', 'admin123', '" + hashedPassword + "', 'admin@example.com', '0123456789', " + ROLE_ADMIN + ")");
+        db.execSQL("INSERT INTO " + TABLE_USERS + " (" +
+                COLUMN_USER_NAME + "," + COLUMN_USER_DISPLAY_NAME + "," +
+                COLUMN_USER_USERNAME + "," + COLUMN_USER_PASSWORD + "," +
+                COLUMN_USER_EMAIL + "," + COLUMN_USER_PHONE + "," + COLUMN_USER_ROLE_ID + ") VALUES (" +
+                "'User', 'User', 'user123', '" + UserDAO.hashPassword("user123") + "', 'user@example.com', '0987654321', " + ROLE_CUSTOMER + ")");
 
         //Product mặc định
         // Cà phê
@@ -235,6 +240,34 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 COLUMN_PRODUCT_NAME + "," + COLUMN_PRODUCT_PRICE + "," + COLUMN_PRODUCT_STATUS + "," +
                 COLUMN_PRODUCT_IMAGE_RES_ID + "," + COLUMN_PRODUCT_IMAGE_PATH + "," + COLUMN_PRODUCT_CATEGORY_ID + "," +
                 COLUMN_PRODUCT_DESCRIPTION + ") VALUES ('Trà dâu tây', 25000, '" + PRODUCT_STATUS_AVAILABLE + "', " + R.drawable.strawberry_tea + ", '', 4, 'Trà dâu tây ngon')");
+
+        // ================= Insert demo order =================
+
+        // ================= Insert demo tables =================
+        db.execSQL("INSERT INTO " + TABLE_TABLES + " (" + COLUMN_TABLE_NAME + ", " + COLUMN_TABLE_STATUS + ") VALUES ('Bàn 1', '" + TABLE_STATUS_AVAILABLE + "')");
+        db.execSQL("INSERT INTO " + TABLE_TABLES + " (" + COLUMN_TABLE_NAME + ", " + COLUMN_TABLE_STATUS + ") VALUES ('Bàn 2', '" + TABLE_STATUS_OCCUPIED + "')");
+
+        // ================= Insert demo orders =================
+        db.execSQL("INSERT INTO " + TABLE_ORDERS + " (" +
+                COLUMN_ORDER_USER_ID + ", " + COLUMN_ORDER_DATE + ", " + COLUMN_ORDER_STATUS + ", " + COLUMN_ORDER_TOTAL + ", " + COLUMN_ORDER_TABLE_ID + ") VALUES " +
+                "(2, '2025-12-11 10:00', '" + ORDER_STATUS_PENDING + "', 55000, 1)");
+
+        db.execSQL("INSERT INTO " + TABLE_ORDERS + " (" +
+                COLUMN_ORDER_USER_ID + ", " + COLUMN_ORDER_DATE + ", " + COLUMN_ORDER_STATUS + ", " + COLUMN_ORDER_TOTAL + ", " + COLUMN_ORDER_TABLE_ID + ") VALUES " +
+                "(2, '2025-12-11 11:00', '" + ORDER_STATUS_COMPLETED + "', 60000, 2)");
+
+        // ================= Insert demo order_details =================
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
+                COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
+                "(1, 1, 1)"); // Cappuccino x1
+
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
+                COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
+                "(1, 2, 1)"); // Cà phê sữa x1
+
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
+                COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
+                "(2, 3, 2)"); // Matcha Latte x2
 
     }
 

@@ -18,7 +18,6 @@ import java.util.List;
 public class CategoryAdminAdapter extends RecyclerView.Adapter<CategoryAdminVH> {
 
     private final List<Category> categoryList; // Danh sách Category
-    private final Context context; // Context để inflate layout
 
     // Interface callback cho Edit/Delete
     public interface OnCategoryActionListener {
@@ -34,7 +33,7 @@ public class CategoryAdminAdapter extends RecyclerView.Adapter<CategoryAdminVH> 
     }
 
     public CategoryAdminAdapter(Context context, List<Category> categoryList) {
-        this.context = context;
+        // Context để inflate layout
         this.categoryList = categoryList;
     }
 
