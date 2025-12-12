@@ -17,7 +17,7 @@ public class OrderAdminVH extends RecyclerView.ViewHolder {
     public OrderAdminVH(@NonNull View itemView) {
         super(itemView);
 
-        imgProduct = itemView.findViewById(R.id.imgProduct);
+        imgProduct = itemView.findViewById(R.id.ivProduct);
         tvEmail = itemView.findViewById(R.id.tvEmail);
         tvOrderId = itemView.findViewById(R.id.tvOrderId);
         tvTotalPrice = itemView.findViewById(R.id.tvTotalPrice);

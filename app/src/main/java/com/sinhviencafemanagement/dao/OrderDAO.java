@@ -148,4 +148,10 @@ public class OrderDAO {
         return list;
     }
 
+    // Lấy trạng thái đơn hàng theo orderId
+    public String getOrderStatusById(int orderId) {
+        Order order = getOrderById(orderId);
+        return (order != null) ? order.getStatus() : null;
+    }
+
 }

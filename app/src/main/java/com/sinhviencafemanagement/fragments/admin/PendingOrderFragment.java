@@ -3,8 +3,12 @@ package com.sinhviencafemanagement.fragments.admin;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +35,23 @@ public class PendingOrderFragment extends Fragment {
     private final List<Order> pendingOrders = new ArrayList<>();
     private OrderDAO orderDAO;
 
+    private final ActivityResultLauncher<Intent> orderTrackingLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == AppCompatActivity.RESULT_OK) {
+                    // Reload danh sách khi trạng thái đơn hàng thay đổi
+                    loadPendingOrders(); // hoặc loadCompletedOrders() nếu Fragment tương ứng
+                }
+            }
+    );
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Khi fragment hiển thị lại, reload danh sách từ DB
+        loadPendingOrders();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_pending_order, container, false);
@@ -51,10 +72,10 @@ public class PendingOrderFragment extends Fragment {
         rvOrders.setAdapter(adapter);
 
         adapter.setOnOrderActionListener(order -> {
-            // Mở Activity chi tiết đơn hàng
+            // Mở chi tiết đơn hàng và nhận kết quả khi trạng thái thay đổi
             Intent intent = new Intent(requireContext(), OrderTrackingActivity.class);
-            intent.putExtra("order_id", order.getOrderId()); // Truyền ID đơn hàng
-            startActivity(intent);
+            intent.putExtra("order_id", order.getOrderId());
+            orderTrackingLauncher.launch(intent);
         });
 
         loadPendingOrders();
