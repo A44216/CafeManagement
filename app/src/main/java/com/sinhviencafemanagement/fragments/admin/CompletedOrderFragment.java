@@ -1,6 +1,7 @@
 package com.sinhviencafemanagement.fragments.admin;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sinhviencafemanagement.R;
+import com.sinhviencafemanagement.activities.home.order.OrderTrackingActivity;
 import com.sinhviencafemanagement.adapter.admin.OrderAdminAdapter;
 import com.sinhviencafemanagement.dao.OrderDAO;
 import com.sinhviencafemanagement.dao.OrderDetailDAO;
@@ -49,7 +51,10 @@ public class CompletedOrderFragment extends Fragment {
         rvOrders.setAdapter(adapter);
 
         adapter.setOnOrderActionListener(order -> {
-            // TODO: mở màn hình chi tiết/tracking đơn hàng
+            // Mở Activity chi tiết đơn hàng
+            Intent intent = new Intent(requireContext(), OrderTrackingActivity.class);
+            intent.putExtra("order_id", order.getOrderId()); // Truyền ID đơn hàng
+            startActivity(intent);
         });
 
         loadCompletedOrders();

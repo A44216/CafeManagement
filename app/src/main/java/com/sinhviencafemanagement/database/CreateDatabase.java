@@ -85,6 +85,19 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_SESSION_CREATED_AT = "created_at";
     public static final String COLUMN_SESSION_EXPIRED_AT = "expired_at";
 
+    // Bảng toppings
+    public static final String TABLE_TOPPINGS = "toppings";
+    public static final String COLUMN_TOPPING_ID = "topping_id";
+    public static final String COLUMN_TOPPING_NAME = "topping_name";
+    public static final String COLUMN_TOPPING_PRICE = "price";
+
+    // Bảng chi tiết topping trên order_detail
+    public static final String TABLE_ORDER_DETAIL_TOPPINGS = "order_detail_toppings";
+    public static final String COLUMN_ODT_ORDER_ID = "order_id";
+    public static final String COLUMN_ODT_PRODUCT_ID = "product_id";
+    public static final String COLUMN_ODT_TOPPING_ID = "topping_id";
+    public static final String COLUMN_ODT_QUANTITY = "quantity";
+
     // Constructor của lớp CreateDatabase, dùng để tạo cơ sở dữ liệu "OrderDrink" phiên bản 1
     public CreateDatabase(Context context) {
         super(context, "CafeManagement", null, 1);
@@ -164,6 +177,23 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 "FOREIGN KEY(" + COLUMN_SESSION_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + ")" +
                 ");";
 
+        // Tạo bảng toppings
+        String tblToppings = "CREATE TABLE " + TABLE_TOPPINGS + " (" +
+                COLUMN_TOPPING_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_TOPPING_NAME + " TEXT NOT NULL UNIQUE, " +
+                COLUMN_TOPPING_PRICE + " REAL NOT NULL);";
+
+        // Tạo bảng order_detail_toppings
+        String tblOrderDetailToppings = "CREATE TABLE " + TABLE_ORDER_DETAIL_TOPPINGS + " (" +
+                COLUMN_ODT_ORDER_ID + " INTEGER NOT NULL, " +
+                COLUMN_ODT_PRODUCT_ID + " INTEGER NOT NULL, " +
+                COLUMN_ODT_TOPPING_ID + " INTEGER NOT NULL, " +
+                COLUMN_ODT_QUANTITY + " INTEGER NOT NULL DEFAULT 1, " +
+                "PRIMARY KEY(" + COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ", " + COLUMN_ODT_TOPPING_ID + "), " +
+                "FOREIGN KEY(" + COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ") REFERENCES " +
+                TABLE_ORDER_DETAILS + "(" + COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + "), " +
+                "FOREIGN KEY(" + COLUMN_ODT_TOPPING_ID + ") REFERENCES " + TABLE_TOPPINGS + "(" + COLUMN_TOPPING_ID + "));";
+
         // Thực thi các câu lệnh tạo bảng
         db.execSQL(tblTables);
         db.execSQL(tblRoles);
@@ -173,6 +203,8 @@ public class CreateDatabase extends SQLiteOpenHelper {
         db.execSQL(tblOrders);
         db.execSQL(tblOrderDetails);
         db.execSQL(tblSessions);
+        db.execSQL(tblToppings);
+        db.execSQL(tblOrderDetailToppings);
 
         // Gọi hàm khởi tạo dữ liệu mặc định
         insertDefaultData(db);
@@ -241,6 +273,11 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 COLUMN_PRODUCT_IMAGE_RES_ID + "," + COLUMN_PRODUCT_IMAGE_PATH + "," + COLUMN_PRODUCT_CATEGORY_ID + "," +
                 COLUMN_PRODUCT_DESCRIPTION + ") VALUES ('Trà dâu tây', 25000, '" + PRODUCT_STATUS_AVAILABLE + "', " + R.drawable.strawberry_tea + ", '', 4, 'Trà dâu tây ngon')");
 
+        // Topping mặc định
+        db.execSQL("INSERT INTO " + TABLE_TOPPINGS + " (" + COLUMN_TOPPING_NAME + ", " + COLUMN_TOPPING_PRICE + ") VALUES ('Trân châu', 5000)");
+        db.execSQL("INSERT INTO " + TABLE_TOPPINGS + " (" + COLUMN_TOPPING_NAME + ", " + COLUMN_TOPPING_PRICE + ") VALUES ('Thạch', 4000)");
+        db.execSQL("INSERT INTO " + TABLE_TOPPINGS + " (" + COLUMN_TOPPING_NAME + ", " + COLUMN_TOPPING_PRICE + ") VALUES ('Kem cheese', 7000)");
+
         // ================= Insert demo order =================
 
         // ================= Insert demo tables =================
@@ -257,18 +294,30 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 "(2, '2025-12-11 11:00', '" + ORDER_STATUS_COMPLETED + "', 60000, 2)");
 
         // ================= Insert demo order_details =================
+        // Hóad dơn 1
         db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
                 COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
                 "(1, 1, 1)"); // Cappuccino x1
-
         db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
                 COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
                 "(1, 2, 1)"); // Cà phê sữa x1
 
+        // Hóa đơn 2
         db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
                 COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
                 "(2, 3, 2)"); // Matcha Latte x2
-
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAIL_TOPPINGS + " (" +
+                COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ", " + COLUMN_ODT_TOPPING_ID + ", " + COLUMN_ODT_QUANTITY + ") VALUES " +
+                "(2, 3, 1, 1)"); // Trân châu x1
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAIL_TOPPINGS + " (" +
+                COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ", " + COLUMN_ODT_TOPPING_ID + ", " + COLUMN_ODT_QUANTITY + ") VALUES " +
+                "(2, 3, 3, 1)"); // Kem cheese x1
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
+                COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
+                "(2, 5, 1)"); // Trà dâu tây x1
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAIL_TOPPINGS + " (" +
+                COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ", " + COLUMN_ODT_TOPPING_ID + ", " + COLUMN_ODT_QUANTITY + ") VALUES " +
+                "(2, 5, 2, 1)"); // Thạch x1
     }
 
     // Xử lý khi nâng cấp phiên bản database (thêm, sửa hoặc xóa bảng, cột)

@@ -41,7 +41,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/bnvMenu"
-        android:paddingBottom="24dp"/>
+        android:paddingBottom="24dp"
+        tools:layout="@layout/fragment_category_admin"/>
 
     <!-- THÊM MỚI -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -119,7 +119,9 @@ public class OrderAdminAdapter extends RecyclerView.Adapter<OrderAdminVH> {
         }
 
         holder.btnOrderTracking.setOnClickListener(v -> {
-            if (listener != null) listener.onTrack(order);
+            if (listener != null)
+                // Báo ra Activity rằng nút theo dõi của đơn này vừa được bấm.
+                listener.onTrack(order);
         });
 
     }

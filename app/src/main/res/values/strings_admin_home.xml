@@ -28,6 +28,9 @@
     <string name="product_category">Danh mục</string>
     <string name="product_description">Mô tả</string>
     <string name="product_image_path">Đường dẫn ảnh</string>
+
     <string name="order_description">Mô tả hóa đơn</string>
     <string name="order_tracking">Theo dõi đơn hàng</string>
+    <string name="step_pending">Chưa xử lý</string>
+    <string name="step_done">Hoàn thành</string>
 </resources>
