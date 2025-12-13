@@ -1,4 +1,4 @@
-package com.sinhviencafemanagement.adapter.admin;
+package com.sinhviencafemanagement.adapter.admin.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;

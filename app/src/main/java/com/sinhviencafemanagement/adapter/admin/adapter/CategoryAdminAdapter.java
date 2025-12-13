@@ -1,4 +1,4 @@
-package com.sinhviencafemanagement.adapter.admin;
+package com.sinhviencafemanagement.adapter.admin.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

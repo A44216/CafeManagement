@@ -1,7 +1,6 @@
-package com.sinhviencafemanagement.adapter.admin;
+package com.sinhviencafemanagement.adapter.admin.adapter;
 
 import android.annotation.SuppressLint;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

@@ -33,4 +33,11 @@
     <string name="order_tracking">Theo dõi đơn hàng</string>
     <string name="step_pending">Chưa xử lý</string>
     <string name="step_done">Hoàn thành</string>
+
+    <string name="avatar">Avatar</string>
+    <string name="default_email">testadmin@gmail.com</string>
+
+    <string name="hint_topping_name">Nhập topping cần tìm kiếm</string>
+    <string name="topping_title">Quản lý topping</string>
+
 </resources>

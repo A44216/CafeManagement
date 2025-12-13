@@ -1,4 +1,4 @@
-package com.sinhviencafemanagement.adapter.admin;
+package com.sinhviencafemanagement.adapter.admin.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

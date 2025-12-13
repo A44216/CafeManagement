@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sinhviencafemanagement.R;
-import com.sinhviencafemanagement.adapter.admin.OrderDetailAdapter;
+import com.sinhviencafemanagement.adapter.admin.adapter.OrderDetailAdapter;
 import com.sinhviencafemanagement.dao.OrderDAO;
 import com.sinhviencafemanagement.dao.OrderDetailDAO;
 import com.sinhviencafemanagement.dao.OrderDetailToppingDAO;
