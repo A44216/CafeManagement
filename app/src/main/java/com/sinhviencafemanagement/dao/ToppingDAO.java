@@ -89,8 +89,8 @@ public class ToppingDAO {
     }
 
     // Xóa topping
-    public int deleteTopping(int toppingId) {
-        if (toppingId <= 0) return 0;
+    public void deleteTopping(int toppingId) {
+        if (toppingId <= 0) return;
         int result = 0;
         try {
             result = db.delete(CreateDatabase.TABLE_TOPPINGS,
@@ -99,7 +99,6 @@ public class ToppingDAO {
         } catch (Exception e) {
             Log.e("ToppingDAO", "Lỗi khi xóa topping", e);
         }
-        return result;
     }
 
     // Lấy topping theo ID
