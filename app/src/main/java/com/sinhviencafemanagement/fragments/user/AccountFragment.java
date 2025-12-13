@@ -55,9 +55,9 @@ public class AccountFragment extends Fragment {
 
         // Nút Liên hệ
         menuContact.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Chức năng Liên hệ", Toast.LENGTH_SHORT).show();
-            // Intent intent = new Intent(getActivity(), ContactActivity.class);
-            // startActivity(intent);
+//           Toast.makeText(getContext(), "Chức năng Liên hệ", Toast.LENGTH_SHORT).show();
+             Intent intent = new Intent(getActivity(), ContactActivity.class);
+             startActivity(intent);
         });
 
         // Nút Đổi mật khẩu

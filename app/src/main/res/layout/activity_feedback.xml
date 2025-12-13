@@ -103,7 +103,7 @@
                 android:background="@drawable/bg_input_border"
                 android:paddingHorizontal="12dp"
                 android:inputType="textEmailAddress"
-                android:text="test@gmail.com"
+                android:hint="test@gmail.com"
                 android:textColor="#757575"
                 android:layout_marginBottom="16dp"/>
 
