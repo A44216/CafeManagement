@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
 
     <application
         android:allowBackup="true"
@@ -60,10 +62,12 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
+
             android:name=".MainActivity"
             android:exported="false" />
         <activity
             android:name=".activities.login.LoginActivity"
+
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -71,6 +75,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.FaceCaptureActivity" android:exported="false"/>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.sinhviencafemanagement.activities.login;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,6 +8,8 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -16,6 +19,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.sinhviencafemanagement.R;
+import com.sinhviencafemanagement.activities.FaceCaptureActivity;
 import com.sinhviencafemanagement.activities.home.AdminHomeActivity;
 import com.sinhviencafemanagement.activities.home.UserHomeActivity;
 import com.sinhviencafemanagement.dao.SessionDAO;
@@ -23,7 +27,9 @@ import com.sinhviencafemanagement.dao.UserDAO;
 import com.sinhviencafemanagement.database.CreateDatabase;
 import com.sinhviencafemanagement.models.Session;
 import com.sinhviencafemanagement.models.User;
+import com.sinhviencafemanagement.utils.FaceRecognitionHelper;
 
+import java.util.List;
 import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
@@ -33,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     // Layout để hiển thị lỗi
     private TextInputLayout layoutUsernameOrEmail, layoutPassword;
     // Nút đăng nhập
-    private MaterialButton btnLogin;
+    private MaterialButton btnLogin, btnFaceId;
 
     // DAO thao tác với database người dùng
     private UserDAO userDAO;
@@ -42,6 +48,16 @@ public class LoginActivity extends AppCompatActivity {
     private CheckBox chkRememberLogin;
 
     private SharedPreferences prefs; // SharedPreferences chung
+    private FaceRecognitionHelper faceHelper;
+
+    // Launcher cho Face Login
+    private final ActivityResultLauncher<Intent> faceLoginLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    String embeddingJson = result.getData().getStringExtra(FaceCaptureActivity.EXTRA_EMBEDDING);
+                    handleFaceLogin(embeddingJson);
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
         // Khởi tạo DAO
         userDAO = new UserDAO(this);
         sessionDAO = new SessionDAO(this);
+        faceHelper = new FaceRecognitionHelper(this);
 
         initViews(); // Ánh xạ các View từ layout
         setUpListeners(); // Thiết lập các listener cho Button và EditText
@@ -82,6 +99,7 @@ public class LoginActivity extends AppCompatActivity {
         layoutUsernameOrEmail = findViewById(R.id.layoutUsernameOrEmail);
         layoutPassword = findViewById(R.id.layoutPassword);
         btnLogin = findViewById(R.id.btnLogin);
+        btnFaceId = findViewById(R.id.btnFaceId);
         chkRememberLogin = findViewById(R.id.chkRememberLogin);
     }
 
@@ -112,9 +130,53 @@ public class LoginActivity extends AppCompatActivity {
 
         // Xử lý đăng nhập khi click nút
         btnLogin.setOnClickListener(v -> handleLogin());
+
+        // Xử lý Face ID
+        btnFaceId.setOnClickListener(v -> {
+            if (userDAO.hasAnyFaceEmbedding()) {
+                Intent intent = new Intent(this, FaceCaptureActivity.class);
+                faceLoginLauncher.launch(intent);
+            } else {
+                showToast("Chưa đăng ký FaceID");
+            }
+        });
     }
 
-    // Xử lý đăng nhập
+    // Xử lý đăng nhập bằng khuôn mặt
+    private void handleFaceLogin(String embeddingJson) {
+        if (embeddingJson == null) return;
+
+        float[] currentEmbedding = faceHelper.stringToEmbedding(embeddingJson);
+        if (currentEmbedding == null) return;
+
+        // Lấy danh sách tất cả người dùng
+        List<User> allUsers = userDAO.getAllUsers();
+        User matchedUser = null;
+        double maxScore = 0.0;
+
+        for (User user : allUsers) {
+            String storedEmbeddingJson = user.getFaceEmbedding();
+            if (storedEmbeddingJson != null && !storedEmbeddingJson.isEmpty()) {
+                float[] storedEmbedding = faceHelper.stringToEmbedding(storedEmbeddingJson);
+                double score = faceHelper.calculateCosineSimilarity(currentEmbedding, storedEmbedding);
+                
+                // Ngưỡng nhận diện
+                if (score > 0.7 && score > maxScore) {
+                    maxScore = score;
+                    matchedUser = user;
+                }
+            }
+        }
+
+        if (matchedUser != null) {
+            loginSuccess(matchedUser);
+            showToast("Xin chào " + matchedUser.getFullName());
+        } else {
+            showToast("Không nhận diện được khuôn mặt");
+        }
+    }
+
+    // Xử lý đăng nhập thường
     private void handleLogin() {
         clearErrors();
 
@@ -130,45 +192,40 @@ public class LoginActivity extends AppCompatActivity {
                 showToast("Không tìm thấy người dùng tương ứng");
                 return;
             }
-
-            SharedPreferences.Editor editor = prefs.edit();
-
-            // Luôn lưu user_id
-            editor.putInt("user_id", user.getUserId());
-
-            // Chỉ lưu session_token nếu checkbox được tick
-            if (chkRememberLogin.isChecked()) {
-                long expiredAt = System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000; // 7 ngày
-                String token = sessionDAO.createSession(user.getUserId(), expiredAt);
-
-                if (token != null) {
-                    editor.putString("session_token", token);
-                } else {
-                    showToast("Đăng nhập thất bại, thử lại sau");
-                    return;
-                }
-            }
-
-            // Luôn lưu username để điền lại EditText lần sau
-            editor.putString("saved_username", input);
-            editor.apply();
-
-            showToast("Đăng nhập thành công!");
-
-            // Phân quyền truy cập
-            Intent intent;
-            if (user.getRoleId() == CreateDatabase.ROLE_ADMIN) {
-                intent = new Intent(this, AdminHomeActivity.class);
-            } else {
-                intent = new Intent(this, UserHomeActivity.class);
-            }
-
-            startActivity(intent);
-            finish();
-
+            loginSuccess(user);
         } else {
             showLoginError();
         }
+    }
+
+    private void loginSuccess(User user) {
+        SharedPreferences.Editor editor = prefs.edit();
+
+        // Luôn lưu user_id
+        editor.putInt("user_id", user.getUserId());
+
+        // Tạo session
+        long expiredAt = System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000; // 7 ngày
+        String token = sessionDAO.createSession(user.getUserId(), expiredAt);
+
+        if (token != null) {
+            editor.putString("session_token", token);
+        }
+
+        // Luôn lưu username để điền lại EditText lần sau
+        editor.putString("saved_username", user.getUsername());
+        editor.apply();
+
+        // Phân quyền truy cập
+        Intent intent;
+        if (user.getRoleId() == CreateDatabase.ROLE_ADMIN) {
+            intent = new Intent(this, AdminHomeActivity.class);
+        } else {
+            intent = new Intent(this, UserHomeActivity.class);
+        }
+
+        startActivity(intent);
+        finish();
     }
 
     // Xóa lỗi cũ
@@ -223,4 +280,3 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 }
-

@@ -1,10 +1,13 @@
 package com.sinhviencafemanagement.fragments.admin;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -15,9 +18,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sinhviencafemanagement.R;
+import com.sinhviencafemanagement.activities.FaceCaptureActivity;
 import com.sinhviencafemanagement.activities.home.topping.ToppingActivity;
 import com.sinhviencafemanagement.activities.login.LoginActivity;
 import com.sinhviencafemanagement.adapter.admin.adapter.SettingAdminAdapter;
@@ -31,6 +36,23 @@ public class SettingAdminFragment extends Fragment {
 
     private TextView tvEmail;
     private UserDAO userDAO;
+    private int currentUserId;
+
+    // Launcher để nhận kết quả từ FaceCaptureActivity
+    private final ActivityResultLauncher<Intent> faceCaptureLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    String embeddingJson = result.getData().getStringExtra(FaceCaptureActivity.EXTRA_EMBEDDING);
+                    if (embeddingJson != null && currentUserId != -1) {
+                        boolean success = userDAO.updateFaceEmbedding(currentUserId, embeddingJson);
+                        if (success) {
+                            Toast.makeText(requireContext(), "Đăng ký Face ID thành công!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(requireContext(), "Lỗi khi lưu Face ID", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
 
     public SettingAdminFragment() {
         // Required empty public constructor
@@ -60,8 +82,10 @@ public class SettingAdminFragment extends Fragment {
         RecyclerView rvSettingAdmin = view.findViewById(R.id.rcvSettingAdmin);
         rvSettingAdmin.setLayoutManager(new LinearLayoutManager(requireContext()));
 
+        // Thêm mục "Đăng ký Face ID" vào danh sách
         List<String> settingTitles = Arrays.asList(
                 "Đồ uống đi kèm",
+                "Đăng ký Face ID",
                 "Đăng xuất"
         );
 
@@ -75,16 +99,16 @@ public class SettingAdminFragment extends Fragment {
 
     @SuppressLint("SetTextI18n")
     private void setupEmailHeader() {
-        int userId = requireContext()
+        currentUserId = requireContext()
                 .getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
                 .getInt("user_id", -1);
 
-        if (userId == -1) {
+        if (currentUserId == -1) {
             tvEmail.setText("Chưa đăng nhập");
             return;
         }
 
-        User user = userDAO.getUserById(userId);
+        User user = userDAO.getUserById(currentUserId);
 
         if (user == null) {
             tvEmail.setText("Chưa đăng nhập");
@@ -101,8 +125,11 @@ public class SettingAdminFragment extends Fragment {
             case 0:
                 startActivity(new Intent(requireContext(), ToppingActivity.class));
                 break;
-
-            case 1:
+            case 1: // Đăng ký Face ID
+                Intent intent = new Intent(requireContext(), FaceCaptureActivity.class);
+                faceCaptureLauncher.launch(intent);
+                break;
+            case 2: // Đăng xuất (index thay đổi do thêm item mới)
                 confirmLogout();
                 break;
         }
@@ -121,6 +148,7 @@ public class SettingAdminFragment extends Fragment {
                             .getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
                             .edit()
                             .remove("user_id")
+                            .remove("session_token") // Đảm bảo xóa token để tránh auto-login
                             .apply();
 
                     Intent intent =

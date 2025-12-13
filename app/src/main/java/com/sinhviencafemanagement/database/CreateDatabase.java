@@ -11,6 +11,8 @@ import com.sinhviencafemanagement.dao.UserDAO;
 // Lớp CreateDatabase dùng để tạo và quản lý cơ sở dữ liệu SQLite cho ứng dụng quản lý quán cafe
 public class CreateDatabase extends SQLiteOpenHelper {
 
+    private static final int DATABASE_VERSION = 2; // Tăng version lên 2
+
     // Bảng người dùng
     public static final String TABLE_USERS = "users";  // Người dùng/khách hàng hoặc nhân viên phụ trách
     public static final String COLUMN_USER_ID = "user_id";   // Mã nhân viên
@@ -23,6 +25,7 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_USER_GENDER = "gender"; // Giới tính
     public static final String COLUMN_USER_BIRTHDATE = "birthdate"; // Ngày sinh
     public static final String COLUMN_USER_ROLE_ID = "role_id"; // Mã quyền
+    public static final String COLUMN_USER_FACE_EMBEDDING = "face_embedding"; // Face Embedding (TEXT/JSON)
 
     // Bảng quyền
     public static final String TABLE_ROLES = "roles"; // Bảng quyền
@@ -98,9 +101,9 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_ODT_TOPPING_ID = "topping_id";
     public static final String COLUMN_ODT_QUANTITY = "quantity";
 
-    // Constructor của lớp CreateDatabase, dùng để tạo cơ sở dữ liệu "OrderDrink" phiên bản 1
+    // Constructor của lớp CreateDatabase
     public CreateDatabase(Context context) {
-        super(context, "CafeManagement", null, 1);
+        super(context, "CafeManagement", null, DATABASE_VERSION);
     }
 
     @Override
@@ -118,16 +121,19 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 + COLUMN_ROLE_NAME + " TEXT NOT NULL UNIQUE);";
 
         // Bảng users
+        // Note: Added face_embedding
         String tblUsers = "CREATE TABLE " + TABLE_USERS + "( " +
                 COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "  +
                 COLUMN_USER_NAME + " TEXT NOT NULL , " +
                 COLUMN_USER_DISPLAY_NAME + " TEXT NOT NULL UNIQUE, " +
                 COLUMN_USER_USERNAME + " TEXT NOT NULL UNIQUE CHECK(length(" + COLUMN_USER_USERNAME + ") >= 7 AND length(" + COLUMN_USER_USERNAME + ") <= 25), " +
-                COLUMN_USER_PASSWORD + " TEXT NOT NULL, " +                COLUMN_USER_EMAIL + " TEXT NOT NULL UNIQUE, " +
+                COLUMN_USER_PASSWORD + " TEXT NOT NULL, " +
+                COLUMN_USER_EMAIL + " TEXT NOT NULL UNIQUE, " +
                 COLUMN_USER_PHONE + " TEXT CHECK(length(" + COLUMN_USER_PHONE + ") = 10), " +
                 COLUMN_USER_GENDER + " TEXT, " +
                 COLUMN_USER_BIRTHDATE + " TEXT, " +
                 COLUMN_USER_ROLE_ID + " INTEGER NOT NULL DEFAULT " + ROLE_CUSTOMER + ", " +
+                COLUMN_USER_FACE_EMBEDDING + " TEXT, " +
                 "FOREIGN KEY(" + COLUMN_USER_ROLE_ID + ") REFERENCES " + TABLE_ROLES + "(" + COLUMN_ROLE_ID + "));";
 
         // Bảng categories
@@ -324,17 +330,14 @@ public class CreateDatabase extends SQLiteOpenHelper {
     // Xử lý khi nâng cấp phiên bản database (thêm, sửa hoặc xóa bảng, cột)
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Xóa bảng theo đúng thứ tự khóa ngoại
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDER_DETAILS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDERS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SESSIONS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROLES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TABLES);
-        // Tạo lại bảng
-        onCreate(db);
+        if (oldVersion < 2) {
+             // Thêm cột face_embedding vào bảng users
+             try {
+                db.execSQL("ALTER TABLE " + TABLE_USERS + " ADD COLUMN " + COLUMN_USER_FACE_EMBEDDING + " TEXT");
+             } catch (Exception e) {
+                Log.e("CreateDatabase", "Error upgrading to version 2", e);
+             }
+        }
     }
 
     @Override
