@@ -116,6 +116,7 @@
                 android:focusable="true"
                 android:clickable="true"
                 tools:ignore="LabelFor" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout

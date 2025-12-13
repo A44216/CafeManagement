@@ -318,6 +318,7 @@ public class CreateDatabase extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO " + TABLE_ORDER_DETAIL_TOPPINGS + " (" +
                 COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ", " + COLUMN_ODT_TOPPING_ID + ", " + COLUMN_ODT_QUANTITY + ") VALUES " +
                 "(2, 5, 2, 1)"); // Thạch x1
+
     }
 
     // Xử lý khi nâng cấp phiên bản database (thêm, sửa hoặc xóa bảng, cột)

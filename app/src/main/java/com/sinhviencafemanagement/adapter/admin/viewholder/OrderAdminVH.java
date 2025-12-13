@@ -6,7 +6,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.sinhviencafemanagement.R;
 
 public class OrderAdminVH extends RecyclerView.ViewHolder {
@@ -23,7 +22,6 @@ public class OrderAdminVH extends RecyclerView.ViewHolder {
         tvTotalPrice = itemView.findViewById(R.id.tvTotalPrice);
         tvDescription = itemView.findViewById(R.id.tvDescription);
         btnOrderTracking = itemView.findViewById(R.id.btnOrderTracking);
-
     }
 
 

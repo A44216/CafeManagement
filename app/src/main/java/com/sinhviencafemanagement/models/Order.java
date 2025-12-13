@@ -16,6 +16,7 @@ public class Order implements Clonable<Order>{
 
     // Constructor đầy đủ (dùng khi đọc từ DB)
     public Order(int orderId, int userId, String orderDate, String status, double totalPrice, Integer tableId) {
+
         this.orderId = orderId;
         this.userId = userId;
         this.orderDate = orderDate;
@@ -48,6 +49,7 @@ public class Order implements Clonable<Order>{
 
     public double getTotalPrice() { return totalPrice; }
     public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
+
 
     public Integer getTableId() { return tableId; }
     public void setTableId(Integer tableId) { this.tableId = tableId; }

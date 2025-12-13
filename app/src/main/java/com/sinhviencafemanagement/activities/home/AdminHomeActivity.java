@@ -141,6 +141,7 @@ public class AdminHomeActivity extends AppCompatActivity {
             else if (selectedId == R.id.menu_setting) {
                 switchToSettingFragment();
             }
+
             return true;
         });
 
@@ -207,7 +208,6 @@ public class AdminHomeActivity extends AppCompatActivity {
                 .replace(R.id.listFragmentContainer, new SettingAdminFragment())
                 .commit();
     }
-
 
     // Hiển thị Category Fragment mặc định
     private void showDefaultCategoryFragment() {

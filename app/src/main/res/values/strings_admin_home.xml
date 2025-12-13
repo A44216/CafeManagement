@@ -29,21 +29,4 @@
     <string name="product_description">Mô tả</string>
     <string name="product_image_path">Đường dẫn ảnh</string>
 
-    <string name="order_description">Mô tả hóa đơn</string>
-    <string name="order_tracking">Theo dõi đơn hàng</string>
-    <string name="step_pending">Chưa xử lý</string>
-    <string name="step_done">Hoàn thành</string>
-
-    <string name="avatar">Avatar</string>
-    <string name="default_email">testadmin@gmail.com</string>
-
-    <string name="hint_topping_name">Nhập topping cần tìm kiếm</string>
-    <string name="topping_title">Quản lý topping</string>
-    <string name="add_topping_title">Thêm topping</string>
-    <string name="update_topping_title">Cập nhật topping</string>
-    <string name="topping_name">Tên topping</string>
-    <string name="topping_price">Giá</string>
-    <string name="add_topping">Thêm topping</string>
-    <string name="update_topping">Cập nhật topping</string>
-
 </resources>

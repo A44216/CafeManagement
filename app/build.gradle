@@ -36,6 +36,7 @@ dependencies {
     implementation libs.glide
     implementation libs.lifecycle.livedata.ktx
     implementation libs.lifecycle.viewmodel.ktx
+
     annotationProcessor libs.compiler
 
     implementation libs.jbcrypt

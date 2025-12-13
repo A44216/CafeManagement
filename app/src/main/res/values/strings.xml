@@ -3,6 +3,7 @@
     <string name="desc_back_button">Quay lại</string>
     <string name="desc_cafe_logo">Logo quán cà phê</string>
 
+
     <string name="hint_password">Mật khẩu</string>
     <string name="autofill_password">password</string>
     <string name="title_activity_forgot_password">activity_forgot_password</string>
