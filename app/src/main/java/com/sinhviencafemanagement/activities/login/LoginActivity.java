@@ -123,46 +123,47 @@ public class LoginActivity extends AppCompatActivity {
 
         if (!validateInput(input, password)) return;
 
+        // Kiểm tra đăng nhập
         if (userDAO.checkLogin(input, password)) {
-            User user = userDAO.getUserByUsernameOrEmail(input); // lấy user
+            User user = userDAO.getUserByUsernameOrEmail(input);
             if (user == null) {
-                showToast("Không tìm thấy id tương ứng");
+                showToast("Không tìm thấy người dùng tương ứng");
                 return;
             }
 
-            SharedPreferences.Editor editor = prefs.edit(); // chỉ dùng editor 1 lần
+            SharedPreferences.Editor editor = prefs.edit();
 
-            // Chỉ lưu SharedPreferences nếu checkbox được tick
+            // Luôn lưu user_id
+            editor.putInt("user_id", user.getUserId());
+
+            // Chỉ lưu session_token nếu checkbox được tick
             if (chkRememberLogin.isChecked()) {
-                int userId = user.getUserId(); // lấy id
                 long expiredAt = System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000; // 7 ngày
-                String token = sessionDAO.createSession(userId, expiredAt);
+                String token = sessionDAO.createSession(user.getUserId(), expiredAt);
 
-                // Kiểm tra token có thành công không
-                if (token == null) {
+                if (token != null) {
+                    editor.putString("session_token", token);
+                } else {
                     showToast("Đăng nhập thất bại, thử lại sau");
                     return;
                 }
-
-                editor.putInt("user_id", userId)
-                        .putString("session_token", token);
             }
 
-            // Luôn lưu username sau khi login thành công
+            // Luôn lưu username để điền lại EditText lần sau
             editor.putString("saved_username", input);
             editor.apply();
 
             showToast("Đăng nhập thành công!");
 
             // Phân quyền truy cập
-            int role = user.getRoleId();  // lấy role từ database
+            Intent intent;
+            if (user.getRoleId() == CreateDatabase.ROLE_ADMIN) {
+                intent = new Intent(this, AdminHomeActivity.class);
+            } else {
+                intent = new Intent(this, UserHomeActivity.class);
+            }
 
-            if (role == CreateDatabase.ROLE_ADMIN){
-                startActivity(new Intent(this, AdminHomeActivity.class));
-            }
-            else {
-                startActivity(new Intent(this, UserHomeActivity.class));
-            }
+            startActivity(intent);
             finish();
 
         } else {
