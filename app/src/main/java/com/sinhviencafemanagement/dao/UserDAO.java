@@ -56,6 +56,7 @@ public class UserDAO {
         values.put(CreateDatabase.COLUMN_USER_GENDER, user.getGender());
         values.put(CreateDatabase.COLUMN_USER_BIRTHDATE, user.getBirthdate());
         values.put(CreateDatabase.COLUMN_USER_ROLE_ID, user.getRoleId());
+        values.put(CreateDatabase.COLUMN_USER_FACE_EMBEDDING, user.getFaceEmbedding());
         return values;
     }
 
@@ -76,7 +77,7 @@ public class UserDAO {
             int index = cursor.getColumnIndexOrThrow(columnName);
             return cursor.isNull(index) ? "" : cursor.getString(index);
         } catch (Exception e) {
-            Log.e("UserDAO", "Lỗi lấy cột String: " + columnName, e);
+            // Log.e("UserDAO", "Lỗi lấy cột String: " + columnName, e); // Giảm log spam nếu cột chưa tồn tại ở version cũ
             return "";
         }
     }
@@ -85,7 +86,7 @@ public class UserDAO {
     private User cursorToUser(Cursor cursor) {
         if (cursor == null) return null;
 
-        return new User(
+        User user = new User(
                 getColumnInt(cursor, CreateDatabase.COLUMN_USER_ID),
                 getColumnString(cursor, CreateDatabase.COLUMN_USER_NAME),
                 getColumnString(cursor, CreateDatabase.COLUMN_USER_DISPLAY_NAME),
@@ -97,6 +98,16 @@ public class UserDAO {
                 getColumnString(cursor, CreateDatabase.COLUMN_USER_BIRTHDATE),
                 getColumnInt(cursor, CreateDatabase.COLUMN_USER_ROLE_ID)
         );
+        // Lấy face embedding
+        try {
+            int index = cursor.getColumnIndex(CreateDatabase.COLUMN_USER_FACE_EMBEDDING);
+            if (index != -1 && !cursor.isNull(index)) {
+                user.setFaceEmbedding(cursor.getString(index));
+            }
+        } catch (Exception e) {
+            // Ignore if column doesn't exist yet (though it should)
+        }
+        return user;
     }
 
     // Truy vấn User theo điều kiện
@@ -576,5 +587,39 @@ public class UserDAO {
                 new String[]{String.valueOf(roleId)});
     }
 
+    // FACE ID METHODS
 
+    // Cập nhật Face Embedding cho user
+    public boolean updateFaceEmbedding(int userId, String embeddingJson) {
+        if (userId <= 0) return false;
+        try {
+            ContentValues values = new ContentValues();
+            values.put(CreateDatabase.COLUMN_USER_FACE_EMBEDDING, embeddingJson);
+            int rows = db.update(CreateDatabase.TABLE_USERS, values,
+                    CreateDatabase.COLUMN_USER_ID + " = ?",
+                    new String[]{String.valueOf(userId)});
+            return rows > 0;
+        } catch (Exception e) {
+            Log.e("UserDAO", "Lỗi updateFaceEmbedding", e);
+            return false;
+        }
+    }
+
+    // Lấy tất cả Admin (để so sánh face login)
+    public List<User> getAllAdmins() {
+        return getUserByRoleId(CreateDatabase.ROLE_ADMIN);
+    }
+
+    // Kiểm tra có bất kỳ user nào đã đăng ký FaceID chưa
+    public boolean hasAnyFaceEmbedding() {
+        try (Cursor cursor = db.query(CreateDatabase.TABLE_USERS, 
+                new String[]{CreateDatabase.COLUMN_USER_ID},
+                CreateDatabase.COLUMN_USER_FACE_EMBEDDING + " IS NOT NULL AND length(" + CreateDatabase.COLUMN_USER_FACE_EMBEDDING + ") > 0",
+                null, null, null, null, "1")) { // Limit 1
+            return cursor.moveToFirst();
+        } catch (Exception e) {
+            Log.e("UserDAO", "Error checking face embeddings", e);
+            return false;
+        }
+    }
 }

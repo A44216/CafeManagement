@@ -123,4 +123,48 @@ public class OrderDetailDAO {
         return list;
     }
 
+    // Lấy tất cả chi tiết đơn hàng
+    public List<OrderDetail> getAllOrderDetails() {
+        List<OrderDetail> list = new ArrayList<>();
+        try (Cursor cursor = db.query(
+                CreateDatabase.TABLE_ORDER_DETAILS,
+                null, null, null, null, null, null
+        )) {
+            if (cursor.moveToFirst()) {
+                do {
+                    OrderDetail detail = new OrderDetail(
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DETAIL_ORDER_ID)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DETAIL_PRODUCT_ID)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DETAIL_QUANTITY))
+                    );
+                    list.add(detail);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("OrderDetailDAO", "Lỗi khi lấy tất cả chi tiết đơn", e);
+        }
+        return list;
+    }
+
+    // Lấy trạng thái đơn hàng theo orderId
+    public String getOrderStatusById(int orderId) {
+        if (orderId <= 0) return null;
+
+        String status = null;
+        try (Cursor cursor = db.query(
+                CreateDatabase.TABLE_ORDERS,
+                new String[]{CreateDatabase.COLUMN_ORDER_STATUS},
+                CreateDatabase.COLUMN_ORDER_ID + " = ?",
+                new String[]{String.valueOf(orderId)},
+                null, null, null
+        )) {
+            if (cursor.moveToFirst()) {
+                status = cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_STATUS));
+            }
+        } catch (Exception e) {
+            Log.e("OrderDAO", "Lỗi khi lấy trạng thái đơn hàng: orderId=" + orderId, e);
+        }
+        return status;
+    }
+
 }

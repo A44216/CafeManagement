@@ -29,7 +29,7 @@ public class OrderDAO {
         values.put(CreateDatabase.COLUMN_ORDER_USER_ID, order.getUserId()); // user phụ trách
         values.put(CreateDatabase.COLUMN_ORDER_DATE, order.getOrderDate()); // ngày đặt
         values.put(CreateDatabase.COLUMN_ORDER_STATUS, order.getStatus()); // trạng thái
-        values.put(CreateDatabase.COLUMN_ORDER_TOTAL, order.getTotal()); // tổng tiền
+        values.put(CreateDatabase.COLUMN_ORDER_TOTAL, order.getTotalPrice()); // tổng tiền
         values.put(CreateDatabase.COLUMN_ORDER_TABLE_ID, order.getTableId()); // bàn
         return values;
     }
@@ -146,6 +146,12 @@ public class OrderDAO {
             Log.e("OrderDAO", "Lỗi khi lấy danh sách đơn", e);
         }
         return list;
+    }
+
+    // Lấy trạng thái đơn hàng theo orderId
+    public String getOrderStatusById(int orderId) {
+        Order order = getOrderById(orderId);
+        return (order != null) ? order.getStatus() : null;
     }
 
 }

@@ -13,8 +13,9 @@ public class User {
     private String gender;     // gender
     private String birthdate;  // birthdate
     private int roleId;        // role_id
+    private String faceEmbedding; // JSON string of float array
 
-    // Constructor đầy đủ
+    // Constructor đầy đủ (cũ)
     public User(int userId, String fullName, String displayName, String username, String password,
                 String email, String phone, String gender, String birthdate, int roleId) {
         this.userId = userId;
@@ -27,6 +28,13 @@ public class User {
         this.gender = gender;
         this.birthdate = birthdate;
         this.roleId = roleId;
+    }
+
+    // Constructor đầy đủ (mới - bao gồm faceEmbedding)
+    public User(int userId, String fullName, String displayName, String username, String password,
+                String email, String phone, String gender, String birthdate, int roleId, String faceEmbedding) {
+        this(userId, fullName, displayName, username, password, email, phone, gender, birthdate, roleId);
+        this.faceEmbedding = faceEmbedding;
     }
 
     public User() {
@@ -87,6 +95,9 @@ public class User {
     public int getRoleId() { return roleId; }
     public void setRoleId(int roleId) { this.roleId = roleId; }
 
+    public String getFaceEmbedding() { return faceEmbedding; }
+    public void setFaceEmbedding(String faceEmbedding) { this.faceEmbedding = faceEmbedding; }
+
     @NonNull
     @Override
     public String toString() {
@@ -100,7 +111,7 @@ public class User {
                 ", gender='" + gender + '\'' +
                 ", birthdate='" + birthdate + '\'' +
                 ", roleId=" + roleId +
+                ", faceEmbedding='" + (faceEmbedding != null ? "HAS_DATA" : "NULL") + '\'' +
                 '}';
     }
-
 }

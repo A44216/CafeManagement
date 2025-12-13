@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -24,6 +25,7 @@ import com.sinhviencafemanagement.activities.home.product.AddProductActivity;
 import com.sinhviencafemanagement.fragments.admin.CategoryAdminFragment;
 import com.sinhviencafemanagement.fragments.admin.OrderAdminFragment;
 import com.sinhviencafemanagement.fragments.admin.ProductAdminFragment;
+import com.sinhviencafemanagement.fragments.admin.SettingAdminFragment;
 import com.sinhviencafemanagement.models.Category;
 import com.sinhviencafemanagement.models.Product;
 
@@ -136,9 +138,10 @@ public class AdminHomeActivity extends AppCompatActivity {
             else if (selectedId == R.id.menu_order) {
                 switchToOrderFragment();
             }
-//            else if (selectedId == R.id.menu_setting) {
-//                switchToSettingFragment();
-//            }
+            else if (selectedId == R.id.menu_setting) {
+                switchToSettingFragment();
+            }
+
             return true;
         });
 
@@ -164,6 +167,9 @@ public class AdminHomeActivity extends AppCompatActivity {
 
     // Chuyển sang Category Fragment
     private void switchToCategoryFragment() {
+        layoutSearch.setVisibility(View.VISIBLE);   // HIỆN thanh tìm kiếm
+        fabAddNew.setVisibility(View.VISIBLE);      // HIỆN nút thêm mới
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.listFragmentContainer, new CategoryAdminFragment())
@@ -172,6 +178,9 @@ public class AdminHomeActivity extends AppCompatActivity {
 
     // Chuyển sang Product Fragment
     private void switchToProductFragment() {
+        layoutSearch.setVisibility(View.VISIBLE);   // HIỆN thanh tìm kiếm
+        fabAddNew.setVisibility(View.VISIBLE);      // HIỆN nút thêm mới
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.listFragmentContainer, new ProductAdminFragment())
@@ -180,20 +189,25 @@ public class AdminHomeActivity extends AppCompatActivity {
 
     // Chuyển sang Order (tạo fragment rỗng trước cũng được)
     private void switchToOrderFragment() {
+        layoutSearch.setVisibility(View.GONE);   // ẨN thanh tìm kiếm
+        fabAddNew.setVisibility(View.GONE);      // ẨN nút thêm mới
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.listFragmentContainer, new OrderAdminFragment())
                 .commit();
     }
-//
-//    // Chuyển sang Setting
-//    private void switchToSettingFragment() {
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.listFragmentContainer, new SettingAdminFragment())
-//                .commit();
-//    }
 
+    // Chuyển sang Setting
+    private void switchToSettingFragment() {
+        layoutSearch.setVisibility(View.GONE);   // ẨN thanh tìm kiếm
+        fabAddNew.setVisibility(View.GONE);      // ẨN nút thêm mới
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.listFragmentContainer, new SettingAdminFragment())
+                .commit();
+    }
 
     // Hiển thị Category Fragment mặc định
     private void showDefaultCategoryFragment() {

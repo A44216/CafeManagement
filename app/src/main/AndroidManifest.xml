@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
 
     <application
         android:allowBackup="true"
@@ -14,10 +16,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CafeManagement">
         <activity
-            android:name=".activities.home.product.UpdateProductActivity"
+            android:name=".activities.home.topping.AddToppingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.home.topping.UpdateToppingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.home.topping.ToppingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.home.order.OrderTrackingActivity"
             android:exported="false" />
         <activity
             android:name=".activities.home.product.AddProductActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.home.product.UpdateProductActivity"
             android:exported="false" />
         <activity
             android:name=".activities.home.category.UpdateCategoryActivity"
@@ -48,6 +62,7 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
+
             android:name=".MainActivity"
             android:exported="false" />
         <activity android:name=".activities.account.FeedbackActivity" />
@@ -55,6 +70,7 @@
         <activity android:name=".activities.account.ChangePasswordActivity" />
         <activity
             android:name=".activities.login.LoginActivity"
+
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -62,6 +78,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.FaceCaptureActivity" android:exported="false"/>
     </application>
 
 </manifest>

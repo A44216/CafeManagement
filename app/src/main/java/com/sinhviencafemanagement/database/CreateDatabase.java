@@ -11,6 +11,8 @@ import com.sinhviencafemanagement.dao.UserDAO;
 // Lớp CreateDatabase dùng để tạo và quản lý cơ sở dữ liệu SQLite cho ứng dụng quản lý quán cafe
 public class CreateDatabase extends SQLiteOpenHelper {
 
+    private static final int DATABASE_VERSION = 2; // Tăng version lên 2
+
     // Bảng người dùng
     public static final String TABLE_USERS = "users";  // Người dùng/khách hàng hoặc nhân viên phụ trách
     public static final String COLUMN_USER_ID = "user_id";   // Mã nhân viên
@@ -23,6 +25,7 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_USER_GENDER = "gender"; // Giới tính
     public static final String COLUMN_USER_BIRTHDATE = "birthdate"; // Ngày sinh
     public static final String COLUMN_USER_ROLE_ID = "role_id"; // Mã quyền
+    public static final String COLUMN_USER_FACE_EMBEDDING = "face_embedding"; // Face Embedding (TEXT/JSON)
 
     // Bảng quyền
     public static final String TABLE_ROLES = "roles"; // Bảng quyền
@@ -85,9 +88,22 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_SESSION_CREATED_AT = "created_at";
     public static final String COLUMN_SESSION_EXPIRED_AT = "expired_at";
 
-    // Constructor của lớp CreateDatabase, dùng để tạo cơ sở dữ liệu "OrderDrink" phiên bản 1
+    // Bảng toppings
+    public static final String TABLE_TOPPINGS = "toppings";
+    public static final String COLUMN_TOPPING_ID = "topping_id";
+    public static final String COLUMN_TOPPING_NAME = "topping_name";
+    public static final String COLUMN_TOPPING_PRICE = "price";
+
+    // Bảng chi tiết topping trên order_detail
+    public static final String TABLE_ORDER_DETAIL_TOPPINGS = "order_detail_toppings";
+    public static final String COLUMN_ODT_ORDER_ID = "order_id";
+    public static final String COLUMN_ODT_PRODUCT_ID = "product_id";
+    public static final String COLUMN_ODT_TOPPING_ID = "topping_id";
+    public static final String COLUMN_ODT_QUANTITY = "quantity";
+
+    // Constructor của lớp CreateDatabase
     public CreateDatabase(Context context) {
-        super(context, "CafeManagement", null, 1);
+        super(context, "CafeManagement", null, DATABASE_VERSION);
     }
 
     @Override
@@ -105,16 +121,19 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 + COLUMN_ROLE_NAME + " TEXT NOT NULL UNIQUE);";
 
         // Bảng users
+        // Note: Added face_embedding
         String tblUsers = "CREATE TABLE " + TABLE_USERS + "( " +
                 COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "  +
                 COLUMN_USER_NAME + " TEXT NOT NULL , " +
                 COLUMN_USER_DISPLAY_NAME + " TEXT NOT NULL UNIQUE, " +
                 COLUMN_USER_USERNAME + " TEXT NOT NULL UNIQUE CHECK(length(" + COLUMN_USER_USERNAME + ") >= 7 AND length(" + COLUMN_USER_USERNAME + ") <= 25), " +
-                COLUMN_USER_PASSWORD + " TEXT NOT NULL, " +                COLUMN_USER_EMAIL + " TEXT NOT NULL UNIQUE, " +
+                COLUMN_USER_PASSWORD + " TEXT NOT NULL, " +
+                COLUMN_USER_EMAIL + " TEXT NOT NULL UNIQUE, " +
                 COLUMN_USER_PHONE + " TEXT CHECK(length(" + COLUMN_USER_PHONE + ") = 10), " +
                 COLUMN_USER_GENDER + " TEXT, " +
                 COLUMN_USER_BIRTHDATE + " TEXT, " +
                 COLUMN_USER_ROLE_ID + " INTEGER NOT NULL DEFAULT " + ROLE_CUSTOMER + ", " +
+                COLUMN_USER_FACE_EMBEDDING + " TEXT, " +
                 "FOREIGN KEY(" + COLUMN_USER_ROLE_ID + ") REFERENCES " + TABLE_ROLES + "(" + COLUMN_ROLE_ID + "));";
 
         // Bảng categories
@@ -164,6 +183,23 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 "FOREIGN KEY(" + COLUMN_SESSION_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + ")" +
                 ");";
 
+        // Tạo bảng toppings
+        String tblToppings = "CREATE TABLE " + TABLE_TOPPINGS + " (" +
+                COLUMN_TOPPING_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_TOPPING_NAME + " TEXT NOT NULL UNIQUE, " +
+                COLUMN_TOPPING_PRICE + " REAL NOT NULL);";
+
+        // Tạo bảng order_detail_toppings
+        String tblOrderDetailToppings = "CREATE TABLE " + TABLE_ORDER_DETAIL_TOPPINGS + " (" +
+                COLUMN_ODT_ORDER_ID + " INTEGER NOT NULL, " +
+                COLUMN_ODT_PRODUCT_ID + " INTEGER NOT NULL, " +
+                COLUMN_ODT_TOPPING_ID + " INTEGER NOT NULL, " +
+                COLUMN_ODT_QUANTITY + " INTEGER NOT NULL DEFAULT 1, " +
+                "PRIMARY KEY(" + COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ", " + COLUMN_ODT_TOPPING_ID + "), " +
+                "FOREIGN KEY(" + COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ") REFERENCES " +
+                TABLE_ORDER_DETAILS + "(" + COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + "), " +
+                "FOREIGN KEY(" + COLUMN_ODT_TOPPING_ID + ") REFERENCES " + TABLE_TOPPINGS + "(" + COLUMN_TOPPING_ID + "));";
+
         // Thực thi các câu lệnh tạo bảng
         db.execSQL(tblTables);
         db.execSQL(tblRoles);
@@ -173,6 +209,8 @@ public class CreateDatabase extends SQLiteOpenHelper {
         db.execSQL(tblOrders);
         db.execSQL(tblOrderDetails);
         db.execSQL(tblSessions);
+        db.execSQL(tblToppings);
+        db.execSQL(tblOrderDetailToppings);
 
         // Gọi hàm khởi tạo dữ liệu mặc định
         insertDefaultData(db);
@@ -205,6 +243,11 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 COLUMN_USER_USERNAME + "," + COLUMN_USER_PASSWORD + "," +
                 COLUMN_USER_EMAIL + "," + COLUMN_USER_PHONE + "," + COLUMN_USER_ROLE_ID + ") VALUES (" +
                 "'Administrator', 'Admin', 'admin123', '" + hashedPassword + "', 'admin@example.com', '0123456789', " + ROLE_ADMIN + ")");
+        db.execSQL("INSERT INTO " + TABLE_USERS + " (" +
+                COLUMN_USER_NAME + "," + COLUMN_USER_DISPLAY_NAME + "," +
+                COLUMN_USER_USERNAME + "," + COLUMN_USER_PASSWORD + "," +
+                COLUMN_USER_EMAIL + "," + COLUMN_USER_PHONE + "," + COLUMN_USER_ROLE_ID + ") VALUES (" +
+                "'User', 'User', 'user123', '" + UserDAO.hashPassword("user123") + "', 'user@example.com', '0987654321', " + ROLE_CUSTOMER + ")");
 
         //Product mặc định
         // Cà phê
@@ -236,22 +279,65 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 COLUMN_PRODUCT_IMAGE_RES_ID + "," + COLUMN_PRODUCT_IMAGE_PATH + "," + COLUMN_PRODUCT_CATEGORY_ID + "," +
                 COLUMN_PRODUCT_DESCRIPTION + ") VALUES ('Trà dâu tây', 25000, '" + PRODUCT_STATUS_AVAILABLE + "', " + R.drawable.strawberry_tea + ", '', 4, 'Trà dâu tây ngon')");
 
+        // Topping mặc định
+        db.execSQL("INSERT INTO " + TABLE_TOPPINGS + " (" + COLUMN_TOPPING_NAME + ", " + COLUMN_TOPPING_PRICE + ") VALUES ('Trân châu', 5000)");
+        db.execSQL("INSERT INTO " + TABLE_TOPPINGS + " (" + COLUMN_TOPPING_NAME + ", " + COLUMN_TOPPING_PRICE + ") VALUES ('Thạch', 4000)");
+        db.execSQL("INSERT INTO " + TABLE_TOPPINGS + " (" + COLUMN_TOPPING_NAME + ", " + COLUMN_TOPPING_PRICE + ") VALUES ('Kem cheese', 7000)");
+
+        // ================= Insert demo order =================
+
+        // ================= Insert demo tables =================
+        db.execSQL("INSERT INTO " + TABLE_TABLES + " (" + COLUMN_TABLE_NAME + ", " + COLUMN_TABLE_STATUS + ") VALUES ('Bàn 1', '" + TABLE_STATUS_AVAILABLE + "')");
+        db.execSQL("INSERT INTO " + TABLE_TABLES + " (" + COLUMN_TABLE_NAME + ", " + COLUMN_TABLE_STATUS + ") VALUES ('Bàn 2', '" + TABLE_STATUS_OCCUPIED + "')");
+
+        // ================= Insert demo orders =================
+        db.execSQL("INSERT INTO " + TABLE_ORDERS + " (" +
+                COLUMN_ORDER_USER_ID + ", " + COLUMN_ORDER_DATE + ", " + COLUMN_ORDER_STATUS + ", " + COLUMN_ORDER_TOTAL + ", " + COLUMN_ORDER_TABLE_ID + ") VALUES " +
+                "(2, '2025-12-11 10:00', '" + ORDER_STATUS_PENDING + "', 55000, 1)");
+
+        db.execSQL("INSERT INTO " + TABLE_ORDERS + " (" +
+                COLUMN_ORDER_USER_ID + ", " + COLUMN_ORDER_DATE + ", " + COLUMN_ORDER_STATUS + ", " + COLUMN_ORDER_TOTAL + ", " + COLUMN_ORDER_TABLE_ID + ") VALUES " +
+                "(2, '2025-12-11 11:00', '" + ORDER_STATUS_COMPLETED + "', 60000, 2)");
+
+        // ================= Insert demo order_details =================
+        // Hóad dơn 1
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
+                COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
+                "(1, 1, 1)"); // Cappuccino x1
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
+                COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
+                "(1, 2, 1)"); // Cà phê sữa x1
+
+        // Hóa đơn 2
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
+                COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
+                "(2, 3, 2)"); // Matcha Latte x2
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAIL_TOPPINGS + " (" +
+                COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ", " + COLUMN_ODT_TOPPING_ID + ", " + COLUMN_ODT_QUANTITY + ") VALUES " +
+                "(2, 3, 1, 1)"); // Trân châu x1
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAIL_TOPPINGS + " (" +
+                COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ", " + COLUMN_ODT_TOPPING_ID + ", " + COLUMN_ODT_QUANTITY + ") VALUES " +
+                "(2, 3, 3, 1)"); // Kem cheese x1
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
+                COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
+                "(2, 5, 1)"); // Trà dâu tây x1
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAIL_TOPPINGS + " (" +
+                COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ", " + COLUMN_ODT_TOPPING_ID + ", " + COLUMN_ODT_QUANTITY + ") VALUES " +
+                "(2, 5, 2, 1)"); // Thạch x1
+
     }
 
     // Xử lý khi nâng cấp phiên bản database (thêm, sửa hoặc xóa bảng, cột)
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Xóa bảng theo đúng thứ tự khóa ngoại
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDER_DETAILS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDERS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SESSIONS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROLES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TABLES);
-        // Tạo lại bảng
-        onCreate(db);
+        if (oldVersion < 2) {
+             // Thêm cột face_embedding vào bảng users
+             try {
+                db.execSQL("ALTER TABLE " + TABLE_USERS + " ADD COLUMN " + COLUMN_USER_FACE_EMBEDDING + " TEXT");
+             } catch (Exception e) {
+                Log.e("CreateDatabase", "Error upgrading to version 2", e);
+             }
+        }
     }
 
     @Override
