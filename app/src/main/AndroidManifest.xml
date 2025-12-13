@@ -50,6 +50,9 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+        <activity android:name=".activities.account.FeedbackActivity" />
+        <activity android:name=".activities.account.ContactActivity" />
+        <activity android:name=".activities.account.ChangePasswordActivity" />
         <activity
             android:name=".activities.login.LoginActivity"
             android:exported="true">

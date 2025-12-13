@@ -6,5 +6,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.home.UserHomeActivity">
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/content_frame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bnvCustomerMenu"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bnvCustomerMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:elevation="16dp"
+        app:labelVisibilityMode="labeled"
+        app:itemIconTint="#6D4C41"
+        app:itemTextColor="#6D4C41"
+        app:menu="@menu/customer_bottom_nav_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

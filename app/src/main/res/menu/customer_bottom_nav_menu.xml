@@ -9,7 +9,7 @@
         android:icon="@drawable/ic_clock_history"
         android:title="Lịch sử" />
     <item
-        android:id="@+id/nav_points"
+        android:id="@+id/nav_account"
         android:icon="@drawable/ic_user"
         android:title="Tài khoản" />
 </menu>
