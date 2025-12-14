@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +17,9 @@ import com.sinhviencafemanagement.R;
  import com.sinhviencafemanagement.activities.account.FeedbackActivity;
  import com.sinhviencafemanagement.activities.account.ContactActivity;
  import com.sinhviencafemanagement.activities.account.ChangePasswordActivity;
- import com.sinhviencafemanagement.activities.account.LogoutActivity;;
+import com.sinhviencafemanagement.activities.login.LoginActivity;
+import com.sinhviencafemanagement.dao.SessionDAO;
+;
 
 public class AccountFragment extends Fragment {
 
@@ -62,20 +63,38 @@ public class AccountFragment extends Fragment {
 
         // Nút Đổi mật khẩu
         menuChangePass.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Chức năng Đổi mật khẩu", Toast.LENGTH_SHORT).show();
-            // Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
-            // startActivity(intent);
+             Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
+             startActivity(intent);
         });
 
         // Nút Đăng xuất
         menuLogout.setOnClickListener(v -> {
-            // Xử lý logic đăng xuất tại đây
-            // Ví dụ: xóa thông tin đăng nhập đã lưu, sau đó chuyển về màn hình Login
-            Toast.makeText(getContext(), "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
+            // Hiển thị một thông báo cho người dùng
+            Toast.makeText(getContext(), "Đã đăng xuất", Toast.LENGTH_SHORT).show();
 
-            // Intent intent = new Intent(getActivity(), LoginActivity.class);
-            // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Xóa hết các Activity cũ
-            // startActivity(intent);
+            // 1. Khởi tạo SessionDAO để xử lý dữ liệu
+            // Cần getActivity() để lấy Context cho DAO
+            if (getActivity() == null) return;
+            SessionDAO sessionDAO = new SessionDAO(getActivity());
+
+            // 2. Lấy session token hiện tại đã lưu
+            String currentToken = sessionDAO.getSessionToken();
+
+            // 3. Xóa session trong cơ sở dữ liệu và SharedPreferences
+            // Phương thức `logoutUser(token)` sẽ xóa cả trong DB và prefs
+            if (currentToken != null && !currentToken.isEmpty()) {
+                sessionDAO.logoutUser(currentToken);
+            }
+
+            // 4. Tạo Intent để quay về màn hình Đăng nhập
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+
+            // 5. Xóa tất cả các Activity cũ khỏi hàng đợi (back stack)
+            // Điều này đảm bảo người dùng không thể nhấn nút "Back" để quay lại màn hình chính sau khi đã đăng xuất
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            // 6. Thực hiện chuyển màn hình
+            startActivity(intent);
         });
     }
 }

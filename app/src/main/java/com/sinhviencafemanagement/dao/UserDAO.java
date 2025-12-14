@@ -260,6 +260,31 @@ public class UserDAO {
         }
     }
 
+    // Hàm kiểm tra mật khẩu của một user cụ thể bằng userId
+    public boolean checkPassword(int userId, String rawPassword) {
+        rawPassword = trimOrEmpty(rawPassword);
+        if (rawPassword.isEmpty()) return false;
+
+        try {
+            // 1. Lấy thông tin user từ DB bằng userId
+            User user = getUserById(userId);
+            if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
+                // User không tồn tại hoặc không có mật khẩu
+                return false;
+            }
+
+            // 2. Lấy mật khẩu đã mã hóa từ đối tượng user
+            String hashedPasswordFromDB = user.getPassword();
+
+            // 3. Dùng lại hàm checkPassword cũ để so sánh
+            return checkPassword(rawPassword, hashedPasswordFromDB);
+        } catch (Exception e) {
+            Log.e("UserDAO", "Lỗi khi kiểm tra mật khẩu cho userId=" + userId, e);
+            return false;
+        }
+    }
+
+
     // Đặt lại mật khẩu
     public boolean resetPassword(int userId, String newPassword) {
         newPassword = trimOrEmpty(newPassword);

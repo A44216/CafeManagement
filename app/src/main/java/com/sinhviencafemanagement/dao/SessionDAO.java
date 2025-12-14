@@ -2,6 +2,7 @@ package com.sinhviencafemanagement.dao;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -16,9 +17,14 @@ public class SessionDAO {
     private final String TAG = "SessionDAO";
     // Đối tượng SQLiteDatabase để DAO thao tác dữ liệu
     private final SQLiteDatabase db;
+    private final SharedPreferences prefs; // Khai báo SharedPreferences
+    private final SharedPreferences.Editor editor; // Khai báo Editor
+    // private final CreateDatabase createDatabase; // Không cần thiết vì đã có DatabaseManager
 
     public SessionDAO(Context context) {
         db = DatabaseManager.getDatabase(context);
+        prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+        editor = prefs.edit();
     }
 
 
@@ -182,4 +188,28 @@ public class SessionDAO {
         return new Session(userId, token, expiredAt);
     }
 
+    public String getSessionToken() {
+        return prefs.getString("session_token", null);
+    }
+
+    /**
+     * Đăng xuất người dùng bằng cách xóa token khỏi DB và SharedPreferences
+     * @param token Token cần xóa
+     */
+    /**
+     * Đăng xuất người dùng bằng cách xóa token khỏi DB và SharedPreferences
+     * @param token Token cần xóa
+     */
+    public void logoutUser(String token) {
+        // 1. Xóa token khỏi bảng sessions trong DB
+        // Dùng lại phương thức deleteSession đã có sẵn để tránh lặp code
+        if (token != null && !token.isEmpty()) {
+            deleteSession(token);
+        }
+
+        // 2. Xóa toàn bộ dữ liệu trong SharedPreferences để đảm bảo sạch sẽ
+        editor.clear();
+        editor.apply();
+        Log.i(TAG, "Đã xóa dữ liệu SharedPreferences.");
+    }
 }
