@@ -118,13 +118,23 @@ public class LoginActivity extends AppCompatActivity {
     private void handleLogin() {
         clearErrors();
 
-        String input = (etUsernameOrEmail.getText() != null) ? etUsernameOrEmail.getText().toString().trim().toLowerCase() : "";
-        String password = (etPassword.getText() != null) ? etPassword.getText().toString().trim() : "";
+        String input = (etUsernameOrEmail.getText() != null)
+                ? etUsernameOrEmail.getText().toString().trim().toLowerCase()
+                : "";
+        String password = (etPassword.getText() != null)
+                ? etPassword.getText().toString().trim()
+                : "";
 
         if (!validateInput(input, password)) return;
 
-        // Kiểm tra đăng nhập
+        // ===== COMMAND PATTERN =====
+        // handleLogin() đóng vai trò INVOKER
+        // kích hoạt hành động đăng nhập (Command)
+
         if (userDAO.checkLogin(input, password)) {
+
+            // ===== RECEIVER =====
+            // UserDAO thực hiện hành động kiểm tra đăng nhập
             User user = userDAO.getUserByUsernameOrEmail(input);
             if (user == null) {
                 showToast("Không tìm thấy người dùng tương ứng");
@@ -133,14 +143,18 @@ public class LoginActivity extends AppCompatActivity {
 
             SharedPreferences.Editor editor = prefs.edit();
 
-            // Luôn lưu user_id
             editor.putInt("user_id", user.getUserId());
 
-            // Chỉ lưu session_token nếu checkbox được tick
+            // ===== COMMAND MỞ RỘNG =====
+            // tạo session nếu người dùng chọn "Remember login"
             if (chkRememberLogin.isChecked()) {
-                long expiredAt = System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000; // 7 ngày
+                long expiredAt = System.currentTimeMillis()
+                        + 7L * 24 * 60 * 60 * 1000;
+
                 String token = sessionDAO.createSession(user.getUserId(), expiredAt);
 
+                // ===== RECEIVER =====
+                // SessionDAO xử lý việc tạo session
                 if (token != null) {
                     editor.putString("session_token", token);
                 } else {
@@ -149,13 +163,13 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
 
-            // Luôn lưu username để điền lại EditText lần sau
             editor.putString("saved_username", input);
             editor.apply();
 
             showToast("Đăng nhập thành công!");
 
-            // Phân quyền truy cập
+            // ===== COMMAND RESULT =====
+            // kết quả của Command → điều hướng theo quyền
             Intent intent;
             if (user.getRoleId() == CreateDatabase.ROLE_ADMIN) {
                 intent = new Intent(this, AdminHomeActivity.class);
@@ -167,6 +181,7 @@ public class LoginActivity extends AppCompatActivity {
             finish();
 
         } else {
+            // ===== COMMAND FAILED =====
             showLoginError();
         }
     }
