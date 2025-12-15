@@ -23,26 +23,39 @@ public class HomeFragment extends Fragment { // Bước 1: Kế thừa từ lớ
         // "Thổi phồng" (inflate) tệp layout XML của bạn thành một đối tượng View trong Java.
         // Tệp layout này sẽ chứa giao diện của màn hình Trang chủ (ví dụ: thanh tìm kiếm, RecyclerView...).
         // Giả sử tệp layout của bạn tên là "fragment_home.xml"
-        View view = inflater.inflate(R.layout.activity_customer_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_home_customer, container, false);
 
         // Trả về View đã được tạo để hệ thống có thể hiển thị nó.
         return view;
     }
 
-    // Bước 3: Ghi đè phương thức onViewCreated (Tùy chọn nhưng rất hữu ích)
-    // Phương thức này được gọi ngay sau khi onCreateView hoàn tất.
-    // Đây là nơi tốt nhất để thực hiện các thao tác trên giao diện như ánh xạ View và cài đặt sự kiện.
+    // Bước 3: Ghi đè phương thức onViewCreated
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Ví dụ: Ánh xạ các View từ layout fragment_home.xml
-        // TextView welcomeText = view.findViewById(R.id.welcome_text);
-        // RecyclerView productList = view.findViewById(R.id.product_recycler_view);
+        // === BẮT ĐẦU PHẦN XỬ LÝ LOGIC ===
 
-        // Tại đây bạn sẽ viết code để xử lý logic cho màn hình Home:
-        // - Lấy dữ liệu sản phẩm từ cơ sở dữ liệu hoặc API.
-        // - Hiển thị dữ liệu lên RecyclerView.
-        // - Cài đặt sự kiện click cho các nút...
+        // 1. Import các lớp cần thiết ở đầu file
+        // import android.content.Intent;
+        // import android.widget.ImageView;
+        // import com.sinhviencafemanagement.activities.cart.CartActivity;
+
+        // 2. Ánh xạ ImageView của nút giỏ hàng từ layout
+        android.widget.ImageView ivCart = view.findViewById(com.sinhviencafemanagement.R.id.ivCart);
+
+        // 3. Cài đặt sự kiện click cho nút giỏ hàng
+        ivCart.setOnClickListener(v -> {
+            // Tạo một Intent để mở CartActivity
+            android.content.Intent intent = new android.content.Intent(getActivity(), com.sinhviencafemanagement.activities.cart.CartActivity.class);
+
+            // Thực hiện chuyển màn hình
+            startActivity(intent);
+        });
+
+        // Tại đây bạn sẽ tiếp tục viết code cho các chức năng khác của màn hình Home:
+        // - Ánh xạ RecyclerView cho danh mục và sản phẩm.
+        // - Lấy dữ liệu và gán vào Adapter...
     }
+
 }
