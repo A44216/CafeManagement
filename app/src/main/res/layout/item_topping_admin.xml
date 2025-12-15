@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp">
+
+    <!-- TÊN TOPPING -->
+    <TextView
+        android:id="@+id/tvToppingNameAdmin"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivEditToppingAdmin"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- GIÁ (DƯỚI TÊN) -->
+    <TextView
+        android:id="@+id/tvToppingPriceAdmin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@color/red"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="@id/tvToppingNameAdmin"
+        app:layout_constraintTop_toBottomOf="@id/tvToppingNameAdmin"/>
+
+    <!-- ICON EDIT (CĂN GIỮA DỌC) -->
+    <ImageView
+        android:id="@+id/ivEditToppingAdmin"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_edit"
+        android:contentDescription="@string/desc_edit"
+        app:layout_constraintEnd_toStartOf="@id/ivDeleteToppingAdmin"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.5"/>
+
+    <!-- ICON DELETE (CĂN GIỮA DỌC) -->
+    <ImageView
+        android:id="@+id/ivDeleteToppingAdmin"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_delete"
+        android:contentDescription="@string/desc_delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.5"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

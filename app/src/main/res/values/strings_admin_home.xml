@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_category">Danh mục</string>
+    <string name="nav_product">Sản phẩm</string>
+    <string name="nav_order">Đơn hàng</string>
+    <string name="nav_setting">Cài đặt</string>
+
+    <string name="hint_category_name">Nhập tên cần tìm</string>
+
+    <string name="desc_add_new">Thêm mới</string>
+    <string name="desc_edit">Sửa</string>
+    <string name="desc_delete">Xóa</string>
+
+    <string name="category_name">Tên danh mục</string>
+    <string name="add_category">Thêm</string>
+    <string name="add_category_title">THÊM DANH MỤC</string>
+    <string name="update_category">Cập nhật</string>
+    <string name="update_category_title">CẬP NHẬT DANH MỤC</string>
+
+    <string name="add_product">Thêm</string>
+    <string name="add_product_title">THÊM SẢN PHẨM</string>
+    <string name="update_product">Cập nhật</string>
+    <string name="update_product_title">CẬP NHẬT SẢN PHẨM</string>
+    <string name="product_name">Tên sản phẩm</string>
+    <string name="product_price">Giá</string>
+    <string name="product_status">Trạng thái</string>
+    <string name="product_image">Ảnh</string>
+    <string name="product_category">Danh mục</string>
+    <string name="product_description">Mô tả</string>
+    <string name="product_image_path">Đường dẫn ảnh</string>
+
+    <string name="order_description">Mô tả hóa đơn</string>
+    <string name="order_tracking">Theo dõi đơn hàng</string>
+    <string name="step_pending">Chưa xử lý</string>
+    <string name="step_done">Hoàn thành</string>
+
+    <string name="avatar">Avatar</string>
+    <string name="default_email">testadmin@gmail.com</string>
+
+    <string name="hint_topping_name">Nhập topping cần tìm kiếm</string>
+    <string name="topping_title">Quản lý topping</string>
+    <string name="add_topping_title">Thêm topping</string>
+    <string name="update_topping_title">Cập nhật topping</string>
+    <string name="topping_name">Tên topping</string>
+    <string name="topping_price">Giá</string>
+    <string name="add_topping">Thêm topping</string>
+    <string name="update_topping">Cập nhật topping</string>
+
+</resources>
