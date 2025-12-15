@@ -164,7 +164,7 @@ public class SettingAdminFragment extends Fragment {
 
                     // XÓA SHAREDPREFERENCES
                     prefs.edit()
-                            .remove("session_token")
+                            .remove("session_token");
                     // XÓA SESSION
                     requireContext()
                             .getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
@@ -173,8 +173,6 @@ public class SettingAdminFragment extends Fragment {
                             .remove("session_token") // Đảm bảo xóa token để tránh auto-login
                             .apply();
 
-                    Intent intent =
-                            new Intent(requireContext(), LoginActivity.class);
                     // QUAY VỀ LOGIN
                     Intent intent = new Intent(requireContext(), LoginActivity.class);
                     intent.setFlags(
