@@ -25,6 +25,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,7 +56,7 @@
                 android:layout_height="250dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_launcher_background"
-                android:background="#D7CCC8"/>
+                android:background="#D7CCC8" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -186,16 +187,19 @@
                         android:layout_marginTop="12dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="90dp"
                             android:layout_height="wrap_content"
                             android:text="Đồ uống"
-                            android:textColor="#333333"/>
+                            android:textColor="#333333" />
+
                         <com.google.android.material.chip.ChipGroup
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:singleSelection="true"
                             app:selectionRequired="true">
+
                             <com.google.android.material.chip.Chip
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -203,14 +207,15 @@
                                 android:checked="true"
                                 android:textColor="#FFFFFF"
                                 app:chipBackgroundColor="#6D4C41"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                                style="@style/Widget.MaterialComponents.Chip.Choice" />
+
                             <com.google.android.material.chip.Chip
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Nóng"
                                 android:textColor="#333333"
                                 app:chipBackgroundColor="#F5F5F5"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                                style="@style/Widget.MaterialComponents.Chip.Choice" />
                         </com.google.android.material.chip.ChipGroup>
                     </LinearLayout>
 
@@ -219,16 +224,19 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="90dp"
                             android:layout_height="wrap_content"
                             android:text="Kích thước"
-                            android:textColor="#333333"/>
+                            android:textColor="#333333" />
+
                         <com.google.android.material.chip.ChipGroup
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:singleSelection="true"
                             app:selectionRequired="true">
+
                             <com.google.android.material.chip.Chip
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -236,21 +244,23 @@
                                 android:checked="true"
                                 android:textColor="#FFFFFF"
                                 app:chipBackgroundColor="#6D4C41"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                                style="@style/Widget.MaterialComponents.Chip.Choice" />
+
                             <com.google.android.material.chip.Chip
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Vừa"
                                 android:textColor="#333333"
                                 app:chipBackgroundColor="#F5F5F5"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                                style="@style/Widget.MaterialComponents.Chip.Choice" />
+
                             <com.google.android.material.chip.Chip
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Lớn"
                                 android:textColor="#333333"
                                 app:chipBackgroundColor="#F5F5F5"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                                style="@style/Widget.MaterialComponents.Chip.Choice" />
                         </com.google.android.material.chip.ChipGroup>
                     </LinearLayout>
 
@@ -259,16 +269,19 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="90dp"
                             android:layout_height="wrap_content"
                             android:text="Đường"
-                            android:textColor="#333333"/>
+                            android:textColor="#333333" />
+
                         <com.google.android.material.chip.ChipGroup
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:singleSelection="true"
                             app:selectionRequired="true">
+
                             <com.google.android.material.chip.Chip
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -276,14 +289,15 @@
                                 android:checked="true"
                                 android:textColor="#FFFFFF"
                                 app:chipBackgroundColor="#6D4C41"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                                style="@style/Widget.MaterialComponents.Chip.Choice" />
+
                             <com.google.android.material.chip.Chip
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Giảm bớt"
                                 android:textColor="#333333"
                                 app:chipBackgroundColor="#F5F5F5"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                                style="@style/Widget.MaterialComponents.Chip.Choice" />
                         </com.google.android.material.chip.ChipGroup>
                     </LinearLayout>
 
@@ -292,16 +306,19 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="90dp"
                             android:layout_height="wrap_content"
                             android:text="Đá"
-                            android:textColor="#333333"/>
+                            android:textColor="#333333" />
+
                         <com.google.android.material.chip.ChipGroup
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:singleSelection="true"
                             app:selectionRequired="true">
+
                             <com.google.android.material.chip.Chip
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -309,14 +326,15 @@
                                 android:checked="true"
                                 android:textColor="#FFFFFF"
                                 app:chipBackgroundColor="#6D4C41"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                                style="@style/Widget.MaterialComponents.Chip.Choice" />
+
                             <com.google.android.material.chip.Chip
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Giảm bớt"
                                 android:textColor="#333333"
                                 app:chipBackgroundColor="#F5F5F5"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                                style="@style/Widget.MaterialComponents.Chip.Choice" />
                         </com.google.android.material.chip.ChipGroup>
                     </LinearLayout>
 
@@ -346,6 +364,7 @@
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
+                    <!-- Sữa đặc -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -367,16 +386,21 @@
                             android:text="+5.000vnd"
                             android:textColor="#6D4C41"
                             android:textStyle="bold"
-                            android:layout_marginEnd="12dp"/>
+                            android:layout_marginEnd="12dp" />
 
                         <CheckBox
+                            android:id="@+id/cbSuaDac"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:buttonTint="#6D4C41" />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F5F5F5"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F5F5F5" />
 
+                    <!-- Trân châu -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -398,16 +422,21 @@
                             android:text="+6.000vnd"
                             android:textColor="#6D4C41"
                             android:textStyle="bold"
-                            android:layout_marginEnd="12dp"/>
+                            android:layout_marginEnd="12dp" />
 
                         <CheckBox
+                            android:id="@+id/cbTranChau"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:buttonTint="#6D4C41" />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F5F5F5"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F5F5F5" />
 
+                    <!-- Dừa khô -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -429,16 +458,21 @@
                             android:text="+3.000vnd"
                             android:textColor="#6D4C41"
                             android:textStyle="bold"
-                            android:layout_marginEnd="12dp"/>
+                            android:layout_marginEnd="12dp" />
 
                         <CheckBox
+                            android:id="@+id/cbDuaKho"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:buttonTint="#6D4C41" />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F5F5F5"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F5F5F5" />
 
+                    <!-- Thạch dừa -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -460,16 +494,21 @@
                             android:text="+7.000vnd"
                             android:textColor="#6D4C41"
                             android:textStyle="bold"
-                            android:layout_marginEnd="12dp"/>
+                            android:layout_marginEnd="12dp" />
 
                         <CheckBox
+                            android:id="@+id/cbThachDua"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:buttonTint="#6D4C41" />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F5F5F5"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F5F5F5" />
 
+                    <!-- Đường đen -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -491,9 +530,10 @@
                             android:text="+10.000vnd"
                             android:textColor="#6D4C41"
                             android:textStyle="bold"
-                            android:layout_marginEnd="12dp"/>
+                            android:layout_marginEnd="12dp" />
 
                         <CheckBox
+                            android:id="@+id/cbDuongDen"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:buttonTint="#6D4C41" />
@@ -516,7 +556,7 @@
                     android:textColor="#000000"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_marginBottom="8dp" />
 
                 <EditText
                     android:id="@+id/edtNote"
@@ -537,6 +577,7 @@
         android:id="@+id/layoutBottomBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         android:background="#FFFFFF"
         android:elevation="16dp"
         android:padding="16dp"

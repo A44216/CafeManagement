@@ -43,6 +43,15 @@
             android:name=".activities.home.UserHomeActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.home.product.ProductDetailActivity"
+            android:exported="false" />
+        <activity android:name=".activities.home.order.CartActivity"
+            android:exported="false" />
+        <activity android:name=".activities.home.order.OrderSuccessActivity"
+            android:exported="false" />
+        <activity android:name=".activities.home.order.TrackOrderActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.home.AdminHomeActivity"
             android:exported="false" />
         <activity

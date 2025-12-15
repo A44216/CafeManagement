@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -26,6 +27,7 @@ import com.sinhviencafemanagement.activities.FaceCaptureActivity;
 import com.sinhviencafemanagement.activities.home.topping.ToppingActivity;
 import com.sinhviencafemanagement.activities.login.LoginActivity;
 import com.sinhviencafemanagement.adapter.admin.adapter.SettingAdminAdapter;
+import com.sinhviencafemanagement.dao.SessionDAO;
 import com.sinhviencafemanagement.dao.UserDAO;
 import com.sinhviencafemanagement.models.User;
 
@@ -143,6 +145,26 @@ public class SettingAdminFragment extends Fragment {
                 .setMessage("Bạn có chắc muốn đăng xuất không?")
                 .setPositiveButton("Đăng xuất", (dialog, which) -> {
 
+                    SharedPreferences prefs =
+                            requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+
+                    String token = prefs.getString("session_token", null);
+                    int userId = prefs.getInt("user_id", -1);
+
+                    // XÓA SESSION TRONG DB
+                    SessionDAO sessionDAO = new SessionDAO(requireContext());
+
+                    if (token != null) {
+                        sessionDAO.deleteSession(token);
+                    }
+
+                    if (userId != -1) {
+                        sessionDAO.deleteSessionsByUserId(userId);
+                    }
+
+                    // XÓA SHAREDPREFERENCES
+                    prefs.edit()
+                            .remove("session_token")
                     // XÓA SESSION
                     requireContext()
                             .getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
@@ -153,6 +175,8 @@ public class SettingAdminFragment extends Fragment {
 
                     Intent intent =
                             new Intent(requireContext(), LoginActivity.class);
+                    // QUAY VỀ LOGIN
+                    Intent intent = new Intent(requireContext(), LoginActivity.class);
                     intent.setFlags(
                             Intent.FLAG_ACTIVITY_NEW_TASK
                                     | Intent.FLAG_ACTIVITY_CLEAR_TASK

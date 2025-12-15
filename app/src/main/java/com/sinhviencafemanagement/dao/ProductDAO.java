@@ -134,6 +134,34 @@ public class ProductDAO {
         return productList;
     }
 
+    public List<Product> getAvailableProductsByCategory(int categoryId) {
+        List<Product> productList = new ArrayList<>();
+
+        // Định nghĩa mệnh đề WHERE: Lấy theo category_id VÀ status = 'available'
+        String selection = CreateDatabase.COLUMN_PRODUCT_CATEGORY_ID + " = ? AND " +
+                CreateDatabase.COLUMN_PRODUCT_STATUS + " = ?";
+
+        String[] selectionArgs = {
+                String.valueOf(categoryId),
+                CreateDatabase.PRODUCT_STATUS_AVAILABLE
+        };
+
+        try (Cursor cursor = db.query(
+                CreateDatabase.TABLE_PRODUCTS,
+                null, // Lấy tất cả cột
+                selection,
+                selectionArgs,
+                null, null, null)) {
+
+            while (cursor.moveToNext()) {
+                productList.add(cursorToProduct(cursor));
+            }
+        } catch (Exception e) {
+            Log.e("ProductDAO", "Error getting available products by category: " + categoryId, e);
+        }
+        return productList;
+    }
+
     // Tìm sản phẩm theo tên
     public List<Product> searchProductsByName(String name) {
         List<Product> productList = new ArrayList<>();
@@ -147,6 +175,29 @@ public class ProductDAO {
             }
         } catch (Exception e) {
             Log.e("ProductDAO", "Error searching products by name", e);
+        }
+        return productList;
+    }
+
+    // Lấy tất cả sản phẩm có trạng thái 'available'
+    public List<Product> getAllAvailableProducts() {
+        List<Product> productList = new ArrayList<>();
+
+        String selection = CreateDatabase.COLUMN_PRODUCT_STATUS + " = ?";
+        String[] selectionArgs = {CreateDatabase.PRODUCT_STATUS_AVAILABLE};
+
+        try (Cursor cursor = db.query(
+                CreateDatabase.TABLE_PRODUCTS,
+                null,
+                selection,
+                selectionArgs,
+                null, null, null)) {
+
+            while (cursor.moveToNext()) {
+                productList.add(cursorToProduct(cursor));
+            }
+        } catch (Exception e) {
+            Log.e("ProductDAO", "Error getting all available products", e);
         }
         return productList;
     }

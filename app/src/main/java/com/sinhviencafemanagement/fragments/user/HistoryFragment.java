@@ -12,8 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sinhviencafemanagement.R; // Đảm bảo import đúng tệp R
+import com.google.android.material.tabs.TabLayout;
+import com.sinhviencafemanagement.R;
 
 public class HistoryFragment extends Fragment { // Kế thừa từ lớp Fragment
+
+    private TabLayout tabLayoutHistory;
+    private RecyclerView rcvOrderHistory;
 
     // Phương thức này được gọi để tạo và trả về giao diện cho Fragment.
     @Nullable
@@ -25,34 +30,37 @@ public class HistoryFragment extends Fragment { // Kế thừa từ lớp Fragme
         return view;
     }
 
-    // Phương thức này được gọi ngay sau khi onCreateView hoàn tất.
-    // Đây là nơi tốt nhất để thực hiện các thao tác trên giao diện.
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // --- Bắt đầu phần logic cho màn hình Lịch sử ---
+        tabLayoutHistory = view.findViewById(R.id.tabLayoutHistory);
+        rcvOrderHistory = view.findViewById(R.id.rcvOrderHistory);
 
+        rcvOrderHistory.setLayoutManager(new LinearLayoutManager(getContext()));
         // 1. Ánh xạ RecyclerView từ layout
         // Giả sử bạn có một RecyclerView với id là 'rcvOrderHistory' trong fragment_history.xml
         RecyclerView rcvOrderHistory = view.findViewById(R.id.rcvOrderHistory);
 
+        tabLayoutHistory.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
+            }
         // 2. Thiết lập LayoutManager
         // LayoutManager quyết định cách các item được sắp xếp (dọc, ngang, lưới).
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rcvOrderHistory.setLayoutManager(linearLayoutManager);
 
-        // 3. Tạo Adapter
-        // Adapter là nơi bạn cung cấp dữ liệu (ví dụ: danh sách các đơn hàng)
-        // và liên kết dữ liệu đó với layout của từng item (item_history_order.xml).
-        // (Bạn sẽ cần tạo một lớp HistoryAdapter riêng)
-        // HistoryAdapter historyAdapter = new HistoryAdapter(danh_sach_don_hang);
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                // Không cần làm gì nhiều khi tab bị bỏ chọn
+            }
 
-        // 4. Set Adapter cho RecyclerView
-        // rcvOrderHistory.setAdapter(historyAdapter);
-
-        // Tại đây, bạn sẽ viết code để:
-        // - Lấy danh sách các đơn hàng đã đặt của người dùng từ cơ sở dữ liệu.
-        // - Khởi tạo adapter với danh sách đó và gán cho RecyclerView.
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                rcvOrderHistory.scrollToPosition(0);
+            }
+        });
     }
 }
