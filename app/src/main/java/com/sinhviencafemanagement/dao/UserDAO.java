@@ -259,31 +259,29 @@ public class UserDAO {
             return false;
         }
     }
-
-    // Hàm kiểm tra mật khẩu của một user cụ thể bằng userId
     public boolean checkPassword(int userId, String rawPassword) {
         rawPassword = trimOrEmpty(rawPassword);
         if (rawPassword.isEmpty()) return false;
 
         try {
-            // 1. Lấy thông tin user từ DB bằng userId
+            // 1. Get the user object from the database using the ID
             User user = getUserById(userId);
             if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
-                // User không tồn tại hoặc không có mật khẩu
+                // User does not exist or has no password set
                 return false;
             }
 
-            // 2. Lấy mật khẩu đã mã hóa từ đối tượng user
+            // 2. Get the hashed password from the user object
             String hashedPasswordFromDB = user.getPassword();
 
-            // 3. Dùng lại hàm checkPassword cũ để so sánh
+            // 3. Use the original checkPassword method to compare
             return checkPassword(rawPassword, hashedPasswordFromDB);
+
         } catch (Exception e) {
-            Log.e("UserDAO", "Lỗi khi kiểm tra mật khẩu cho userId=" + userId, e);
+            Log.e("UserDAO", "Error checking password for userId=" + userId, e);
             return false;
         }
     }
-
 
     // Đặt lại mật khẩu
     public boolean resetPassword(int userId, String newPassword) {

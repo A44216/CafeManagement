@@ -1,60 +1,80 @@
 package com.sinhviencafemanagement.activities.cart;
 
+// ... các import ...
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.sinhviencafemanagement.R;
-import com.sinhviencafemanagement.adapter.user.CartAdapter;
+import com.sinhviencafemanagement.activities.home.order.OrderSuccessActivity;
+import com.sinhviencafemanagement.adapter.customer.CartAdapter;
+//import com.sinhviencafemanagement.dao.CartManager; // THÊM IMPORT
 import com.sinhviencafemanagement.models.CartItem;
+import com.sinhviencafemanagement.utils.CartManager;
 
-import java.util.ArrayList;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
-public class CartActivity extends AppCompatActivity {
-
-    private RecyclerView rcvCartItems;
+public class CartActivity extends AppCompatActivity implements  CartAdapter.OnCartChangeListener {private RecyclerView rcvCartItems;
     private CartAdapter cartAdapter;
+    private Button btnOrder;
     private List<CartItem> cartItemList;
-
+    private TextView tvTotalPrice;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
-        // Ánh xạ RecyclerView
         rcvCartItems = findViewById(R.id.rcvCartItems);
+        tvTotalPrice = findViewById(R.id.tvTotalPrice); // Ánh xạ TextView tổng tiền
 
-        // Khởi tạo danh sách và adapter
-        cartItemList = new ArrayList<>();
-        cartAdapter = new CartAdapter(this, cartItemList);
+        // Lấy danh sách sản phẩm từ CartManager
+        cartItemList = CartManager.getInstance().getCartItems();
 
-        // Cài đặt LayoutManager và Adapter cho RecyclerView
+        ImageView imgBack = findViewById(R.id.imgBack);
+        imgBack.setOnClickListener(v -> finish());
+
+        btnOrder = findViewById(R.id.btnOrder);
+        btnOrder.setOnClickListener(v -> {
+            Intent intent = new Intent(CartActivity.this, OrderSuccessActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
+
+        // 1. Lấy danh sách sản phẩm từ CartManager
+        cartItemList = CartManager.getInstance().getCartItems();
+
+        // 2. Khởi tạo Adapter với dữ liệu đã có
+        cartAdapter = new CartAdapter(this, cartItemList, this);
+
+        // Cấu hình RecyclerView
         rcvCartItems.setLayoutManager(new LinearLayoutManager(this));
         rcvCartItems.setAdapter(cartAdapter);
-
-        // Tắt tính năng cuộn của RecyclerView để cho phép NestedScrollView cuộn
         rcvCartItems.setNestedScrollingEnabled(false);
 
-        // Tải dữ liệu giỏ hàng (ví dụ dữ liệu mẫu)
-        loadCartData();
+        // === BƯỚC 3.3: TÍNH TỔNG TIỀN LẦN ĐẦU ===
+        updateTotalPrice();
+    }
+    private void updateTotalPrice() {
+        double total = 0;
+        for (CartItem item : cartItemList) {
+            total += item.getPrice() * item.getQuantity();
+        }
+        NumberFormat format = NumberFormat.getInstance(new Locale("vi", "VN"));
+        tvTotalPrice.setText(format.format(total) + "đ");
     }
 
-    private void loadCartData() {
-        // Đây là nơi bạn sẽ lấy dữ liệu từ SQLite
-        // Hiện tại, chúng ta sẽ dùng dữ liệu mẫu để kiểm tra
-
-        // Xóa danh sách cũ để tránh thêm trùng lặp nếu gọi lại hàm này
-        cartItemList.clear();
-
-        // BẰNG CÁC DÒNG MỚI NÀY (truyền vào tên ảnh dạng String):
-        cartItemList.add(new CartItem(1, "Cà Phê Sữa Nóng", "Size: M, Ít đường", 59000, 1, "cafe_sua_nong"));
-        cartItemList.add(new CartItem(2, "Trà Sữa Trân Châu", "Size: L, 70% đá", 65000, 2, "tra_sua"));
-        cartItemList.add(new CartItem(3, "Bạc Xỉu", "Size: M, Nóng", 55000, 1, "bac_xiu"));
-
-        // Thông báo cho adapter rằng dữ liệu đã thay đổi để nó cập nhật giao diện
-        cartAdapter.notifyDataSetChanged();
+    @Override
+    public void onCartChanged() {
+        // Khi Adapter gọi "sứ giả", phương thức này sẽ được thực thi
+        updateTotalPrice(); // Tính toán và cập nhật lại tổng tiền
     }
 }

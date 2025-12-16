@@ -1,4 +1,4 @@
-package com.sinhviencafemanagement.adapter.user;
+package com.sinhviencafemanagement.adapter.customer;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -23,10 +23,16 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     private final List<CartItem> cartItems;
     private final Context context;
 
-    // Constructor
-    public CartAdapter(Context context, List<CartItem> cartItems) {
+    public interface OnCartChangeListener {
+        void onCartChanged();
+    }
+    private OnCartChangeListener cartChangeListener; // Biến để lưu "sứ giả"
+
+    //Constructor
+    public CartAdapter(Context context, List<CartItem> cartItems, OnCartChangeListener listener) {
         this.context = context;
         this.cartItems = cartItems;
+        this.cartChangeListener = listener; // Lưu lại "sứ giả"
     }
 
     @NonNull
@@ -65,9 +71,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             int quantity = currentItem.getQuantity();
             quantity++;
             currentItem.setQuantity(quantity);
-            // Cập nhật lại giao diện của item này
             notifyItemChanged(holder.getAdapterPosition());
-            // TODO: Báo cho Activity biết để cập nhật tổng tiền
+            if (cartChangeListener != null) {
+                cartChangeListener.onCartChanged(); // Báo cho Activity
+            }
         });
 
         holder.btnMinus.setOnClickListener(v -> {
@@ -75,22 +82,21 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             if (quantity > 1) {
                 quantity--;
                 currentItem.setQuantity(quantity);
-                // Cập nhật lại giao diện của item này
                 notifyItemChanged(holder.getAdapterPosition());
-                // TODO: Báo cho Activity biết để cập nhật tổng tiền
             }
-            // Nếu muốn xóa khi số lượng là 1, hãy gọi logic xóa ở đây
+            if (cartChangeListener != null) {
+                cartChangeListener.onCartChanged(); // Báo cho Activity
+            }
         });
 
         holder.btnDelete.setOnClickListener(v -> {
             int currentPosition = holder.getAdapterPosition();
-            // Xóa item khỏi danh sách
             cartItems.remove(currentPosition);
-            // Thông báo cho RecyclerView rằng một item đã bị xóa
             notifyItemRemoved(currentPosition);
-            // Thông báo rằng phạm vi các item đã thay đổi để cập nhật lại vị trí
             notifyItemRangeChanged(currentPosition, cartItems.size());
-            // TODO: Báo cho Activity biết để cập nhật tổng tiền
+            if (cartChangeListener != null) {
+                cartChangeListener.onCartChanged(); // Báo cho Activity
+            }
         });
 
         holder.btnEdit.setOnClickListener(v -> {

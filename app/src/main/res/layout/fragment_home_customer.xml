@@ -71,6 +71,37 @@
                     android:background="#D7CCC8"/>
             </androidx.cardview.widget.CardView>
 
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                app:tabIndicatorColor="#6D4C41"
+                app:tabSelectedTextColor="#6D4C41"
+                app:tabTextColor="#757575"
+                app:tabMode="fixed">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CÀ PHÊ" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TRÀ SỮA" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SINH TỐ" />
+
+            </com.google.android.material.tabs.TabLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#EEEEEE" />
+
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -133,95 +164,12 @@
                 </com.google.android.material.chip.ChipGroup>
             </HorizontalScrollView>
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabLayout"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                app:tabIndicatorColor="#6D4C41"
-                app:tabSelectedTextColor="#6D4C41"
-                app:tabTextColor="#757575"
-                app:tabMode="fixed">
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="CÀ PHÊ" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TRÀ SỮA" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="SINH TỐ" />
-
-            </com.google.android.material.tabs.TabLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#EEEEEE" />
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:paddingVertical="12dp"
-                android:paddingHorizontal="16dp">
-
-                <com.google.android.material.chip.ChipGroup
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:singleLine="true"
-                    app:chipSpacingHorizontal="8dp">
-
-                    <com.google.android.material.chip.Chip
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tất cả"
-                        android:textColor="@android:color/white"
-                        app:chipBackgroundColor="#6D4C41"
-                        app:chipCornerRadius="20dp"
-                        app:chipStrokeWidth="0dp"
-                        style="@style/Widget.MaterialComponents.Chip.Choice" />
-
-                    <com.google.android.material.chip.Chip
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Xếp hạng"
-                        app:chipBackgroundColor="#F5F5F5"
-                        app:chipCornerRadius="20dp"
-                        app:chipStrokeWidth="0dp"
-                        style="@style/Widget.MaterialComponents.Chip.Action" />
-
-                    <com.google.android.material.chip.Chip
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Giá"
-                        app:chipBackgroundColor="#F5F5F5"
-                        app:chipCornerRadius="20dp"
-                        app:chipStrokeWidth="0dp"
-                        style="@style/Widget.MaterialComponents.Chip.Action" />
-
-                    <com.google.android.material.chip.Chip
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Khuyến mãi"
-                        app:chipBackgroundColor="#F5F5F5"
-                        app:chipCornerRadius="20dp"
-                        app:chipStrokeWidth="0dp"
-                        style="@style/Widget.MaterialComponents.Chip.Action" />
-                </com.google.android.material.chip.ChipGroup>
-            </HorizontalScrollView>
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcvProduct"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:nestedScrollingEnabled="false"
-                tools:itemCount="4"
+                tools:itemCount="5"
                 tools:listitem="@layout/item_product_customer" />
 
         </LinearLayout>

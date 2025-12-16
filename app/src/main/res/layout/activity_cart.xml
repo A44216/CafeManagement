@@ -349,9 +349,10 @@
                 android:textColor="#757575" />
 
             <TextView
+                android:id="@+id/tvTotalPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="234.000vnd"
+                android:text="0vnd"
                 android:textColor="#6D4C41"
                 android:textSize="18sp"
                 android:textStyle="bold" />

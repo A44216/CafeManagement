@@ -13,6 +13,7 @@ public class Product implements Serializable, Clonable<Product>{
     private String status;           // status (mặc định "available")
     private int imageResId;          // lưu id ảnh có sẵn (trong drawable)
     private String imagePath;       // đường dẫn ảnh admin thêm runtime
+    private String imageName;
     private Integer categoryId;      // category_id (có thể null)
     private String description;      // description (có thể null)
 
@@ -126,5 +127,10 @@ public class Product implements Serializable, Clonable<Product>{
                 this.description
         );
     }
-
+    public String getImageForCart() {
+        if (imagePath != null && !imagePath.isEmpty()) {
+            return imagePath;
+        }
+        return "cat_coffee";
+    }
 }

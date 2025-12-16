@@ -34,19 +34,18 @@ public class UserHomeActivity extends AppCompatActivity {
             Fragment selectedFragment = null;
             int itemId = item.getItemId();
 
-            if (itemId == R.id.nav_home) { // Thay ID cho đúng
+            if (itemId == R.id.nav_home) {
                 selectedFragment = new HomeFragment();
-            } else if (itemId == R.id.nav_order) { // Thay ID cho đúng
+            } else if (itemId == R.id.nav_order) {
                 selectedFragment = new HistoryFragment();
-            } else if (itemId == R.id.nav_account) { // Thay ID cho đúng
+            } else if (itemId == R.id.nav_account) {
                 selectedFragment = new AccountFragment();
             }
 
             if (selectedFragment != null) {
                 loadFragment(selectedFragment);
-                return true; // Trả về true để đánh dấu mục đã được chọn
+                return true;
             }
-
             return false;
         });
     }

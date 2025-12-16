@@ -12,8 +12,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.sinhviencafemanagement.R;
-import com.sinhviencafemanagement.activities.home.order.CartActivity;
+import com.sinhviencafemanagement.activities.cart.CartActivity;
+import com.sinhviencafemanagement.models.CartItem;
 import com.sinhviencafemanagement.models.Product;
+import com.sinhviencafemanagement.utils.CartManager;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -127,18 +129,73 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         // Thêm vào giỏ hàng
         btnAddCart.setOnClickListener(v -> {
+            // Kiểm tra null cho product để đảm bảo an toàn
+            if (product == null) {
+                Toast.makeText(this, "Lỗi: Không tìm thấy thông tin sản phẩm", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 1. Lấy thông tin cơ bản từ sản phẩm và các View
+            String name = product.getProductName();
+            double basePrice = product.getPrice();
             String note = edtNote.getText().toString().trim();
 
-            // Tạm thời chỉ demo
-            Toast.makeText(this,
-                    "Đã thêm vào giỏ hàng\n" +
-                            "SP: " + product.getProductName() +
-                            "\nSL: " + quantity +
-                            "\nTổng: " + tvTotalPrice.getText(),
-                    Toast.LENGTH_SHORT).show();
+            // 2. Xây dựng mô tả và tính lại giá topping ngay tại thời điểm click
+            StringBuilder descriptionBuilder = new StringBuilder();
+            int toppingPrice = 0;
 
-            startActivity(new Intent(this, CartActivity.class));
+            if (cbSuaDac.isChecked()) {
+                descriptionBuilder.append("Sữa đặc, ");
+                toppingPrice += PRICE_SUA_DAC;
+            }
+            if (cbTranChau.isChecked()) {
+                descriptionBuilder.append("Trân châu, ");
+                toppingPrice += PRICE_TRAN_CHAU;
+            }
+            if (cbDuaKho.isChecked()) {
+                descriptionBuilder.append("Dừa khô, ");
+                toppingPrice += PRICE_DUA_KHO;
+            }
+            if (cbThachDua.isChecked()) {
+                descriptionBuilder.append("Thạch dừa, ");
+                toppingPrice += PRICE_THACH_DUA;
+            }
+            if (cbDuongDen.isChecked()) {
+                descriptionBuilder.append("Đường đen, ");
+                toppingPrice += PRICE_DUONG_DEN;
+            }
+            // Thêm ghi chú của người dùng vào mô tả
+            if (!note.isEmpty()) {
+                descriptionBuilder.append("Ghi chú: ").append(note);
+            }
+
+            String description = descriptionBuilder.length() > 0
+                    ? descriptionBuilder.toString()
+                    : "Không có tùy chọn";
+            // Xóa dấu phẩy và khoảng trắng thừa ở cuối (nếu có)
+            if (description.endsWith(", ")) {
+                description = description.substring(0, description.length() - 2);
+            }
+
+            // 3. Tạo đối tượng CartItem
+            double finalPricePerItem = basePrice + toppingPrice;
+            int itemId = (product.getProductId() + description).hashCode();
+
+            // Giả sử bạn đã thêm phương thức getImageForCart() vào Product.java
+            // String imageIdentifier = product.getImageForCart();
+            // Nếu chưa, tạm thời dùng một ảnh mẫu:
+            String imageIdentifier = "cat_coffee"; // Tạm thời
+
+            CartItem newItem = new CartItem(itemId, name, description, finalPricePerItem, quantity, imageIdentifier);
+
+            // 4. Thêm sản phẩm vào CartManager
+            CartManager.getInstance().addItem(newItem);
+
+            // 5. Hiển thị thông báo và quay lại màn hình trước
+            Toast.makeText(this, "Đã thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
+            finish(); // Quay về màn hình Home
         });
+
     }
 
     private void updateTotalPrice() {
