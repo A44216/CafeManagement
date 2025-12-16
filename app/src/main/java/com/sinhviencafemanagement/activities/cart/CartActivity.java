@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +45,12 @@ public class CartActivity extends AppCompatActivity implements  CartAdapter.OnCa
 
         btnOrder = findViewById(R.id.btnOrder);
         btnOrder.setOnClickListener(v -> {
+            if (cartItemList.isEmpty()) {
+                Toast toast = Toast.makeText(this, "Giỏ hàng trống", Toast.LENGTH_SHORT);
+                toast.show();
+                return;
+            }
+            CartManager.getInstance().clearCart();
             Intent intent = new Intent(CartActivity.this, OrderSuccessActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

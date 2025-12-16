@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.sinhviencafemanagement.R;
+import com.sinhviencafemanagement.activities.home.UserHomeActivity;
 
 public class OrderSuccessActivity extends AppCompatActivity {
 
@@ -20,7 +21,10 @@ public class OrderSuccessActivity extends AppCompatActivity {
 
         imgBack = findViewById(R.id.imgBack);
         btnTrackOrder = findViewById(R.id.btnTrackOrder);
-        imgBack.setOnClickListener(v -> finish());
+        imgBack.setOnClickListener(v -> {
+            Intent intent = new Intent(OrderSuccessActivity.this, UserHomeActivity.class);
+            startActivity(intent);
+        });
 
         btnTrackOrder.setOnClickListener(v -> {
             Intent intent = new Intent(OrderSuccessActivity.this, TrackOrderActivity.class);
