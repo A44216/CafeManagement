@@ -11,7 +11,7 @@ import com.sinhviencafemanagement.dao.UserDAO;
 // Lớp CreateDatabase dùng để tạo và quản lý cơ sở dữ liệu SQLite cho ứng dụng quản lý quán cafe
 public class CreateDatabase extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 2; // Tăng version lên 2
+    private static final int DATABASE_VERSION = 3; // Tăng version lên 2
 
     // Bảng người dùng
     public static final String TABLE_USERS = "users";  // Người dùng/khách hàng hoặc nhân viên phụ trách
@@ -53,14 +53,6 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public static final String TABLE_CATEGORIES = "categories"; // Bảng loại món
     public static final String COLUMN_CATEGORY_ID = "category_id"; // Mã loại
     public static final String COLUMN_CATEGORY_NAME = "category_name"; // Tên loại
-    // Bảng bàn
-    public static final String TABLE_TABLES = "tables"; // Bảng bàn
-    public static final String COLUMN_TABLE_ID = "table_id"; // Mã bàn
-    public static final String COLUMN_TABLE_NAME = "table_name"; // Tên bàn
-    public static final String COLUMN_TABLE_STATUS = "status"; // Tình trạng bàn
-    // Trạng thái bàn
-    public static final String TABLE_STATUS_AVAILABLE = "available";
-    public static final String TABLE_STATUS_OCCUPIED = "occupied";
 
     // Bảng đơn đặt
     public static final String TABLE_ORDERS = "orders"; // Bảng đơn đặt
@@ -69,7 +61,6 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_ORDER_DATE = "order_date"; // Ngày đặt
     public static final String COLUMN_ORDER_STATUS = "status"; // Tình trạng đơn
     public static final String COLUMN_ORDER_TOTAL = "total"; // Tổng tiền
-    public static final String COLUMN_ORDER_TABLE_ID = "table_id"; // Mã bàn
     // Trạng thái đơn hàng
     public static final String ORDER_STATUS_PENDING = "pending";
     public static final String ORDER_STATUS_COMPLETED = "completed";
@@ -108,12 +99,6 @@ public class CreateDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
-        // Bảng tables
-        String tblTables = "CREATE TABLE " + TABLE_TABLES + " (" +
-                COLUMN_TABLE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_TABLE_NAME + " TEXT NOT NULL UNIQUE, " +
-                COLUMN_TABLE_STATUS + " TEXT NOT NULL DEFAULT '" + TABLE_STATUS_AVAILABLE + "');";
 
         // Bảng roles
         String tblRoles = "CREATE TABLE " + TABLE_ROLES + " ("
@@ -160,9 +145,7 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 COLUMN_ORDER_DATE + " TEXT, " +
                 COLUMN_ORDER_STATUS + " TEXT NOT NULL DEFAULT '" + ORDER_STATUS_PENDING + "', " +
                 COLUMN_ORDER_TOTAL + " REAL DEFAULT 0, " +
-                COLUMN_ORDER_TABLE_ID + " INTEGER, " +
-                "FOREIGN KEY(" + COLUMN_ORDER_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "), " +
-                "FOREIGN KEY(" + COLUMN_ORDER_TABLE_ID + ") REFERENCES " + TABLE_TABLES + "(" + COLUMN_TABLE_ID + "));";
+                "FOREIGN KEY(" + COLUMN_ORDER_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "))";
 
         // Bảng order_details
         String tblOrderDetails = "CREATE TABLE " + TABLE_ORDER_DETAILS + " (" +
@@ -201,7 +184,6 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 "FOREIGN KEY(" + COLUMN_ODT_TOPPING_ID + ") REFERENCES " + TABLE_TOPPINGS + "(" + COLUMN_TOPPING_ID + "));";
 
         // Thực thi các câu lệnh tạo bảng
-        db.execSQL(tblTables);
         db.execSQL(tblRoles);
         db.execSQL(tblUsers);
         db.execSQL(tblCategories);
@@ -284,20 +266,14 @@ public class CreateDatabase extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO " + TABLE_TOPPINGS + " (" + COLUMN_TOPPING_NAME + ", " + COLUMN_TOPPING_PRICE + ") VALUES ('Thạch', 4000)");
         db.execSQL("INSERT INTO " + TABLE_TOPPINGS + " (" + COLUMN_TOPPING_NAME + ", " + COLUMN_TOPPING_PRICE + ") VALUES ('Kem cheese', 7000)");
 
-        // ================= Insert demo order =================
-
-        // ================= Insert demo tables =================
-        db.execSQL("INSERT INTO " + TABLE_TABLES + " (" + COLUMN_TABLE_NAME + ", " + COLUMN_TABLE_STATUS + ") VALUES ('Bàn 1', '" + TABLE_STATUS_AVAILABLE + "')");
-        db.execSQL("INSERT INTO " + TABLE_TABLES + " (" + COLUMN_TABLE_NAME + ", " + COLUMN_TABLE_STATUS + ") VALUES ('Bàn 2', '" + TABLE_STATUS_OCCUPIED + "')");
-
         // ================= Insert demo orders =================
         db.execSQL("INSERT INTO " + TABLE_ORDERS + " (" +
-                COLUMN_ORDER_USER_ID + ", " + COLUMN_ORDER_DATE + ", " + COLUMN_ORDER_STATUS + ", " + COLUMN_ORDER_TOTAL + ", " + COLUMN_ORDER_TABLE_ID + ") VALUES " +
-                "(2, '2025-12-11 10:00', '" + ORDER_STATUS_PENDING + "', 55000, 1)");
+                COLUMN_ORDER_USER_ID + ", " + COLUMN_ORDER_DATE + ", " + COLUMN_ORDER_STATUS + ", " + COLUMN_ORDER_TOTAL   + ") VALUES " +
+                "(2, '2025-12-11 10:00', '" + ORDER_STATUS_PENDING + "', 55000)");
 
         db.execSQL("INSERT INTO " + TABLE_ORDERS + " (" +
-                COLUMN_ORDER_USER_ID + ", " + COLUMN_ORDER_DATE + ", " + COLUMN_ORDER_STATUS + ", " + COLUMN_ORDER_TOTAL + ", " + COLUMN_ORDER_TABLE_ID + ") VALUES " +
-                "(2, '2025-12-11 11:00', '" + ORDER_STATUS_COMPLETED + "', 60000, 2)");
+                COLUMN_ORDER_USER_ID + ", " + COLUMN_ORDER_DATE + ", " + COLUMN_ORDER_STATUS + ", " + COLUMN_ORDER_TOTAL  + ") VALUES " +
+                "(2, '2025-12-11 11:00', '" + ORDER_STATUS_COMPLETED + "', 60000)");
 
         // ================= Insert demo order_details =================
         // Hóad dơn 1
@@ -330,14 +306,17 @@ public class CreateDatabase extends SQLiteOpenHelper {
     // Xử lý khi nâng cấp phiên bản database (thêm, sửa hoặc xóa bảng, cột)
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 2) {
-             // Thêm cột face_embedding vào bảng users
-             try {
-                db.execSQL("ALTER TABLE " + TABLE_USERS + " ADD COLUMN " + COLUMN_USER_FACE_EMBEDDING + " TEXT");
-             } catch (Exception e) {
-                Log.e("CreateDatabase", "Error upgrading to version 2", e);
-             }
-        }
+        Log.w("CreateDatabase", "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDER_DETAIL_TOPPINGS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TOPPINGS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SESSIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDER_DETAILS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROLES);
+        onCreate(db);
     }
 
     @Override

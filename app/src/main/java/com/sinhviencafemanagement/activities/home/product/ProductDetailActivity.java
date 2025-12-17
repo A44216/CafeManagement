@@ -6,18 +6,29 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.cart.CartActivity;
+import com.sinhviencafemanagement.adapter.customer.ToppingAdapter;
+import com.sinhviencafemanagement.dao.ToppingDAO;
 import com.sinhviencafemanagement.models.CartItem;
 import com.sinhviencafemanagement.models.Product;
+import com.sinhviencafemanagement.models.Topping;
 import com.sinhviencafemanagement.utils.CartManager;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class ProductDetailActivity extends AppCompatActivity {
@@ -35,13 +46,13 @@ public class ProductDetailActivity extends AppCompatActivity {
     // Data
     private Product product;
     private int quantity = 1;
+    // ...
+    private RecyclerView rcvToppings;
+    private ToppingAdapter toppingAdapter;
+    private List<Topping> toppingList = new ArrayList<>();
+    private ToppingDAO toppingDAO;
 
-    // Giá topping
-    private final int PRICE_SUA_DAC = 5000;
-    private final int PRICE_TRAN_CHAU = 6000;
-    private final int PRICE_DUA_KHO = 3000;
-    private final int PRICE_THACH_DUA = 7000;
-    private final int PRICE_DUONG_DEN = 10000;
+    private ChipGroup cgType, cgSize, cgSugar, cgIce;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +62,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         initView();
         getDataFromIntent();
         setEvent();
+        setupToppingRecyclerView();
         updateTotalPrice();
     }
 
@@ -60,6 +72,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvNameDetail = findViewById(R.id.tvNameDetail);
         tvPriceDetail = findViewById(R.id.tvPriceDetail);
         tvDescDetail = findViewById(R.id.tvDescDetail);
+        cgType = findViewById(R.id.rgType);
+        cgSugar = findViewById(R.id.rgSugar);
+        cgIce = findViewById(R.id.rgIce);
 
         tvQuantity = findViewById(R.id.tvQuantity);
         btnPlus = findViewById(R.id.btnPlus);
@@ -68,13 +83,17 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         btnAddCart = findViewById(R.id.btnAddCart);
         edtNote = findViewById(R.id.edtNote);
+        rcvToppings = findViewById(R.id.rcvToppings);
+    }
+    private void setupToppingRecyclerView() {
+        toppingDAO = new ToppingDAO(this);
+        toppingList.clear();
+        toppingList.addAll(toppingDAO.getAllToppings()); // Giả sử bạn có hàm này trong ToppingDAO
 
-        // Checkbox topping (BẮT BUỘC phải có id trong XML)
-        cbSuaDac = findViewById(R.id.cbSuaDac);
-        cbTranChau = findViewById(R.id.cbTranChau);
-        cbDuaKho = findViewById(R.id.cbDuaKho);
-        cbThachDua = findViewById(R.id.cbThachDua);
-        cbDuongDen = findViewById(R.id.cbDuongDen);
+        toppingAdapter = new ToppingAdapter(this, toppingList, this::updateTotalPrice); // Báo cho updateTotalPrice mỗi khi topping thay đổi
+
+        rcvToppings.setLayoutManager(new LinearLayoutManager(this));
+        rcvToppings.setAdapter(toppingAdapter);
     }
 
     private void getDataFromIntent() {
@@ -142,28 +161,36 @@ public class ProductDetailActivity extends AppCompatActivity {
 
             // 2. Xây dựng mô tả và tính lại giá topping ngay tại thời điểm click
             StringBuilder descriptionBuilder = new StringBuilder();
-            int toppingPrice = 0;
+            double optionsPrice = 0;
 
-            if (cbSuaDac.isChecked()) {
-                descriptionBuilder.append("Sữa đặc, ");
-                toppingPrice += PRICE_SUA_DAC;
+            Chip selectedTypeChip = findViewById(cgType.getCheckedChipId());
+            if (selectedTypeChip != null) {
+                // Nếu là "Nóng", không cần thêm "Đồ uống"
+                if (selectedTypeChip.getText().toString().equals("Nóng")) {
+                    descriptionBuilder.append(selectedTypeChip.getText()).append(", ");
+                } else {
+                    descriptionBuilder.append("Đồ uống ").append(selectedTypeChip.getText()).append(", ");
+                }
             }
-            if (cbTranChau.isChecked()) {
-                descriptionBuilder.append("Trân châu, ");
-                toppingPrice += PRICE_TRAN_CHAU;
+
+            // Lấy text từ Chip được chọn trong cgSugar
+            Chip selectedSugarChip = findViewById(cgSugar.getCheckedChipId());
+            if (selectedSugarChip != null) {
+                descriptionBuilder.append(selectedSugarChip.getText()).append(" Đường, ");
             }
-            if (cbDuaKho.isChecked()) {
-                descriptionBuilder.append("Dừa khô, ");
-                toppingPrice += PRICE_DUA_KHO;
+
+            // Lấy text từ Chip được chọn trong cgIce
+            Chip selectedIceChip = findViewById(cgIce.getCheckedChipId());
+            if (selectedIceChip != null) {
+                descriptionBuilder.append(selectedIceChip.getText()).append(" Đá, ");
             }
-            if (cbThachDua.isChecked()) {
-                descriptionBuilder.append("Thạch dừa, ");
-                toppingPrice += PRICE_THACH_DUA;
+            for (Topping topping : toppingList) {
+                if (topping.isChecked()) {
+                    descriptionBuilder.append(topping.getToppingName()).append(", ");
+                    optionsPrice += topping.getPrice();
+                }
             }
-            if (cbDuongDen.isChecked()) {
-                descriptionBuilder.append("Đường đen, ");
-                toppingPrice += PRICE_DUONG_DEN;
-            }
+
             // Thêm ghi chú của người dùng vào mô tả
             if (!note.isEmpty()) {
                 descriptionBuilder.append("Ghi chú: ").append(note);
@@ -178,15 +205,18 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
 
             // 3. Tạo đối tượng CartItem
-            double finalPricePerItem = basePrice + toppingPrice;
+            double finalPricePerItem = basePrice + optionsPrice;
+            int realProductId = product.getProductId();
             int itemId = (product.getProductId() + description).hashCode();
 
-            // Giả sử bạn đã thêm phương thức getImageForCart() vào Product.java
-            // String imageIdentifier = product.getImageForCart();
-            // Nếu chưa, tạm thời dùng một ảnh mẫu:
-            String imageIdentifier = "cat_coffee"; // Tạm thời
-
-            CartItem newItem = new CartItem(itemId, name, description, finalPricePerItem, quantity, imageIdentifier);
+            Object imageIdentifier = product.getImageForCart();
+            List<Topping> selectedToppings = new ArrayList<>();
+            for (Topping topping : toppingList) {
+                if (topping.isChecked()) {
+                    selectedToppings.add(topping);
+                }
+            }
+            CartItem newItem = new CartItem(itemId, realProductId, name, description, finalPricePerItem, quantity, imageIdentifier, selectedToppings);
 
             // 4. Thêm sản phẩm vào CartManager
             CartManager.getInstance().addItem(newItem);
@@ -198,16 +228,16 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     }
 
+    // Sửa lại updateTotalPrice()
     private void updateTotalPrice() {
         if (product == null) return;
 
-        int toppingPrice = 0;
-
-        if (cbSuaDac.isChecked()) toppingPrice += PRICE_SUA_DAC;
-        if (cbTranChau.isChecked()) toppingPrice += PRICE_TRAN_CHAU;
-        if (cbDuaKho.isChecked()) toppingPrice += PRICE_DUA_KHO;
-        if (cbThachDua.isChecked()) toppingPrice += PRICE_THACH_DUA;
-        if (cbDuongDen.isChecked()) toppingPrice += PRICE_DUONG_DEN;
+        double toppingPrice = 0;
+        for (Topping topping : toppingList) {
+            if (topping.isChecked()) {
+                toppingPrice += topping.getPrice();
+            }
+        }
 
         double total = (product.getPrice() + toppingPrice) * quantity;
         tvTotalPrice.setText(formatPrice(total));

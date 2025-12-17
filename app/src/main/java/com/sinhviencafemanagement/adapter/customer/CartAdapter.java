@@ -60,11 +60,24 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
         // Tải hình ảnh bằng Glide (thay thế bằng ảnh thật)
         // Ví dụ này giả sử imageUrl là tên file trong drawable
-        int imageResId = context.getResources().getIdentifier(currentItem.getImageUrl(), "drawable", context.getPackageName());
-        Glide.with(context)
-                .load(imageResId)
-                .placeholder(R.drawable.ic_launcher_background) // Ảnh hiển thị trong lúc chờ tải
-                .into(holder.ivProductImage);
+        Object imageIdentifier = currentItem.getImageIdentifier();
+
+        if (imageIdentifier instanceof String) {
+            // Nếu là String, đây là đường dẫn file hoặc tên file trong drawable
+            Glide.with(context)
+                    .load(imageIdentifier)
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .into(holder.ivProductImage);
+        } else if (imageIdentifier instanceof Integer) {
+            // Nếu là Integer, đây là Resource ID
+            Glide.with(context)
+                    .load((Integer) imageIdentifier) // Ép kiểu về Integer
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .into(holder.ivProductImage);
+        } else {
+            // Nếu không có ảnh, hiển thị một ảnh mặc định
+            holder.ivProductImage.setImageResource(R.drawable.cat_coffee);
+        }
 
         // --- Cài đặt sự kiện cho các nút ---
         holder.btnPlus.setOnClickListener(v -> {

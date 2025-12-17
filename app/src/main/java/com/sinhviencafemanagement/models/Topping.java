@@ -8,6 +8,7 @@ public class Topping implements Serializable, Clonable<Topping> {
     private int toppingId;       // topping_id
     private String toppingName;  // topping_name
     private double price;        // price
+    private boolean isChecked = false; // Thêm trường này để lưu trạng thái được chọn
 
     public Topping() { }
 
@@ -33,6 +34,13 @@ public class Topping implements Serializable, Clonable<Topping> {
 
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
 
     @NonNull
     @Override
