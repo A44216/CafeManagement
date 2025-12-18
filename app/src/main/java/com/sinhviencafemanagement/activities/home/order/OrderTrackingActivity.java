@@ -30,7 +30,7 @@ import java.util.List;
 
 public class OrderTrackingActivity extends AppCompatActivity {
 
-    private ImageView ivBack, ivProduct;
+    private ImageView ivBack;
     private RadioGroup rgOrderStatus;
     private RadioButton rbPending, rbDone;
 
@@ -77,7 +77,7 @@ public class OrderTrackingActivity extends AppCompatActivity {
     // Ánh xạ view
     public void initViews() {
         ivBack = findViewById(R.id.ivBack);
-        ivProduct = findViewById(R.id.ivProduct);
+        ImageView ivProduct = findViewById(R.id.ivProduct);
         rgOrderStatus = findViewById(R.id.rgOrderStatus);
         rbPending = findViewById(R.id.rbPending);
         rbDone = findViewById(R.id.rbDone);

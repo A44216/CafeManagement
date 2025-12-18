@@ -30,7 +30,7 @@ public class OrderDAO {
         values.put(CreateDatabase.COLUMN_ORDER_DATE, order.getOrderDate()); // ngày đặt
         values.put(CreateDatabase.COLUMN_ORDER_STATUS, order.getStatus()); // trạng thái
         values.put(CreateDatabase.COLUMN_ORDER_TOTAL, order.getTotalPrice()); // tổng tiền
-        values.put(CreateDatabase.COLUMN_ORDER_TABLE_ID, order.getTableId()); // bàn
+        values.put(CreateDatabase.COLUMN_ORDER_ADDRESS_ID, order.getAddressId()); // bàn
         return values;
     }
 
@@ -110,7 +110,7 @@ public class OrderDAO {
                         cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DATE)),
                         cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_STATUS)),
                         cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TOTAL)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TABLE_ID))
+                        cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ADDRESS_ID))
                 );
             }
         } catch (Exception e) {
@@ -137,7 +137,7 @@ public class OrderDAO {
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DATE)),
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_STATUS)),
                             cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TOTAL)),
-                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TABLE_ID))
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ADDRESS_ID))
                     );
                     list.add(order);
                 } while (cursor.moveToNext());
