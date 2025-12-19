@@ -1,10 +1,11 @@
 package com.sinhviencafemanagement.activities.cart;
 
-// ... các import ...
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,31 +40,42 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
     private CartAdapter cartAdapter;
     private Button btnOrder;
     private List<CartItem> cartItemList;
-    private TextView tvTotalPrice;
+
+    // UI components cho phần giá
+    private TextView tvTotalPrice, tvSubTotal, tvDiscountAmount, tvDiscountNote, tvItemCount;
+    private RadioGroup rgDiscount;
+
     private OrderDAO orderDAO;
     private OrderDetailToppingDAO orderDetailToppingDAO;
     private OrderDetailDAO orderDetailDAO;
     private SessionManager sessionManager;
+
+    private double discountPercent = 0.0; // Lưu % giảm giá đang chọn
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
-        // --- KHỞI TẠO ---
         initView();
         initData();
         setupRecyclerView();
         setEventListeners();
 
-        // Cập nhật giao diện lần đầu
-        updateTotalPrice();
+        updatePriceUI();
     }
 
     private void initView() {
         rcvCartItems = findViewById(R.id.rcvCartItems);
-        tvTotalPrice = findViewById(R.id.tvTotalPrice);
+        tvTotalPrice = findViewById(R.id.tvTotalPrice); // Tổng cuối cùng ở bottom bar
         btnOrder = findViewById(R.id.btnOrder);
+
+        // Ánh xạ các view mới ở phần thanh toán
+        tvSubTotal = findViewById(R.id.tvSubTotal); // Giá gốc (tạm tính)
+        tvDiscountAmount = findViewById(R.id.tvDiscountAmount); // Số tiền trừ ra
+        tvDiscountNote = findViewById(R.id.tvDiscountNote); // Chữ "Chưa áp dụng..." hoặc "%"
+        tvItemCount = findViewById(R.id.tvItemCount); // "(X đồ uống)"
+        rgDiscount = findViewById(R.id.rgDiscount);
     }
 
     private void initData() {
@@ -92,27 +104,66 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
             }
             placeOrder();
         });
+
+        // Xử lý khi chọn RadioButton giảm giá
+        rgDiscount.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rbDiscount10) {
+                discountPercent = 0.10;
+            } else if (checkedId == R.id.rbDiscount15) {
+                discountPercent = 0.15;
+            } else {
+                discountPercent = 0.0;
+            }
+            updatePriceUI();
+        });
+    }
+
+    private void updatePriceUI() {
+        double subTotal = 0;
+        int totalQuantity = 0;
+        for (CartItem item : cartItemList) {
+            subTotal += item.getPrice() * item.getQuantity();
+            totalQuantity += item.getQuantity();
+        }
+
+        double discountAmount = subTotal * discountPercent;
+        double finalTotal = subTotal - discountAmount;
+
+        NumberFormat format = NumberFormat.getInstance(new Locale("vi", "VN"));
+
+        // Cập nhật text hiển thị
+        tvItemCount.setText("(" + totalQuantity + " đồ uống)");
+        tvSubTotal.setText(format.format(subTotal) + "đ");
+        tvDiscountAmount.setText("-" + format.format(discountAmount) + "đ");
+        tvTotalPrice.setText(format.format(finalTotal) + "đ");
+
+        if (discountPercent > 0) {
+            tvDiscountNote.setText("Đã áp dụng giảm giá " + (int)(discountPercent * 100) + "%");
+        } else {
+            tvDiscountNote.setText("Chưa áp dụng mã khuyến mại");
+        }
     }
 
     private void placeOrder() {
         int userId = sessionManager.getUserId();
         if (userId == -1) {
-            Toast.makeText(this, "Lỗi xác thực người dùng. Vui lòng đăng nhập lại.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Lỗi xác thực", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Tạo đối tượng Order
+        double subTotal = 0;
+        for (CartItem item : cartItemList) subTotal += item.getPrice() * item.getQuantity();
+        double finalTotal = subTotal * (1 - discountPercent);
+
         Order order = new Order();
         order.setUserId(userId);
         order.setOrderDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
         order.setStatus(CreateDatabase.ORDER_STATUS_PENDING);
-        order.setTotalPrice(calculateTotalPrice());
+        order.setTotalPrice(finalTotal); // Lưu giá sau khi giảm vào database
 
-        // Thêm đơn hàng vào CSDL
         long orderId = orderDAO.addOrder(order);
 
         if (orderId != -1) {
-            // Thêm chi tiết đơn hàng
             for (CartItem item : cartItemList) {
                 OrderDetail detail = new OrderDetail();
                 detail.setOrderId((int) orderId);
@@ -120,50 +171,27 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
                 detail.setQuantity(item.getQuantity());
                 orderDetailDAO.addOrderDetail(detail);
 
-                // TODO: Xử lý lưu topping cho item này vào bảng order_detail_toppings
-                if (item.getSelectedToppings() != null && !item.getSelectedToppings().isEmpty()) {
-                    // Lặp qua danh sách các topping đã chọn của item
-                    for (Topping selectedTopping : item.getSelectedToppings()) {
-                        // Gọi DAO để thêm từng topping vào bảng order_detail_toppings
-                        OrderDetailTopping odt = new OrderDetailTopping(
-                                (int) orderId,
-                                item.getProductId(),
-                                selectedTopping.getToppingId(),
-                                1
-                        );
+                if (item.getSelectedToppings() != null) {
+                    for (Topping topping : item.getSelectedToppings()) {
+                        OrderDetailTopping odt = new OrderDetailTopping((int)orderId, item.getProductId(), topping.getToppingId(), 1);
                         orderDetailToppingDAO.addOrderDetailTopping(odt);
                     }
                 }
             }
-
-            // Dọn dẹp và chuyển màn hình
             CartManager.getInstance().clearCart();
-            Intent intent = new Intent(CartActivity.this, OrderSuccessActivity.class);
+//            startActivity(new Intent(this, OrderSuccessActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            // Chuyển sang OrderSuccessActivity và gửi kèm Order ID
+            Intent intent = new Intent(this, OrderSuccessActivity.class);
+            intent.putExtra("ORDER_ID", (int) orderId);
+            // Xóa các activity trước đó để người dùng không back lại giỏ hàng đã trống
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-        } else {
-            Toast.makeText(this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
+            finish();
         }
-    }
-
-    // --- Các phương thức còn lại không thay đổi ---
-
-    private double calculateTotalPrice() {
-        double total = 0;
-        for (CartItem item : cartItemList) {
-            total += item.getPrice() * item.getQuantity();
-        }
-        return total;
-    }
-
-    private void updateTotalPrice() {
-        double total = calculateTotalPrice();
-        NumberFormat format = NumberFormat.getInstance(new Locale("vi", "VN"));
-        tvTotalPrice.setText(format.format(total) + "đ");
     }
 
     @Override
     public void onCartChanged() {
-        updateTotalPrice();
+        updatePriceUI();
     }
 }

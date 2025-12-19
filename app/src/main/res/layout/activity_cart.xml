@@ -142,6 +142,7 @@
                     android:gravity="center_vertical"
                     android:layout_marginTop="4dp">
                     <TextView
+                        android:id="@+id/tvSelectedAddress"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -278,16 +279,18 @@
                             android:text="Giá"
                             android:textColor="#333333"/>
                         <TextView
+                            android:id="@+id/tvItemCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="(1 đồ uống)"
+                            android:text="(0 đồ uống)"
                             android:textColor="#757575"
                             android:textSize="12sp"/>
                     </LinearLayout>
                     <TextView
+                        android:id="@+id/tvSubTotal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="234.000vnd"
+                        android:text="0đ"
                         android:textColor="#333333"/>
                 </LinearLayout>
 
@@ -308,6 +311,7 @@
                             android:text="Khuyến mại"
                             android:textColor="#333333"/>
                         <TextView
+                            android:id="@+id/tvDiscountNote"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Chưa áp dụng mã khuyến mại"
@@ -315,11 +319,11 @@
                             android:textSize="12sp"/>
                     </LinearLayout>
                     <TextView
+                        android:id="@+id/tvDiscountAmount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="-0.000vnd"
-                        android:textColor="#333333"/>
-                </LinearLayout>
+                        android:text="-0đ"
+                        android:textColor="#E53935"/> </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

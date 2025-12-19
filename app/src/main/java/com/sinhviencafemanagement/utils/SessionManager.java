@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.sinhviencafemanagement.dao.SessionDAO;
+import com.sinhviencafemanagement.dao.UserDAO;
 import com.sinhviencafemanagement.models.Session;
+import com.sinhviencafemanagement.models.User;
 
 public class SessionManager {
 
@@ -65,6 +67,26 @@ public class SessionManager {
             return session.getUserId();
         }
         return -1; // hoặc một giá trị mặc định khác báo hiệu chưa đăng nhập
+    }
+
+    public String getUserFullName() {
+        int userId = getUserId();
+        if (userId != -1) {
+            UserDAO userDAO = new UserDAO(context);
+            User user = userDAO.getUserById(userId); // Bạn cần đảm bảo UserDAO có hàm này
+            if (user != null) return user.getFullName();
+        }
+        return "Khách hàng";
+    }
+
+    public String getUserPhone() {
+        int userId = getUserId();
+        if (userId != -1) {
+            UserDAO userDAO = new UserDAO(context);
+            User user = userDAO.getUserById(userId);
+            if (user != null) return user.getPhone();
+        }
+        return "Chưa cập nhật";
     }
 
     /**
