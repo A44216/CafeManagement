@@ -18,7 +18,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.home.AdminHomeActivity;
 import com.sinhviencafemanagement.activities.home.category.UpdateCategoryActivity;
-import com.sinhviencafemanagement.adapter.admin.adapter.CategoryAdminAdapter;
+import com.sinhviencafemanagement.adapters.admin.adapter.CategoryAdminAdapter;
 import com.sinhviencafemanagement.dao.CategoryDAO;
 import com.sinhviencafemanagement.models.Category;
 

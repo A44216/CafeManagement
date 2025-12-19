@@ -1,13 +1,10 @@
 package com.sinhviencafemanagement.activities.home.product;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,8 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.sinhviencafemanagement.R;
-import com.sinhviencafemanagement.activities.cart.CartActivity;
-import com.sinhviencafemanagement.adapter.customer.ToppingAdapter;
+import com.sinhviencafemanagement.adapters.customer.ToppingAdapter;
 import com.sinhviencafemanagement.dao.ToppingDAO;
 import com.sinhviencafemanagement.models.CartItem;
 import com.sinhviencafemanagement.models.Product;

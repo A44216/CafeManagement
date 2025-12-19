@@ -2,35 +2,34 @@ package com.sinhviencafemanagement.models;
 
 import androidx.annotation.NonNull;
 
-import java.util.List;
-
 public class Order implements Clonable<Order>{
     private int orderId;         // order_id
     private int userId;          // user_id (người phụ trách)
     private String orderDate;    // order_date
     private String status;       // status (mặc định "pending")
-    private double totalPrice;        // total (tổng tiền)
+    private double totalPrice;   // total (tổng tiền)
+    private int addressId;   // address_id (bắt buộc – delivery)
 
     public Order() {
 
     }
 
     // Constructor đầy đủ (dùng khi đọc từ DB)
-    public Order(int orderId, int userId, String orderDate, String status, double totalPrice) {
-
+    public Order(int orderId, int userId, String orderDate, String status, double totalPrice, int addressId) {
         this.orderId = orderId;
         this.userId = userId;
         this.orderDate = orderDate;
         this.status = status != null ? status : "pending";
         this.totalPrice = totalPrice;
+        this.addressId = addressId;
     }
 
-    // Constructor thêm mới (không cần orderId, SQLite tự sinh)
-    public Order(int userId, String orderDate, String status, double totalPrice) {
+    // Constructor tạo đơn mới – KHÔNG truyền orderId, orderDate
+    public Order(int userId, int addressId) {
         this.userId = userId;
-        this.orderDate = orderDate;
-        this.status = status != null ? status : "pending";
-        this.totalPrice = totalPrice;
+        this.addressId = addressId;
+        this.status = "pending";
+        this.totalPrice = 0;
     }
 
     // Getter & Setter
@@ -49,6 +48,8 @@ public class Order implements Clonable<Order>{
     public double getTotalPrice() { return totalPrice; }
     public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
 
+    public int getAddressId() { return addressId; }
+    public void setAddressId(int addressId) { this.addressId = addressId; }
 
     @NonNull
     @Override
@@ -58,7 +59,8 @@ public class Order implements Clonable<Order>{
                 ", userId=" + userId +
                 ", orderDate='" + orderDate + '\'' +
                 ", status='" + status + '\'' +
-                ", total=" + totalPrice +
+                ", totalPrice=" + totalPrice +
+                ", addressId=" + addressId +
                 '}';
     }
 
@@ -71,7 +73,8 @@ public class Order implements Clonable<Order>{
                 this.userId,
                 this.orderDate,
                 this.status,
-                this.totalPrice
+                this.totalPrice,
+                this.addressId
         );
 
     }

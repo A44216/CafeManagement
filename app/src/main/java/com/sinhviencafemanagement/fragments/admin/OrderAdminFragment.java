@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.sinhviencafemanagement.R;
-import com.sinhviencafemanagement.adapter.admin.adapter.OrderPagerAdapter;
+import com.sinhviencafemanagement.adapters.admin.adapter.OrderPagerAdapter;
 
 public class OrderAdminFragment extends Fragment {
 

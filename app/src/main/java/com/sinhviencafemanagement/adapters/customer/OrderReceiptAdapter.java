@@ -1,4 +1,4 @@
-package com.sinhviencafemanagement.adapter.customer;
+package com.sinhviencafemanagement.adapters.customer;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -93,29 +93,30 @@ public class OrderDAO {
 
     // Lấy đơn theo ID
     public Order getOrderById(int orderId) {
-        if (orderId <= 0) return null; //
+        if (orderId <= 0) return null;
 
-        try (Cursor cursor = db.query( //
-                CreateDatabase.TABLE_ORDERS, //
-                null, //
-                CreateDatabase.COLUMN_ORDER_ID + " = ?", //
-                new String[]{String.valueOf(orderId)}, //
-                null, null, null //
+        try (Cursor cursor = db.query(
+                CreateDatabase.TABLE_ORDERS,
+                null,
+                CreateDatabase.COLUMN_ORDER_ID + " = ?",
+                new String[]{String.valueOf(orderId)},
+                null, null, null
         )) {
-            if (cursor.moveToFirst()) { //
-                return new Order( //
-                        cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ID)), //
-                        cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_USER_ID)), //
-                        cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DATE)), //
-                        cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_STATUS)), //
-                        cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TOTAL)) //
+            if (cursor.moveToFirst()) {
+                return new Order(
+                        cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ID)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_USER_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DATE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_STATUS)),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TOTAL)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ADDRESS_ID))
                 );
             }
-        } catch (Exception e) { //
-            Log.e("OrderDAO", "Lỗi khi lấy đơn theo ID", e); //
+        } catch (Exception e) {
+            Log.e("OrderDAO", "Lỗi khi lấy đơn theo ID", e);
         }
-        Log.e("OrderDAO", "Không tìm thấy đơn: " + orderId); //
-        return null; //
+        Log.e("OrderDAO", "Không tìm thấy đơn: " + orderId);
+        return null;
     }
 
     // ================= MỚI: Lấy danh sách đơn hàng theo UserId và Status =================
@@ -134,12 +135,13 @@ public class OrderDAO {
         )) {
             if (cursor.moveToFirst()) { //
                 do {
-                    Order order = new Order( //
-                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ID)), //
-                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_USER_ID)), //
-                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DATE)), //
-                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_STATUS)), //
-                            cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TOTAL)) //
+                    Order order = new Order(
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ID)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_USER_ID)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DATE)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_STATUS)),
+                            cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TOTAL)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ADDRESS_ID))
                     );
                     list.add(order); //
                 } while (cursor.moveToNext()); //
@@ -152,29 +154,30 @@ public class OrderDAO {
 
     // Lấy tất cả đơn, sắp xếp theo ngày giảm dần
     public List<Order> getAllOrders() {
-        List<Order> list = new ArrayList<>(); //
-        try (Cursor cursor = db.query( //
-                CreateDatabase.TABLE_ORDERS, //
-                null, //
-                null, null, null, null, //
+        List<Order> list = new ArrayList<>();
+        try (Cursor cursor = db.query(
+                CreateDatabase.TABLE_ORDERS,
+                null,
+                null, null, null, null,
                 CreateDatabase.COLUMN_ORDER_DATE + " DESC" // sắp xếp mới nhất trước
         )) {
-            if (cursor.moveToFirst()) { //
+            if (cursor.moveToFirst()) {
                 do {
-                    Order order = new Order( //
-                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ID)), //
-                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_USER_ID)), //
-                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DATE)), //
-                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_STATUS)), //
-                            cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TOTAL)) //
+                    Order order = new Order(
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ID)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_USER_ID)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DATE)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_STATUS)),
+                            cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TOTAL)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ADDRESS_ID))
                     );
-                    list.add(order); //
-                } while (cursor.moveToNext()); //
+                    list.add(order);
+                } while (cursor.moveToNext());
             }
-        } catch (Exception e) { //
-            Log.e("OrderDAO", "Lỗi khi lấy danh sách đơn", e); //
+        } catch (Exception e) {
+            Log.e("OrderDAO", "Lỗi khi lấy danh sách đơn", e);
         }
-        return list; //
+        return list;
     }
 
     // Lấy trạng thái đơn hàng theo orderId

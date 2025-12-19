@@ -20,7 +20,7 @@ import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.home.product.ProductDetailActivity;
 import com.sinhviencafemanagement.dao.ProductDAO;
 import com.sinhviencafemanagement.models.Product;
-import com.sinhviencafemanagement.adapter.customer.ProductCustomerAdapter;
+import com.sinhviencafemanagement.adapters.customer.ProductCustomerAdapter;
 import com.sinhviencafemanagement.dao.CategoryDAO;
 import com.sinhviencafemanagement.models.Category;
 

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sinhviencafemanagement.R;
-import com.sinhviencafemanagement.adapter.customer.OrderReceiptAdapter;
+import com.sinhviencafemanagement.adapters.customer.OrderReceiptAdapter;
 import com.sinhviencafemanagement.dao.OrderDAO;
 import com.sinhviencafemanagement.dao.OrderDetailDAO;
 import com.sinhviencafemanagement.database.CreateDatabase; // Import lớp database để lấy hằng số status

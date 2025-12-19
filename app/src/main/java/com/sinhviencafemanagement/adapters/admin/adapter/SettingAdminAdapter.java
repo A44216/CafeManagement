@@ -1,4 +1,4 @@
-package com.sinhviencafemanagement.adapter.admin.adapter;
+package com.sinhviencafemanagement.adapters.admin.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sinhviencafemanagement.R;
-import com.sinhviencafemanagement.adapter.admin.viewholder.SettingAdminVH;
+import com.sinhviencafemanagement.adapters.admin.viewholder.SettingAdminVH;
 
 import java.util.List;
 

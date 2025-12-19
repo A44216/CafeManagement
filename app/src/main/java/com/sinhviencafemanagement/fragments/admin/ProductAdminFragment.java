@@ -17,7 +17,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.home.AdminHomeActivity;
 import com.sinhviencafemanagement.activities.home.product.UpdateProductActivity;
-import com.sinhviencafemanagement.adapter.admin.adapter.ProductAdminAdapter;
+import com.sinhviencafemanagement.adapters.admin.adapter.ProductAdminAdapter;
 import com.sinhviencafemanagement.dao.ProductDAO;
 import com.sinhviencafemanagement.models.Product;
 

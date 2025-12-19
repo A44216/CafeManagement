@@ -1,4 +1,4 @@
-package com.sinhviencafemanagement.adapter.admin;
+package com.sinhviencafemanagement.adapters.admin.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sinhviencafemanagement.R;
-import com.sinhviencafemanagement.adapter.admin.viewholder.CategoryAdminVH;
+import com.sinhviencafemanagement.adapters.admin.viewholder.CategoryAdminVH;
 import com.sinhviencafemanagement.models.Category;
 
 import java.util.List;
@@ -18,7 +18,6 @@ import java.util.List;
 public class CategoryAdminAdapter extends RecyclerView.Adapter<CategoryAdminVH> {
 
     private final List<Category> categoryList; // Danh sách Category
-    private final Context context; // Context để inflate layout
 
     // Interface callback cho Edit/Delete
     public interface OnCategoryActionListener {
@@ -34,7 +33,7 @@ public class CategoryAdminAdapter extends RecyclerView.Adapter<CategoryAdminVH> 
     }
 
     public CategoryAdminAdapter(Context context, List<Category> categoryList) {
-        this.context = context;
+        // Context để inflate layout
         this.categoryList = categoryList;
     }
 

@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.home.UserHomeActivity;
-import com.sinhviencafemanagement.adapter.customer.OrderReceiptAdapter;
+import com.sinhviencafemanagement.adapters.customer.OrderReceiptAdapter;
 import com.sinhviencafemanagement.dao.OrderDAO;
 import com.sinhviencafemanagement.dao.OrderDetailDAO;
 import com.sinhviencafemanagement.models.Order;

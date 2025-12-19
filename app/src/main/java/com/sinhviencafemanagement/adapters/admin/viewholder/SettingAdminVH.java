@@ -1,4 +1,4 @@
-package com.sinhviencafemanagement.adapter.admin.viewholder;
+package com.sinhviencafemanagement.adapters.admin.viewholder;
 
 import android.view.View;
 import android.widget.TextView;

@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 
 import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.home.order.OrderTrackingActivity;
-import com.sinhviencafemanagement.adapter.admin.adapter.OrderAdminAdapter;
+import com.sinhviencafemanagement.adapters.admin.adapter.OrderAdminAdapter;
 import com.sinhviencafemanagement.dao.OrderDAO;
 import com.sinhviencafemanagement.dao.OrderDetailDAO;
 import com.sinhviencafemanagement.dao.ProductDAO;

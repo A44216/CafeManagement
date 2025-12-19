@@ -26,7 +26,7 @@ import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.FaceCaptureActivity;
 import com.sinhviencafemanagement.activities.home.topping.ToppingActivity;
 import com.sinhviencafemanagement.activities.login.LoginActivity;
-import com.sinhviencafemanagement.adapter.admin.adapter.SettingAdminAdapter;
+import com.sinhviencafemanagement.adapters.admin.adapter.SettingAdminAdapter;
 import com.sinhviencafemanagement.dao.SessionDAO;
 import com.sinhviencafemanagement.dao.UserDAO;
 import com.sinhviencafemanagement.models.User;
@@ -139,6 +139,7 @@ public class SettingAdminFragment extends Fragment {
 
     // Đăng xuất
 
+    @SuppressLint("CommitPrefEdits")
     private void confirmLogout() {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Đăng xuất")

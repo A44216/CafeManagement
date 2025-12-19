@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.home.order.OrderSuccessActivity;
-import com.sinhviencafemanagement.adapter.customer.CartAdapter;
+import com.sinhviencafemanagement.adapters.customer.CartAdapter;
 import com.sinhviencafemanagement.dao.OrderDAO;
 import com.sinhviencafemanagement.dao.OrderDetailDAO;
 import com.sinhviencafemanagement.dao.OrderDetailToppingDAO;

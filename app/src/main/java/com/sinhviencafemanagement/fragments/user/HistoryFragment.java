@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.tabs.TabLayout;
 import com.sinhviencafemanagement.R;
-import com.sinhviencafemanagement.adapter.customer.OrderHistoryAdapter;
+import com.sinhviencafemanagement.adapters.customer.OrderHistoryAdapter;
 import com.sinhviencafemanagement.dao.OrderDAO;
 import com.sinhviencafemanagement.database.CreateDatabase;
 import com.sinhviencafemanagement.models.Order;

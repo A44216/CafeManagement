@@ -1,4 +1,4 @@
-package com.sinhviencafemanagement.adapter.admin.adapter;
+package com.sinhviencafemanagement.adapters.admin.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sinhviencafemanagement.R;
-import com.sinhviencafemanagement.adapter.admin.viewholder.ProductAdminVH;
+import com.sinhviencafemanagement.adapters.admin.viewholder.ProductAdminVH;
 import com.sinhviencafemanagement.dao.CategoryDAO;
 import com.sinhviencafemanagement.database.CreateDatabase;
 import com.sinhviencafemanagement.models.Category;

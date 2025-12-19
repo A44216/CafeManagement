@@ -27,6 +27,12 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_USER_ROLE_ID = "role_id"; // Mã quyền
     public static final String COLUMN_USER_FACE_EMBEDDING = "face_embedding"; // Face Embedding (TEXT/JSON)
 
+    // Bảng địa chỉ
+    public static final String TABLE_ADDRESSES = "addresses"; // Bảng địa chỉ
+    public static final String COLUMN_ADDRESS_ID = "address_id"; // Mã địa chỉ
+    public static final String COLUMN_ADDRESS_ADDRESS = "address"; // Địa chỉ
+    public static final String COLUMN_ADDRESS_USER_ID = "user_id"; // Mã người dùng
+
     // Bảng quyền
     public static final String TABLE_ROLES = "roles"; // Bảng quyền
     public static final String COLUMN_ROLE_ID = "role_id"; // Mã quyền (1=Admin, 2=Staff, 3=Customer)
@@ -61,6 +67,8 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_ORDER_DATE = "order_date"; // Ngày đặt
     public static final String COLUMN_ORDER_STATUS = "status"; // Tình trạng đơn
     public static final String COLUMN_ORDER_TOTAL = "total"; // Tổng tiền
+    public static final String COLUMN_ORDER_ADDRESS_ID = "address_id"; // Mã địa chỉ
+
     // Trạng thái đơn hàng
     public static final String ORDER_STATUS_PENDING = "pending";
     public static final String ORDER_STATUS_COMPLETED = "completed";
@@ -121,6 +129,13 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 COLUMN_USER_FACE_EMBEDDING + " TEXT, " +
                 "FOREIGN KEY(" + COLUMN_USER_ROLE_ID + ") REFERENCES " + TABLE_ROLES + "(" + COLUMN_ROLE_ID + "));";
 
+        // Bảng addresses
+        String tblAddresses = "CREATE TABLE " + TABLE_ADDRESSES + " (" +
+                COLUMN_ADDRESS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_ADDRESS_ADDRESS + " TEXT NOT NULL, " +
+                COLUMN_ADDRESS_USER_ID + " INTEGER NOT NULL, " +
+                "FOREIGN KEY(" + COLUMN_ADDRESS_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "));";
+
         // Bảng categories
         String tblCategories = "CREATE TABLE " + TABLE_CATEGORIES + " (" +
                 COLUMN_CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -141,16 +156,19 @@ public class CreateDatabase extends SQLiteOpenHelper {
         // Bảng orders
         String tblOrders = "CREATE TABLE " + TABLE_ORDERS + " (" +
                 COLUMN_ORDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_ORDER_USER_ID + " INTEGER, " +
-                COLUMN_ORDER_DATE + " TEXT, " +
+                COLUMN_ORDER_USER_ID + " INTEGER NOT NULL, " +
+                COLUMN_ORDER_DATE + " TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 COLUMN_ORDER_STATUS + " TEXT NOT NULL DEFAULT '" + ORDER_STATUS_PENDING + "', " +
-                COLUMN_ORDER_TOTAL + " REAL DEFAULT 0, " +
-                "FOREIGN KEY(" + COLUMN_ORDER_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "))";
+                COLUMN_ORDER_TOTAL + " REAL NOT NULL DEFAULT 0, " +
+                COLUMN_ORDER_ADDRESS_ID + " INTEGER NOT NULL, " +
+                "CHECK(" + COLUMN_ORDER_STATUS + " IN ('pending','completed')), " +
+                "FOREIGN KEY(" + COLUMN_ORDER_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "), " +
+                "FOREIGN KEY(" + COLUMN_ORDER_ADDRESS_ID + ") REFERENCES " + TABLE_ADDRESSES + "(" + COLUMN_ADDRESS_ID + "));";
 
         // Bảng order_details
         String tblOrderDetails = "CREATE TABLE " + TABLE_ORDER_DETAILS + " (" +
-                COLUMN_ORDER_DETAIL_ORDER_ID + " INTEGER, " +
-                COLUMN_ORDER_DETAIL_PRODUCT_ID + " INTEGER, " +
+                COLUMN_ORDER_DETAIL_ORDER_ID + " INTEGER NOT NULL, " +
+                COLUMN_ORDER_DETAIL_PRODUCT_ID + " INTEGER NOT NULL, " +
                 COLUMN_ORDER_DETAIL_QUANTITY + " INTEGER NOT NULL, " +
                 "PRIMARY KEY(" + COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + "), " +
                 "FOREIGN KEY(" + COLUMN_ORDER_DETAIL_ORDER_ID + ") REFERENCES " + TABLE_ORDERS + "(" + COLUMN_ORDER_ID + "), " +
@@ -186,6 +204,7 @@ public class CreateDatabase extends SQLiteOpenHelper {
         // Thực thi các câu lệnh tạo bảng
         db.execSQL(tblRoles);
         db.execSQL(tblUsers);
+        db.execSQL(tblAddresses);
         db.execSQL(tblCategories);
         db.execSQL(tblProducts);
         db.execSQL(tblOrders);
@@ -205,7 +224,6 @@ public class CreateDatabase extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO " + TABLE_ROLES + " (" + COLUMN_ROLE_ID + ", " + COLUMN_ROLE_NAME + ") VALUES (" + ROLE_ADMIN + ", 'admin')");
         db.execSQL("INSERT INTO " + TABLE_ROLES + " (" + COLUMN_ROLE_ID + ", " + COLUMN_ROLE_NAME + ") VALUES (" + ROLE_STAFF + ", 'staff')");
         db.execSQL("INSERT INTO " + TABLE_ROLES + " (" + COLUMN_ROLE_ID + ", " + COLUMN_ROLE_NAME + ") VALUES (" + ROLE_CUSTOMER + ", 'customer')");
-
 
         // Categories mặc định
         db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " (" + COLUMN_CATEGORY_NAME + ") VALUES ('Cà phê')");
@@ -266,14 +284,23 @@ public class CreateDatabase extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO " + TABLE_TOPPINGS + " (" + COLUMN_TOPPING_NAME + ", " + COLUMN_TOPPING_PRICE + ") VALUES ('Thạch', 4000)");
         db.execSQL("INSERT INTO " + TABLE_TOPPINGS + " (" + COLUMN_TOPPING_NAME + ", " + COLUMN_TOPPING_PRICE + ") VALUES ('Kem cheese', 7000)");
 
+        // Địa chỉ mắc định
+        db.execSQL("INSERT INTO addresses(address, user_id) VALUES ('123 Nguyễn Trãi, Hà Nội', 2)");
+
         // ================= Insert demo orders =================
         db.execSQL("INSERT INTO " + TABLE_ORDERS + " (" +
-                COLUMN_ORDER_USER_ID + ", " + COLUMN_ORDER_DATE + ", " + COLUMN_ORDER_STATUS + ", " + COLUMN_ORDER_TOTAL   + ") VALUES " +
-                "(2, '2025-12-11 10:00', '" + ORDER_STATUS_PENDING + "', 55000)");
+                COLUMN_ORDER_USER_ID + ", " +
+                COLUMN_ORDER_ADDRESS_ID + ", " +
+                COLUMN_ORDER_STATUS + ", " +
+                COLUMN_ORDER_TOTAL + ") VALUES " +
+                "(2, 1, '" + ORDER_STATUS_PENDING + "', 55000)");
 
         db.execSQL("INSERT INTO " + TABLE_ORDERS + " (" +
-                COLUMN_ORDER_USER_ID + ", " + COLUMN_ORDER_DATE + ", " + COLUMN_ORDER_STATUS + ", " + COLUMN_ORDER_TOTAL  + ") VALUES " +
-                "(2, '2025-12-11 11:00', '" + ORDER_STATUS_COMPLETED + "', 60000)");
+                COLUMN_ORDER_USER_ID + ", " +
+                COLUMN_ORDER_ADDRESS_ID + ", " +
+                COLUMN_ORDER_STATUS + ", " +
+                COLUMN_ORDER_TOTAL + ") VALUES " +
+                "(2, 1, '" + ORDER_STATUS_COMPLETED + "', 60000)");
 
         // ================= Insert demo order_details =================
         // Hóad dơn 1
@@ -308,12 +335,13 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.w("CreateDatabase", "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDER_DETAIL_TOPPINGS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TOPPINGS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SESSIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDER_DETAILS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TOPPINGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ADDRESSES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SESSIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROLES);
         onCreate(db);
