@@ -46,4 +46,6 @@
     <string name="add_topping">Thêm topping</string>
     <string name="update_topping">Cập nhật topping</string>
 
+    <string name="default_address">Hà Nội</string>
+
 </resources>

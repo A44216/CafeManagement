@@ -109,7 +109,7 @@ public class OrderDAO {
                         cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DATE)),
                         cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_STATUS)),
                         cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TOTAL)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ADDRESS_ID))
+                        cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ADDRESS))
                 );
             }
         } catch (Exception e) {
@@ -141,7 +141,7 @@ public class OrderDAO {
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DATE)),
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_STATUS)),
                             cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TOTAL)),
-                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ADDRESS_ID))
+                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ADDRESS))
                     );
                     list.add(order); //
                 } while (cursor.moveToNext()); //
@@ -169,7 +169,7 @@ public class OrderDAO {
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_DATE)),
                             cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_STATUS)),
                             cursor.getDouble(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_TOTAL)),
-                            cursor.getInt(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ADDRESS_ID))
+                            cursor.getString(cursor.getColumnIndexOrThrow(CreateDatabase.COLUMN_ORDER_ADDRESS))
                     );
                     list.add(order);
                 } while (cursor.moveToNext());

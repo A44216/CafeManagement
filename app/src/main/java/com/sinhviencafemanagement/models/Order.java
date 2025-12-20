@@ -8,26 +8,26 @@ public class Order implements Clonable<Order>{
     private String orderDate;    // order_date
     private String status;       // status (mặc định "pending")
     private double totalPrice;   // total (tổng tiền)
-    private int addressId;   // address_id (bắt buộc – delivery)
+    private String address;   // address (bắt buộc – delivery)
 
     public Order() {
 
     }
 
     // Constructor đầy đủ (dùng khi đọc từ DB)
-    public Order(int orderId, int userId, String orderDate, String status, double totalPrice, int addressId) {
+    public Order(int orderId, int userId, String orderDate, String status, double totalPrice, String address) {
         this.orderId = orderId;
         this.userId = userId;
         this.orderDate = orderDate;
         this.status = status != null ? status : "pending";
         this.totalPrice = totalPrice;
-        this.addressId = addressId;
+        this.address = address;
     }
 
     // Constructor tạo đơn mới – KHÔNG truyền orderId, orderDate
-    public Order(int userId, int addressId) {
+    public Order(int userId, String address) {
         this.userId = userId;
-        this.addressId = addressId;
+        this.address = address;
         this.status = "pending";
         this.totalPrice = 0;
     }
@@ -48,8 +48,8 @@ public class Order implements Clonable<Order>{
     public double getTotalPrice() { return totalPrice; }
     public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
 
-    public int getAddressId() { return addressId; }
-    public void setAddressId(int addressId) { this.addressId = addressId; }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 
     @NonNull
     @Override
@@ -60,7 +60,7 @@ public class Order implements Clonable<Order>{
                 ", orderDate='" + orderDate + '\'' +
                 ", status='" + status + '\'' +
                 ", totalPrice=" + totalPrice +
-                ", addressId=" + addressId +
+                ", address=" + address +
                 '}';
     }
 
@@ -74,7 +74,7 @@ public class Order implements Clonable<Order>{
                 this.orderDate,
                 this.status,
                 this.totalPrice,
-                this.addressId
+                this.address
         );
 
     }

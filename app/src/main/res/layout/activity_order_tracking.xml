@@ -53,6 +53,19 @@
             android:layout_height="1dp"
             android:background="@color/black" />
 
+        <TextView
+            android:id="@+id/tvAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/default_address"
+            android:textSize="18sp"
+            android:layout_margin="12dp"/>
+
+        <!-- Đường kẻ ngang -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black" />
         <!-- Timeline đơn hàng dùng RadioGroup -->
         <RadioGroup
             android:id="@+id/rgOrderStatus"

@@ -1,10 +1,12 @@
 package com.sinhviencafemanagement.activities.home.order;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -35,7 +37,7 @@ public class OrderTrackingActivity extends AppCompatActivity {
     private RadioButton rbPending, rbDone;
 
     private RecyclerView rvOrderItems;
-
+    private TextView tvAddress;
     private OrderDAO orderDAO;
     private OrderDetailDAO orderDetailDAO;
     private ProductDAO productDAO;
@@ -82,7 +84,7 @@ public class OrderTrackingActivity extends AppCompatActivity {
         rbPending = findViewById(R.id.rbPending);
         rbDone = findViewById(R.id.rbDone);
         rvOrderItems = findViewById(R.id.rvOrderItems);
-
+        tvAddress = findViewById(R.id.tvAddress);
         // Mặc định chọn bước đầu tiên
         rbPending.setChecked(true);
     }
@@ -146,7 +148,16 @@ public class OrderTrackingActivity extends AppCompatActivity {
     }
 
     // Load tất cả chi tiết đơn hàng theo orderId
+    @SuppressLint("SetTextI18n")
     private void loadAllOrderDetails() {
+        // Load địa chỉ giao hàng
+        Order order = orderDAO.getOrderById(orderId);
+        if (order != null && order.getAddress() != null) {
+            tvAddress.setText("Địa chỉ: " + order.getAddress());
+        } else {
+            tvAddress.setText("Chưa có địa chỉ giao hàng");
+        }
+
         // Lấy chi tiết đơn hàng theo orderId
         List<OrderDetail> details = orderDetailDAO.getDetailsByOrderId(orderId);
         // Tạo adapter

@@ -201,28 +201,31 @@ public class LoginActivity extends AppCompatActivity {
     private void loginSuccess(User user) {
         SharedPreferences.Editor editor = prefs.edit();
 
-        // Luôn lưu user_id
+        // Luôn lưu user_id (chỉ để dùng trong phiên hiện tại)
         editor.putInt("user_id", user.getUserId());
 
-        // Tạo session
-        long expiredAt = System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000; // 7 ngày
-        String token = sessionDAO.createSession(user.getUserId(), expiredAt);
+        // Luôn lưu username để điền lại
+        editor.putString("saved_username", user.getUsername());
 
-        if (token != null) {
-            editor.putString("session_token", token);
+        // CHỈ lưu session nếu tích "Ghi nhớ đăng nhập"
+        if (chkRememberLogin.isChecked()) {
+            long expiredAt = System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000;
+            String token = sessionDAO.createSession(user.getUserId(), expiredAt);
+
+            if (token != null) {
+                editor.putString("session_token", token);
+            }
+        } else {
+            // Đảm bảo không còn token cũ
+            editor.remove("session_token");
         }
 
-        // Luôn lưu username để điền lại EditText lần sau
-        editor.putString("saved_username", user.getUsername());
         editor.apply();
 
-        // Phân quyền truy cập
-        Intent intent;
-        if (user.getRoleId() == CreateDatabase.ROLE_ADMIN) {
-            intent = new Intent(this, AdminHomeActivity.class);
-        } else {
-            intent = new Intent(this, UserHomeActivity.class);
-        }
+        // Điều hướng theo role
+        Intent intent = (user.getRoleId() == CreateDatabase.ROLE_ADMIN)
+                ? new Intent(this, AdminHomeActivity.class)
+                : new Intent(this, UserHomeActivity.class);
 
         startActivity(intent);
         finish();

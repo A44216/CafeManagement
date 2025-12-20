@@ -67,7 +67,7 @@ public class CreateDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_ORDER_DATE = "order_date"; // Ngày đặt
     public static final String COLUMN_ORDER_STATUS = "status"; // Tình trạng đơn
     public static final String COLUMN_ORDER_TOTAL = "total"; // Tổng tiền
-    public static final String COLUMN_ORDER_ADDRESS_ID = "address_id"; // Mã địa chỉ
+    public static final String COLUMN_ORDER_ADDRESS = "address"; // địa chỉ giao hàng
 
     // Trạng thái đơn hàng
     public static final String ORDER_STATUS_PENDING = "pending";
@@ -160,10 +160,9 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 COLUMN_ORDER_DATE + " TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 COLUMN_ORDER_STATUS + " TEXT NOT NULL DEFAULT '" + ORDER_STATUS_PENDING + "', " +
                 COLUMN_ORDER_TOTAL + " REAL NOT NULL DEFAULT 0, " +
-                COLUMN_ORDER_ADDRESS_ID + " INTEGER NOT NULL, " +
+                COLUMN_ORDER_ADDRESS + " TEXT NOT NULL, " +
                 "CHECK(" + COLUMN_ORDER_STATUS + " IN ('pending','completed')), " +
-                "FOREIGN KEY(" + COLUMN_ORDER_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "), " +
-                "FOREIGN KEY(" + COLUMN_ORDER_ADDRESS_ID + ") REFERENCES " + TABLE_ADDRESSES + "(" + COLUMN_ADDRESS_ID + "));";
+                "FOREIGN KEY(" + COLUMN_ORDER_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "));";
 
         // Bảng order_details
         String tblOrderDetails = "CREATE TABLE " + TABLE_ORDER_DETAILS + " (" +
@@ -290,17 +289,17 @@ public class CreateDatabase extends SQLiteOpenHelper {
         // ================= Insert demo orders =================
         db.execSQL("INSERT INTO " + TABLE_ORDERS + " (" +
                 COLUMN_ORDER_USER_ID + ", " +
-                COLUMN_ORDER_ADDRESS_ID + ", " +
+                COLUMN_ORDER_ADDRESS + ", " +
                 COLUMN_ORDER_STATUS + ", " +
                 COLUMN_ORDER_TOTAL + ") VALUES " +
-                "(2, 1, '" + ORDER_STATUS_PENDING + "', 55000)");
+                "(2, '123 Nguyễn Trãi, Hà Nội', '" + ORDER_STATUS_PENDING + "', 55000)");
 
         db.execSQL("INSERT INTO " + TABLE_ORDERS + " (" +
                 COLUMN_ORDER_USER_ID + ", " +
-                COLUMN_ORDER_ADDRESS_ID + ", " +
+                COLUMN_ORDER_ADDRESS + ", " +
                 COLUMN_ORDER_STATUS + ", " +
                 COLUMN_ORDER_TOTAL + ") VALUES " +
-                "(2, 1, '" + ORDER_STATUS_COMPLETED + "', 60000)");
+                "(2, '123 Nguyễn Trãi, Hà Nội', '" + ORDER_STATUS_COMPLETED + "', 60000)");
 
         // ================= Insert demo order_details =================
         // Hóad dơn 1
