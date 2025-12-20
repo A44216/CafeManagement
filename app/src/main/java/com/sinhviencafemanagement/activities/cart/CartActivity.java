@@ -1,25 +1,32 @@
 package com.sinhviencafemanagement.activities.cart;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sinhviencafemanagement.R;
+import com.sinhviencafemanagement.activities.cart.SelectAddressActivity;
 import com.sinhviencafemanagement.activities.home.order.OrderSuccessActivity;
 import com.sinhviencafemanagement.adapters.customer.CartAdapter;
+import com.sinhviencafemanagement.dao.AddressDAO;
 import com.sinhviencafemanagement.dao.OrderDAO;
 import com.sinhviencafemanagement.dao.OrderDetailDAO;
 import com.sinhviencafemanagement.dao.OrderDetailToppingDAO;
 import com.sinhviencafemanagement.database.CreateDatabase;
+import com.sinhviencafemanagement.models.Address;
 import com.sinhviencafemanagement.models.CartItem;
 import com.sinhviencafemanagement.models.Order;
 import com.sinhviencafemanagement.models.OrderDetail;
@@ -35,21 +42,37 @@ import java.util.List;
 import java.util.Locale;
 
 public class CartActivity extends AppCompatActivity implements CartAdapter.OnCartChangeListener {
+
+    // === KHAI BÁO BIẾN ===
     private RecyclerView rcvCartItems;
     private CartAdapter cartAdapter;
     private Button btnOrder;
     private List<CartItem> cartItemList;
-
-    // UI components cho phần giá
     private TextView tvTotalPrice, tvSubTotal, tvDiscountAmount, tvDiscountNote, tvItemCount;
+    private TextView tvSelectedAddress; // <-- THÊM KHAI BÁO
     private RadioGroup rgDiscount;
+    private LinearLayout layoutSelectAddress;
 
+    // DAO & Managers
+    private AddressDAO addressDAO;
     private OrderDAO orderDAO;
-    private OrderDetailToppingDAO orderDetailToppingDAO;
     private OrderDetailDAO orderDetailDAO;
+    private OrderDetailToppingDAO orderDetailToppingDAO;
     private SessionManager sessionManager;
 
-    private double discountPercent = 0.0; // Lưu % giảm giá đang chọn
+    // Data state
+    private int selectedAddressId = -1;
+    private double discountPercent = 0.0;
+
+    // ActivityResultLauncher
+    private final ActivityResultLauncher<Intent> selectAddressLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    selectedAddressId = result.getData().getIntExtra(
+                            SelectAddressActivity.EXTRA_SELECTED_ADDRESS_ID, -1);
+                    loadAndDisplaySelectedAddress();
+                }
+            });
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,20 +84,22 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
         setupRecyclerView();
         setEventListeners();
 
+        // Cập nhật giao diện lần đầu tiên
         updatePriceUI();
+        loadAndDisplaySelectedAddress();
     }
 
     private void initView() {
         rcvCartItems = findViewById(R.id.rcvCartItems);
-        tvTotalPrice = findViewById(R.id.tvTotalPrice); // Tổng cuối cùng ở bottom bar
+        tvTotalPrice = findViewById(R.id.tvTotalPrice);
         btnOrder = findViewById(R.id.btnOrder);
-
-        // Ánh xạ các view mới ở phần thanh toán
-        tvSubTotal = findViewById(R.id.tvSubTotal); // Giá gốc (tạm tính)
-        tvDiscountAmount = findViewById(R.id.tvDiscountAmount); // Số tiền trừ ra
-        tvDiscountNote = findViewById(R.id.tvDiscountNote); // Chữ "Chưa áp dụng..." hoặc "%"
-        tvItemCount = findViewById(R.id.tvItemCount); // "(X đồ uống)"
+        tvSubTotal = findViewById(R.id.tvSubTotal);
+        tvDiscountAmount = findViewById(R.id.tvDiscountAmount);
+        tvDiscountNote = findViewById(R.id.tvDiscountNote);
+        tvItemCount = findViewById(R.id.tvItemCount);
         rgDiscount = findViewById(R.id.rgDiscount);
+        layoutSelectAddress = findViewById(R.id.selectAddress);
+        tvSelectedAddress = findViewById(R.id.tvSelectedAddress);
     }
 
     private void initData() {
@@ -82,6 +107,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
         orderDetailDAO = new OrderDetailDAO(this);
         sessionManager = new SessionManager(this);
         orderDetailToppingDAO = new OrderDetailToppingDAO(this);
+        addressDAO = new AddressDAO(this);
         cartItemList = CartManager.getInstance().getCartItems();
     }
 
@@ -104,7 +130,6 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
             placeOrder();
         });
 
-        // Xử lý khi chọn RadioButton giảm giá
         rgDiscount.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rbDiscount10) {
                 discountPercent = 0.10;
@@ -115,9 +140,29 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
             }
             updatePriceUI();
         });
+
+        layoutSelectAddress.setOnClickListener(v -> {
+            Intent intent = new Intent(CartActivity.this, SelectAddressActivity.class);
+            selectAddressLauncher.launch(intent);
+        });
+    }
+
+    private void loadAndDisplaySelectedAddress() {
+        if (selectedAddressId != -1) {
+            Address selectedAddress = addressDAO.getAddressById(selectedAddressId);
+            if (selectedAddress != null) {
+                tvSelectedAddress.setText(selectedAddress.getAddress());
+                tvSelectedAddress.setTextColor(getResources().getColor(R.color.black, getTheme()));
+            }
+        } else {
+            // Lấy địa chỉ mặc định của user nếu có (cải tiến)
+            // Tạm thời để mặc định là chưa chọn
+            tvSelectedAddress.setText("Chưa chọn địa chỉ giao hàng");
+        }
     }
 
     private void updatePriceUI() {
+        // ... (phần này không đổi)
         double subTotal = 0;
         int totalQuantity = 0;
         for (CartItem item : cartItemList) {
@@ -130,7 +175,6 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
 
         NumberFormat format = NumberFormat.getInstance(new Locale("vi", "VN"));
 
-        // Cập nhật text hiển thị
         tvItemCount.setText("(" + totalQuantity + " đồ uống)");
         tvSubTotal.setText(format.format(subTotal) + "đ");
         tvDiscountAmount.setText("-" + format.format(discountAmount) + "đ");
@@ -144,12 +188,18 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
     }
 
     private void placeOrder() {
-        int userId = sessionManager.getUserId();
-        if (userId == -1) {
-            Toast.makeText(this, "Lỗi xác thực", Toast.LENGTH_SHORT).show();
+        if (selectedAddressId == -1) {
+            Toast.makeText(this, "Vui lòng chọn địa chỉ giao hàng", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        int userId = sessionManager.getUserId();
+        if (userId == -1) {
+            Toast.makeText(this, "Lỗi xác thực người dùng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // ... (logic tính toán giá và tạo đối tượng Order không đổi)
         double subTotal = 0;
         for (CartItem item : cartItemList) subTotal += item.getPrice() * item.getQuantity();
         double finalTotal = subTotal * (1 - discountPercent);
@@ -158,12 +208,13 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
         order.setUserId(userId);
         order.setOrderDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
         order.setStatus(CreateDatabase.ORDER_STATUS_PENDING);
-        order.setTotalPrice(finalTotal); // Lưu giá sau khi giảm vào database
-
+        order.setTotalPrice(finalTotal);
+        order.setAddressId(selectedAddressId);
         long orderId = orderDAO.addOrder(order);
 
         if (orderId != -1) {
             for (CartItem item : cartItemList) {
+                // ... (logic thêm order_detail và order_detail_toppings không đổi)
                 OrderDetail detail = new OrderDetail();
                 detail.setOrderId((int) orderId);
                 detail.setProductId(item.getProductId());
@@ -177,15 +228,14 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
                     }
                 }
             }
+
             CartManager.getInstance().clearCart();
-//            startActivity(new Intent(this, OrderSuccessActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-            // Chuyển sang OrderSuccessActivity và gửi kèm Order ID
+
             Intent intent = new Intent(this, OrderSuccessActivity.class);
             intent.putExtra("ORDER_ID", (int) orderId);
-            // Xóa các activity trước đó để người dùng không back lại giỏ hàng đã trống
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            finish();
+            // Không cần gọi finish() ở đây
         }
     }
 

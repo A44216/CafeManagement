@@ -29,7 +29,8 @@ public class OrderDAO {
         values.put(CreateDatabase.COLUMN_ORDER_USER_ID, order.getUserId()); // user phụ trách
         values.put(CreateDatabase.COLUMN_ORDER_DATE, order.getOrderDate()); // ngày đặt
         values.put(CreateDatabase.COLUMN_ORDER_STATUS, order.getStatus()); // trạng thái
-        values.put(CreateDatabase.COLUMN_ORDER_TOTAL, order.getTotalPrice()); // tổng tiền
+        values.put(CreateDatabase.COLUMN_ORDER_TOTAL, order.getTotalPrice());// tổng tiền
+        values.put(CreateDatabase.COLUMN_ORDER_ADDRESS_ID, order.getAddressId());
         return values; //
     }
 

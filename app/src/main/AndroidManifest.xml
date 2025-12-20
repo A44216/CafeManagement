@@ -72,9 +72,11 @@
             android:name=".MainActivity"
             android:exported="false" />
         <activity android:name=".activities.account.FeedbackActivity" />
+        <activity android:name=".activities.cart.AddAddressActivity"/>
         <activity android:name=".activities.account.ContactActivity" />
         <activity android:name=".activities.account.ChangePasswordActivity" />
         <activity android:name=".activities.cart.CartActivity" />
+        <activity android:name=".activities.cart.SelectAddressActivity"/>
         <activity
             android:name=".activities.login.LoginActivity"
 

@@ -3,12 +3,12 @@ package com.sinhviencafemanagement.models;
 import androidx.annotation.NonNull;
 
 public class Order implements Clonable<Order>{
-    private int orderId;         // order_id
-    private int userId;          // user_id (người phụ trách)
-    private String orderDate;    // order_date
-    private String status;       // status (mặc định "pending")
-    private double totalPrice;   // total (tổng tiền)
-    private int addressId;   // address_id (bắt buộc – delivery)
+    private int orderId;
+    private int userId;
+    private String orderDate;
+    private String status;
+    private double totalPrice;
+    private int addressId;
 
     public Order() {
 
