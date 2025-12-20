@@ -1,5 +1,8 @@
 package com.sinhviencafemanagement.fragments.user;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,7 +74,9 @@ public class HistoryFragment extends Fragment {
     }
 
     private void loadOrdersByStatus(String status) {
-        int userId = sessionManager.getUserId();
+//        int userId = sessionManager.getUserId();
+        SharedPreferences prefs = requireContext().getSharedPreferences("app_prefs", MODE_PRIVATE);
+        int userId = prefs.getInt("user_id", -1);
         // Lấy danh sách đơn hàng từ Database theo UserId và Status
         List<Order> orderList = orderDAO.getOrdersByUserIdAndStatus(userId, status);
 

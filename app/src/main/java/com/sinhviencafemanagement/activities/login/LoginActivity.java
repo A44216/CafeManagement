@@ -209,7 +209,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // CHỈ lưu session nếu tích "Ghi nhớ đăng nhập"
         if (chkRememberLogin.isChecked()) {
-            long expiredAt = System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000;
+            long expiredAt = System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000; // ngày
             String token = sessionDAO.createSession(user.getUserId(), expiredAt);
 
             if (token != null) {

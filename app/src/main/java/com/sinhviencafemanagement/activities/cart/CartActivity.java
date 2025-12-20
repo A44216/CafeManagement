@@ -2,7 +2,9 @@ package com.sinhviencafemanagement.activities.cart;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -193,7 +195,10 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
             return;
         }
 
-        int userId = sessionManager.getUserId();
+        SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
+        int userId = prefs.getInt("user_id", -1);
+        Log.e("CartActivity: ", String.valueOf(userId));
+//        int userId = sessionManager.getUserId();
         if (userId == -1) {
             Toast.makeText(this, "Lỗi xác thực người dùng", Toast.LENGTH_SHORT).show();
             return;
