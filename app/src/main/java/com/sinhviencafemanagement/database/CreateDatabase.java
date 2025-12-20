@@ -302,7 +302,7 @@ public class CreateDatabase extends SQLiteOpenHelper {
                 "(2, '123 Nguyễn Trãi, Hà Nội', '" + ORDER_STATUS_COMPLETED + "', 60000)");
 
         // ================= Insert demo order_details =================
-        // Hóad dơn 1
+        // Hóa dơn 1
         db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
                 COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
                 "(1, 1, 1)"); // Cappuccino x1

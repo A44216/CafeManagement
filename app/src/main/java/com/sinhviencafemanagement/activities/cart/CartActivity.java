@@ -211,8 +211,13 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
         order.setTotalPrice(finalTotal);
 
         Address address = addressDAO.getAddressById(selectedAddressId);
+        if (address == null) {
+            Toast.makeText(this, "Không tìm thấy địa chỉ", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         order.setAddress(address.getAddress());
+
         long orderId = orderDAO.addOrder(order);
 
         if (orderId != -1) {
