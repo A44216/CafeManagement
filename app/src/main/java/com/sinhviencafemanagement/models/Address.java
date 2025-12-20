@@ -1,40 +1,40 @@
 package com.sinhviencafemanagement.models;
 
 import androidx.annotation.NonNull;
+import java.io.Serializable;
 
-public class Address {
-    private int addressId;   // address_id
-    private String address;  // address
-    private int userId;      // user_id
+// Model này đã được đơn giản hóa để khớp với cấu trúc CSDL và AddressDAO
+public class Address implements Serializable {
 
-    // Constructor đầy đủ
+    private int addressId;
+    private int userId;
+    private String address; // Một trường duy nhất để lưu toàn bộ chuỗi địa chỉ
+
+    // Constructor rỗng
+    public Address() {
+    }
+
+    // Constructor đầy đủ (dùng khi đọc từ DB trong DAO)
     public Address(int addressId, String address, int userId) {
         this.addressId = addressId;
         this.address = address;
         this.userId = userId;
     }
 
-    // Constructor thêm mới (không cần id, tự sinh trong DB)
-    public Address(String address, int userId) {
-        this.address = address;
+    // Constructor để thêm địa chỉ mới (không cần addressId)
+    public Address(int userId, String address) {
         this.userId = userId;
+        this.address = address;
     }
 
-    // Getter và Setter
+    // --- Getters và Setters ---
+
     public int getAddressId() {
         return addressId;
     }
 
     public void setAddressId(int addressId) {
         this.addressId = addressId;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public int getUserId() {
@@ -45,14 +45,21 @@ public class Address {
         this.userId = userId;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @NonNull
     @Override
     public String toString() {
         return "Address{" +
                 "addressId=" + addressId +
-                ", address='" + address + '\'' +
                 ", userId=" + userId +
+                ", address='" + address + '\'' +
                 '}';
     }
-
 }
