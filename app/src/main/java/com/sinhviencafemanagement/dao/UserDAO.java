@@ -627,6 +627,22 @@ public class UserDAO {
             return false;
         }
     }
+    
+    // Xóa Face Embedding (gán null)
+    public boolean deleteFaceEmbedding(int userId) {
+        if (userId <= 0) return false;
+        try {
+            ContentValues values = new ContentValues();
+            values.putNull(CreateDatabase.COLUMN_USER_FACE_EMBEDDING);
+            int rows = db.update(CreateDatabase.TABLE_USERS, values,
+                    CreateDatabase.COLUMN_USER_ID + " = ?",
+                    new String[]{String.valueOf(userId)});
+            return rows > 0;
+        } catch (Exception e) {
+            Log.e("UserDAO", "Lỗi deleteFaceEmbedding", e);
+            return false;
+        }
+    }
 
     // Lấy tất cả Admin (để so sánh face login)
     public List<User> getAllAdmins() {

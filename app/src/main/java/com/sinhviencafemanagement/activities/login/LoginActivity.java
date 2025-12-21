@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -29,6 +30,7 @@ import com.sinhviencafemanagement.models.Session;
 import com.sinhviencafemanagement.models.User;
 import com.sinhviencafemanagement.utils.FaceRecognitionHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -151,8 +153,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // Lấy danh sách tất cả người dùng
         List<User> allUsers = userDAO.getAllUsers();
-        User matchedUser = null;
-        double maxScore = 0.0;
+        
+        List<User> matchedUsers = new ArrayList<>();
 
         for (User user : allUsers) {
             String storedEmbeddingJson = user.getFaceEmbedding();
@@ -160,20 +162,52 @@ public class LoginActivity extends AppCompatActivity {
                 float[] storedEmbedding = faceHelper.stringToEmbedding(storedEmbeddingJson);
                 double score = faceHelper.calculateCosineSimilarity(currentEmbedding, storedEmbedding);
                 
-                // Ngưỡng nhận diện
-                if (score > 0.7 && score > maxScore) {
-                    maxScore = score;
-                    matchedUser = user;
+                // Ngưỡng nhận diện (ví dụ 0.75)
+                if (score > 0.75) {
+                    matchedUsers.add(user);
                 }
             }
         }
 
-        if (matchedUser != null) {
-            loginSuccess(matchedUser);
-            showToast("Xin chào " + matchedUser.getFullName());
-        } else {
+        if (matchedUsers.isEmpty()) {
             showToast("Không nhận diện được khuôn mặt");
+        } else if (matchedUsers.size() == 1) {
+            // Chỉ có 1 tài khoản khớp -> Đăng nhập luôn
+            User user = matchedUsers.get(0);
+            
+            // Xóa dòng tự động setChecked
+            // chkRememberLogin.setChecked(true);
+            
+            loginSuccess(user);
+            showToast("Xin chào " + user.getFullName());
+        } else {
+            // Có nhiều tài khoản trùng khớp -> Hiện Dialog chọn
+            showUserSelectionDialog(matchedUsers);
         }
+    }
+
+    // Hiển thị Dialog chọn tài khoản khi có xung đột
+    private void showUserSelectionDialog(List<User> users) {
+        String[] userNames = new String[users.size()];
+        for (int i = 0; i < users.size(); i++) {
+            User u = users.get(i);
+            String role = (u.getRoleId() == CreateDatabase.ROLE_ADMIN) ? "Admin" : "User";
+            userNames[i] = u.getUsername() + " (" + role + ")";
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Chọn tài khoản để đăng nhập")
+                .setItems(userNames, (dialog, which) -> {
+                    User selectedUser = users.get(which);
+                    
+                    // Xóa dòng tự động setChecked
+                    // chkRememberLogin.setChecked(true);
+                    
+                    loginSuccess(selectedUser);
+                    showToast("Xin chào " + selectedUser.getFullName());
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     // Xử lý đăng nhập thường
@@ -201,31 +235,31 @@ public class LoginActivity extends AppCompatActivity {
     private void loginSuccess(User user) {
         SharedPreferences.Editor editor = prefs.edit();
 
-        // Luôn lưu user_id (chỉ để dùng trong phiên hiện tại)
+        // Luôn lưu user_id
         editor.putInt("user_id", user.getUserId());
-
-        // Luôn lưu username để điền lại
-        editor.putString("saved_username", user.getUsername());
 
         // CHỈ lưu session nếu tích "Ghi nhớ đăng nhập"
         if (chkRememberLogin.isChecked()) {
-            long expiredAt = System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000; // ngày
+            long expiredAt = System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000; // 7 ngày
             String token = sessionDAO.createSession(user.getUserId(), expiredAt);
-
             if (token != null) {
                 editor.putString("session_token", token);
             }
         } else {
-            // Đảm bảo không còn token cũ
             editor.remove("session_token");
         }
 
+        // Luôn lưu username để điền lại EditText lần sau
+        editor.putString("saved_username", user.getUsername());
         editor.apply();
 
-        // Điều hướng theo role
-        Intent intent = (user.getRoleId() == CreateDatabase.ROLE_ADMIN)
-                ? new Intent(this, AdminHomeActivity.class)
-                : new Intent(this, UserHomeActivity.class);
+        // Phân quyền truy cập
+        Intent intent;
+        if (user.getRoleId() == CreateDatabase.ROLE_ADMIN) {
+            intent = new Intent(this, AdminHomeActivity.class);
+        } else {
+            intent = new Intent(this, UserHomeActivity.class);
+        }
 
         startActivity(intent);
         finish();

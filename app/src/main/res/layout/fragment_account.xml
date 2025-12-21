@@ -109,6 +109,34 @@
             app:drawableTint="#757575"/>
 
         <TextView
+            android:id="@+id/menuFaceId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Đăng ký Face ID"
+            android:textColor="#333333"
+            android:textSize="15sp"
+            android:gravity="center_vertical"
+            android:drawableStart="@drawable/ic_face_id"
+            android:drawablePadding="16dp"
+            android:paddingVertical="12dp"
+            android:background="?attr/selectableItemBackground"
+            app:drawableTint="#757575"/>
+            
+        <TextView
+            android:id="@+id/menuDeleteFaceId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Xóa Face ID"
+            android:textColor="#333333"
+            android:textSize="15sp"
+            android:gravity="center_vertical"
+            android:drawableStart="@drawable/ic_face_remove"
+            android:drawablePadding="16dp"
+            android:paddingVertical="12dp"
+            android:background="?attr/selectableItemBackground"
+            app:drawableTint="#757575"/>
+
+        <TextView
             android:id="@+id/menuLogout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
