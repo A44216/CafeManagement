@@ -22,6 +22,9 @@ import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.FaceCaptureActivity;
 import com.sinhviencafemanagement.activities.home.AdminHomeActivity;
 import com.sinhviencafemanagement.activities.home.UserHomeActivity;
+import com.sinhviencafemanagement.command.Command;
+import com.sinhviencafemanagement.command.login.AccountCommand;
+import com.sinhviencafemanagement.command.login.LoginInvoker;
 import com.sinhviencafemanagement.dao.SessionDAO;
 import com.sinhviencafemanagement.dao.UserDAO;
 import com.sinhviencafemanagement.database.CreateDatabase;
@@ -149,32 +152,42 @@ public class LoginActivity extends AppCompatActivity {
         float[] currentEmbedding = faceHelper.stringToEmbedding(embeddingJson);
         if (currentEmbedding == null) return;
 
-        // Lấy danh sách tất cả người dùng
-        List<User> allUsers = userDAO.getAllUsers();
-        User matchedUser = null;
-        double maxScore = 0.0;
+        // Tạo command và invoker
+        LoginInvoker invoker = new LoginInvoker();
+        Command faceCommand = new com.sinhviencafemanagement.command.login.FaceIdCommand(currentEmbedding, userDAO);
+        invoker.setCommand(faceCommand);
 
-        for (User user : allUsers) {
-            String storedEmbeddingJson = user.getFaceEmbedding();
-            if (storedEmbeddingJson != null && !storedEmbeddingJson.isEmpty()) {
-                float[] storedEmbedding = faceHelper.stringToEmbedding(storedEmbeddingJson);
-                double score = faceHelper.calculateCosineSimilarity(currentEmbedding, storedEmbedding);
-                
-                // Ngưỡng nhận diện
-                if (score > 0.7 && score > maxScore) {
-                    maxScore = score;
-                    matchedUser = user;
+        boolean faceSuccess = invoker.executeCommand();
+        if (faceSuccess) {
+            // Nếu FaceIdCommand trả true, tìm user có similarity cao nhất
+            List<User> allUsers = userDAO.getAllUsers();
+            User matchedUser = null;
+            double maxScore = 0.0;
+
+            for (User user : allUsers) {
+                String storedEmbeddingJson = user.getFaceEmbedding();
+                if (storedEmbeddingJson != null && !storedEmbeddingJson.isEmpty()) {
+                    float[] storedEmbedding = faceHelper.stringToEmbedding(storedEmbeddingJson);
+                    double score = faceHelper.calculateCosineSimilarity(currentEmbedding, storedEmbedding);
+
+                    if (score > 0.7 && score > maxScore) {
+                        maxScore = score;
+                        matchedUser = user;
+                    }
                 }
             }
-        }
 
-        if (matchedUser != null) {
-            loginSuccess(matchedUser);
-            showToast("Xin chào " + matchedUser.getFullName());
+            if (matchedUser != null) {
+                loginSuccess(matchedUser);
+                showToast("Xin chào " + matchedUser.getFullName());
+            } else {
+                showToast("Không nhận diện được khuôn mặt");
+            }
         } else {
             showToast("Không nhận diện được khuôn mặt");
         }
     }
+
 
     // Xử lý đăng nhập thường
     private void handleLogin() {
@@ -186,16 +199,18 @@ public class LoginActivity extends AppCompatActivity {
         if (!validateInput(input, password)) return;
 
         // Kiểm tra đăng nhập
-        if (userDAO.checkLogin(input, password)) {
-            User user = userDAO.getUserByUsernameOrEmail(input);
-            if (user == null) {
-                showToast("Không tìm thấy người dùng tương ứng");
-                return;
-            }
-            loginSuccess(user);
+        LoginInvoker invoker = new LoginInvoker();
+        Command loginCommand = new AccountCommand(input, password, userDAO);
+        invoker.setCommand(loginCommand);
+
+        boolean success = invoker.executeCommand();
+        if (success) {
+            User user = userDAO.getUserByUsernameOrEmail(input); // lấy đối tượng user
+            if (user != null) loginSuccess(user);
         } else {
             showLoginError();
         }
+
     }
 
     private void loginSuccess(User user) {

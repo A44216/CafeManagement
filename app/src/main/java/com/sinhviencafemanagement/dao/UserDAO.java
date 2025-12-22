@@ -12,6 +12,8 @@ import com.sinhviencafemanagement.database.CreateDatabase;
 import com.sinhviencafemanagement.database.DatabaseManager;
 import com.sinhviencafemanagement.models.User;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.ArrayList;
@@ -645,4 +647,27 @@ public class UserDAO {
             return false;
         }
     }
+
+    // Chuyển float[] sang String để lưu DB
+//    public static String embeddingToString(float[] embedding) {
+//        if (embedding == null) return null;
+//        StringBuilder sb = new StringBuilder();
+//        for (int i = 0; i < embedding.length; i++) {
+//            sb.append(embedding[i]);
+//            if (i < embedding.length - 1) sb.append(",");
+//        }
+//        return sb.toString();
+//    }
+
+    // Chuyển String từ DB về float[]
+    public static float[] stringToEmbedding(String s) {
+        if (s == null || s.isEmpty()) return null;
+        String[] parts = s.split(",");
+        float[] embedding = new float[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            embedding[i] = Float.parseFloat(parts[i]);
+        }
+        return embedding;
+    }
+
 }
