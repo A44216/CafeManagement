@@ -4,11 +4,10 @@ import androidx.annotation.NonNull;
 
 public class Role {
     private int roleId;         // role_id
-    @NonNull
     private String roleName;    // role_name
 
     // Constructor đầy đủ
-    public Role(int roleId, @NonNull String roleName) {
+    public Role(int roleId, String roleName) {
         this.roleId = roleId;
         this.roleName = roleName;
     }
@@ -18,7 +17,7 @@ public class Role {
     }
 
     // Constructor thêm mới (không cần roleId, SQLite tự sinh)
-    public Role(@NonNull String roleName) {
+    public Role(String roleName) {
         this.roleName = roleName;
     }
 
@@ -30,11 +29,10 @@ public class Role {
         this.roleId = roleId;
     }
 
-    @NonNull
     public String getRoleName() {
         return roleName;
     }
-    public void setRoleName(@NonNull String roleName) {
+    public void setRoleName(String roleName) {
         this.roleName = roleName;
     }
 
