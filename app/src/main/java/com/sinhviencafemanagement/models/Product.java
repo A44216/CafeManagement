@@ -114,9 +114,10 @@ public class Product implements Serializable, Clonable<Product>{
 
     @NonNull
     @Override
+//    Tạo hàm clone để clone sản phẩm áp dụng prototype pattern trong ProductDetailActivity
     public Product clone() {
         return new Product(
-                0,                       // productId = 0 cho sản phẩm mới
+                this.productId, // Giữ lại ID của sản phẩm gốc
                 this.productName,
                 this.price,
                 this.status,
@@ -126,6 +127,7 @@ public class Product implements Serializable, Clonable<Product>{
                 this.description
         );
     }
+
     public Object getImageForCart() {
         if (imagePath != null && !imagePath.isEmpty()) {
             return imagePath;

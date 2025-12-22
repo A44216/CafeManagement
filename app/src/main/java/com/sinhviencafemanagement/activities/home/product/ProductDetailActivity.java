@@ -2,7 +2,6 @@ package com.sinhviencafemanagement.activities.home.product;
 
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,45 +28,79 @@ import java.util.Locale;
 
 public class ProductDetailActivity extends AppCompatActivity {
 
-    // View
+    // ===================== VIEW =====================
+
+    // Nút quay lại & hình ảnh sản phẩm
     private ImageView imgBack, imgProductDetail;
+
+    // Hiển thị tên, giá, mô tả sản phẩm
     private TextView tvNameDetail, tvPriceDetail, tvDescDetail;
+
+    // Điều chỉnh số lượng và tổng tiền
     private TextView tvQuantity, btnPlus, btnMinus, tvTotalPrice;
+
+    // Nút thêm vào giỏ hàng
     private Button btnAddCart;
+
+    // Ô nhập ghi chú cho sản phẩm
     private EditText edtNote;
 
-    // Topping
-    private CheckBox cbSuaDac, cbTranChau, cbDuaKho, cbThachDua, cbDuongDen;
+    // ===================== DATA =====================
 
-    // Data
+    // Sản phẩm gốc (Prototype)
     private Product product;
+
+    // Số lượng sản phẩm
     private int quantity = 1;
-    // ...
+
+    // RecyclerView hiển thị danh sách topping
     private RecyclerView rcvToppings;
+
+    // Adapter quản lý topping
     private ToppingAdapter toppingAdapter;
+
+    // Danh sách topping
     private List<Topping> toppingList = new ArrayList<>();
+
+    // DAO lấy topping từ database
     private ToppingDAO toppingDAO;
 
-    private ChipGroup cgType, cgSize, cgSugar, cgIce;
+    // Các nhóm lựa chọn option
+    private ChipGroup cgType, cgSugar, cgIce;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
 
+        // Ánh xạ view
         initView();
-        getDataFromIntent();
-        setEvent();
+
+        // Khởi tạo RecyclerView topping
         setupToppingRecyclerView();
+
+        // Nhận dữ liệu sản phẩm từ Intent
+        getDataFromIntent();
+
+        // Gắn sự kiện click
+        setEvent();
+
+        // Tính tổng tiền ban đầu
         updateTotalPrice();
     }
 
+    /**
+     * Ánh xạ các View từ layout XML
+     */
     private void initView() {
         imgBack = findViewById(R.id.imgBack);
         imgProductDetail = findViewById(R.id.imgProductDetail);
+
         tvNameDetail = findViewById(R.id.tvNameDetail);
         tvPriceDetail = findViewById(R.id.tvPriceDetail);
         tvDescDetail = findViewById(R.id.tvDescDetail);
+
+        // ChipGroup lựa chọn option
         cgType = findViewById(R.id.rgType);
         cgSugar = findViewById(R.id.rgSugar);
         cgIce = findViewById(R.id.rgIce);
@@ -79,40 +112,58 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         btnAddCart = findViewById(R.id.btnAddCart);
         edtNote = findViewById(R.id.edtNote);
+
         rcvToppings = findViewById(R.id.rcvToppings);
     }
+
+    /**
+     * Khởi tạo RecyclerView hiển thị topping
+     */
     private void setupToppingRecyclerView() {
         toppingDAO = new ToppingDAO(this);
-        toppingList.clear();
-        toppingList.addAll(toppingDAO.getAllToppings()); // Giả sử bạn có hàm này trong ToppingDAO
 
-        toppingAdapter = new ToppingAdapter(this, toppingList, this::updateTotalPrice); // Báo cho updateTotalPrice mỗi khi topping thay đổi
+        // Lấy toàn bộ topping từ database
+        toppingList.clear();
+        toppingList.addAll(toppingDAO.getAllToppings());
+
+        // Adapter có callback để cập nhật giá
+        toppingAdapter = new ToppingAdapter(this, toppingList, this::updateTotalPrice);
 
         rcvToppings.setLayoutManager(new LinearLayoutManager(this));
         rcvToppings.setAdapter(toppingAdapter);
     }
 
+    /**
+     * Nhận sản phẩm từ Intent
+     */
     private void getDataFromIntent() {
-        if (getIntent().hasExtra("product_detail")) {
-            product = (Product) getIntent().getSerializableExtra("product_detail");
-        }
+        Product prototypeProduct =
+                (Product) getIntent().getSerializableExtra("product_detail");
 
-        if (product != null) {
+        if (prototypeProduct != null) {
+            this.product = prototypeProduct;
+
             tvNameDetail.setText(product.getProductName());
             tvPriceDetail.setText(formatPrice(product.getPrice()));
+
+            // Nếu không có mô tả thì hiển thị mặc định
             tvDescDetail.setText(product.getDescription() != null
                     ? product.getDescription()
                     : "Không có mô tả chi tiết");
 
+            // Hiển thị ảnh sản phẩm
             if (product.getImageResId() != 0) {
                 imgProductDetail.setImageResource(product.getImageResId());
             }
         }
     }
 
+    /**
+     * Gắn sự kiện cho các nút và ChipGroup
+     */
     private void setEvent() {
 
-        // Back
+        // Quay lại màn hình trước
         imgBack.setOnClickListener(v -> finish());
 
         // Tăng số lượng
@@ -131,106 +182,105 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Topping thay đổi → cập nhật giá
-        CheckBox[] toppings = {
-                cbSuaDac, cbTranChau, cbDuaKho, cbThachDua, cbDuongDen
-        };
+        // Thay đổi option sẽ cập nhật giá
+        if (cgType != null)
+            cgType.setOnCheckedStateChangeListener((g, ids) -> updateTotalPrice());
 
-        for (CheckBox cb : toppings) {
-            if (cb != null) {
-                cb.setOnCheckedChangeListener((buttonView, isChecked) -> updateTotalPrice());
-            }
-        }
+        if (cgSugar != null)
+            cgSugar.setOnCheckedStateChangeListener((g, ids) -> updateTotalPrice());
+
+        if (cgIce != null)
+            cgIce.setOnCheckedStateChangeListener((g, ids) -> updateTotalPrice());
 
         // Thêm vào giỏ hàng
-        btnAddCart.setOnClickListener(v -> {
-            // Kiểm tra null cho product để đảm bảo an toàn
-            if (product == null) {
-                Toast.makeText(this, "Lỗi: Không tìm thấy thông tin sản phẩm", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // 1. Lấy thông tin cơ bản từ sản phẩm và các View
-            String name = product.getProductName();
-            double basePrice = product.getPrice();
-            String note = edtNote.getText().toString().trim();
-
-            // 2. Xây dựng mô tả và tính lại giá topping ngay tại thời điểm click
-            StringBuilder descriptionBuilder = new StringBuilder();
-            double optionsPrice = 0;
-
-            Chip selectedTypeChip = findViewById(cgType.getCheckedChipId());
-            if (selectedTypeChip != null) {
-                // Nếu là "Nóng", không cần thêm "Đồ uống"
-                if (selectedTypeChip.getText().toString().equals("Nóng")) {
-                    descriptionBuilder.append(selectedTypeChip.getText()).append(", ");
-                } else {
-                    descriptionBuilder.append("Đồ uống ").append(selectedTypeChip.getText()).append(", ");
-                }
-            }
-
-            // Lấy text từ Chip được chọn trong cgSugar
-            Chip selectedSugarChip = findViewById(cgSugar.getCheckedChipId());
-            if (selectedSugarChip != null) {
-                descriptionBuilder.append(selectedSugarChip.getText()).append(" Đường, ");
-            }
-
-            // Lấy text từ Chip được chọn trong cgIce
-            Chip selectedIceChip = findViewById(cgIce.getCheckedChipId());
-            if (selectedIceChip != null) {
-                descriptionBuilder.append(selectedIceChip.getText()).append(" Đá, ");
-            }
-            for (Topping topping : toppingList) {
-                if (topping.isChecked()) {
-                    descriptionBuilder.append(topping.getToppingName()).append(", ");
-                    optionsPrice += topping.getPrice();
-                }
-            }
-
-            // Thêm ghi chú của người dùng vào mô tả
-            if (!note.isEmpty()) {
-                descriptionBuilder.append("Ghi chú: ").append(note);
-            }
-
-            String description = descriptionBuilder.length() > 0
-                    ? descriptionBuilder.toString()
-                    : "Không có tùy chọn";
-            // Xóa dấu phẩy và khoảng trắng thừa ở cuối (nếu có)
-            if (description.endsWith(", ")) {
-                description = description.substring(0, description.length() - 2);
-            }
-
-            // 3. Tạo đối tượng CartItem
-            double finalPricePerItem = basePrice + optionsPrice;
-            int realProductId = product.getProductId();
-            int itemId = (product.getProductId() + description).hashCode();
-
-            Object imageIdentifier = product.getImageForCart();
-            List<Topping> selectedToppings = new ArrayList<>();
-            for (Topping topping : toppingList) {
-                if (topping.isChecked()) {
-                    selectedToppings.add(topping);
-                }
-            }
-            CartItem newItem = new CartItem(itemId, realProductId, name, description, finalPricePerItem, quantity, imageIdentifier, selectedToppings);
-
-            // 4. Thêm sản phẩm vào CartManager
-            CartManager.getInstance().addItem(newItem);
-
-            // 5. Hiển thị thông báo và quay lại màn hình trước
-            Toast.makeText(this, "Đã thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
-            finish(); // Quay về màn hình Home
-        });
-
+        btnAddCart.setOnClickListener(v -> addToCart());
     }
 
-    // Sửa lại updateTotalPrice()
+    /**
+     * Xử lý thêm sản phẩm vào giỏ hàng
+     * Áp dụng PROTOTYPE PATTERN
+     */
+    private void addToCart() {
+
+        if (product == null) {
+            Toast.makeText(this, "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Clone sản phẩm gốc (Prototype)
+        Product customizedProduct = product.clone();
+
+        StringBuilder desc = new StringBuilder();
+        double optionPrice = 0;
+
+        Chip chip;
+
+        // Lấy option loại
+        chip = findViewById(cgType.getCheckedChipId());
+        if (chip != null) desc.append(chip.getText()).append(", ");
+
+        // Lấy option đường
+        chip = findViewById(cgSugar.getCheckedChipId());
+        if (chip != null) desc.append(chip.getText()).append(" đường, ");
+
+        // Lấy option đá
+        chip = findViewById(cgIce.getCheckedChipId());
+        if (chip != null) desc.append(chip.getText()).append(" đá, ");
+
+        // Lấy danh sách topping đã chọn
+        List<Topping> selectedToppings = toppingAdapter.getSelectedToppings();
+        for (Topping t : selectedToppings) {
+            desc.append(t.getToppingName()).append(", ");
+            optionPrice += t.getPrice();
+        }
+
+        // Ghi chú thêm
+        String note = edtNote.getText().toString().trim();
+        if (!note.isEmpty()) {
+            desc.append("Ghi chú: ").append(note);
+        }
+
+        // Xóa dấu phẩy cuối
+        if (desc.toString().endsWith(", ")) {
+            desc.setLength(desc.length() - 2);
+        }
+
+        // Áp dụng mô tả và giá mới cho sản phẩm clone
+        customizedProduct.setDescription(desc.toString());
+        customizedProduct.setPrice(product.getPrice() + optionPrice);
+
+        // Tạo ID duy nhất cho CartItem
+        int itemId = (customizedProduct.getProductId() + desc.toString()).hashCode();
+
+        // Tạo CartItem
+        CartItem item = new CartItem(
+                itemId,
+                customizedProduct.getProductId(),
+                customizedProduct.getProductName(),
+                customizedProduct.getDescription(),
+                customizedProduct.getPrice(),
+                quantity,
+                customizedProduct.getImageForCart(),
+                selectedToppings
+        );
+
+        // Thêm vào giỏ hàng
+        CartManager.getInstance().addItem(item);
+
+        Toast.makeText(this, "Đã thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    /**
+     * Tính và cập nhật tổng tiền
+     */
     private void updateTotalPrice() {
         if (product == null) return;
 
         double toppingPrice = 0;
-        for (Topping topping : toppingList) {
-            if (topping.isChecked()) {
+
+        if (toppingAdapter != null) {
+            for (Topping topping : toppingAdapter.getSelectedToppings()) {
                 toppingPrice += topping.getPrice();
             }
         }
@@ -239,8 +289,11 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvTotalPrice.setText(formatPrice(total));
     }
 
+    /**
+     * Format tiền theo chuẩn VNĐ
+     */
     private String formatPrice(double price) {
         NumberFormat format = NumberFormat.getInstance(new Locale("vi", "VN"));
-        return format.format((long) price) + "đ"; // ép về long để không hiện .0
+        return format.format((long) price) + "đ";
     }
 }

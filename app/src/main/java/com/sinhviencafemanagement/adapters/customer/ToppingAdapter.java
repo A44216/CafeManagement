@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.models.Topping;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,6 +30,16 @@ public class ToppingAdapter extends RecyclerView.Adapter<ToppingAdapter.ToppingV
         this.listener = listener;
     }
 
+    // Method to get selected toppings
+    public List<Topping> getSelectedToppings() {
+        List<Topping> selected = new ArrayList<>();
+        for (Topping topping : toppingList) {
+            if (topping.isChecked()) {
+                selected.add(topping);
+            }
+        }
+        return selected;
+    }
 
     @NonNull
     @Override
@@ -75,14 +86,3 @@ public class ToppingAdapter extends RecyclerView.Adapter<ToppingAdapter.ToppingV
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-

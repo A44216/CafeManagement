@@ -15,25 +15,18 @@
         android:padding="30dp">
 
         <!-- Nút quay lại (mũi tên) -->
-        <ImageView
-            android:id="@+id/ivBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/desc_back_button"
-            android:src="@drawable/ic_back"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
 
         <!-- Logo quán cafe -->
         <ImageView
             android:id="@+id/ivCafe"
             android:layout_width="250dp"
             android:layout_height="250dp"
-            android:src="@drawable/cafe_logo"
             android:contentDescription="@string/desc_cafe_logo"
-            app:layout_constraintTop_toBottomOf="@id/ivBack"
+            android:src="@drawable/cafe_logo"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            tools:layout_editor_absoluteY="60dp"
+            tools:ignore="MissingConstraints" />
 
         <!-- Tên đăng nhập -->
         <com.google.android.material.textfield.TextInputLayout
