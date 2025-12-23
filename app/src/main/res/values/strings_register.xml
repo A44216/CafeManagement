@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="register_title">ĐĂNG KÝ</string>
+
+    <string name="hint_full_name">Họ và tên</string>
+    <string name="autofill_full_name">name</string>
+
+    <string name="hint_display_name">Tên hiển thị</string>
+    <string name="autofill_display_name">username</string>
+
+    <string name="hint_username">Tên đăng nhập</string>
+    <string name="autofill_username">username</string>
+
+    <string name="hint_email">Email</string>
+    <string name="autofill_email">emailAddress</string>
+
+    <string name="hint_phone">Số điện thoại</string>
+    <string name="autofill_phone">phone</string>
+
+    <string name="password_confirm">Nhập lại mật khẩu</string>
+    <string name="hint_password_confirm">Nhập lại mật khẩu</string>
+
+    <string name="next_register">Tiếp theo</string>
+
+    <string name="gender">Giới tính</string>
+    <string name="gender_male">Nam</string>
+    <string name="gender_female">Nữ</string>
+    <string name="gender_other">Khác</string>
+
+    <string name="birthday">Ngày sinh</string>
+
+    <string name="finish">Hoàn thành</string>
+
+</resources>
