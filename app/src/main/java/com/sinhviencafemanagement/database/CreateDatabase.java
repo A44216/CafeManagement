@@ -11,7 +11,7 @@ import com.sinhviencafemanagement.dao.UserDAO;
 // Lớp CreateDatabase dùng để tạo và quản lý cơ sở dữ liệu SQLite cho ứng dụng quản lý quán cafe
 public class CreateDatabase extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 4; // Tăng version lên 2
+    private static final int DATABASE_VERSION = 4; // Version cao nhất
 
     // Bảng người dùng
     public static final String TABLE_USERS = "users";  // Người dùng/khách hàng hoặc nhân viên phụ trách
@@ -321,8 +321,8 @@ public class CreateDatabase extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO " + TABLE_ORDER_DETAIL_TOPPINGS + " (" +
                 COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ", " + COLUMN_ODT_TOPPING_ID + ", " + COLUMN_ODT_QUANTITY + ") VALUES " +
                 "(2, 3, 3, 1)"); // Kem cheese x1
-        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAILS + " (" +
-                COLUMN_ORDER_DETAIL_ORDER_ID + ", " + COLUMN_ORDER_DETAIL_PRODUCT_ID + ", " + COLUMN_ORDER_DETAIL_QUANTITY + ") VALUES " +
+        db.execSQL("INSERT INTO " + TABLE_ORDER_DETAIL_TOPPINGS + " (" +
+                COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ", " + COLUMN_ODT_TOPPING_ID + ", " + COLUMN_ODT_QUANTITY + ") VALUES " +
                 "(2, 5, 1)"); // Trà dâu tây x1
         db.execSQL("INSERT INTO " + TABLE_ORDER_DETAIL_TOPPINGS + " (" +
                 COLUMN_ODT_ORDER_ID + ", " + COLUMN_ODT_PRODUCT_ID + ", " + COLUMN_ODT_TOPPING_ID + ", " + COLUMN_ODT_QUANTITY + ") VALUES " +

@@ -114,10 +114,9 @@ public class Product implements Serializable, Clonable<Product>{
 
     @NonNull
     @Override
-//    Tạo hàm clone để clone sản phẩm áp dụng prototype pattern trong ProductDetailActivity
     public Product clone() {
         return new Product(
-                this.productId, // Giữ lại ID của sản phẩm gốc
+                0,                       // productId = 0 cho sản phẩm mới
                 this.productName,
                 this.price,
                 this.status,

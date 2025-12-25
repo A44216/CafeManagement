@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -26,10 +25,14 @@ import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.FaceCaptureActivity;
 import com.sinhviencafemanagement.activities.home.topping.ToppingActivity;
 import com.sinhviencafemanagement.activities.login.LoginActivity;
+// Sửa import sai ở đây: thêm 's' vào adapters
 import com.sinhviencafemanagement.adapters.admin.adapter.SettingAdminAdapter;
-import com.sinhviencafemanagement.dao.SessionDAO;
+import com.sinhviencafemanagement.command.Command;
+import com.sinhviencafemanagement.command.DeleteFaceCommand;
+import com.sinhviencafemanagement.command.FaceDeleteReceiver;
 import com.sinhviencafemanagement.dao.UserDAO;
 import com.sinhviencafemanagement.models.User;
+import com.sinhviencafemanagement.utils.FaceRecognitionHelper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,21 +42,25 @@ public class SettingAdminFragment extends Fragment {
     private TextView tvEmail;
     private UserDAO userDAO;
     private int currentUserId;
+    private FaceRecognitionHelper faceHelper;
+
+    private boolean isDeleteMode = false;
 
     // Launcher để nhận kết quả từ FaceCaptureActivity
     private final ActivityResultLauncher<Intent> faceCaptureLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     String embeddingJson = result.getData().getStringExtra(FaceCaptureActivity.EXTRA_EMBEDDING);
+                    
                     if (embeddingJson != null && currentUserId != -1) {
-                        boolean success = userDAO.updateFaceEmbedding(currentUserId, embeddingJson);
-                        if (success) {
-                            Toast.makeText(requireContext(), "Đăng ký Face ID thành công!", Toast.LENGTH_SHORT).show();
+                         if (isDeleteMode) {
+                            handleDeleteFace(embeddingJson);
                         } else {
-                            Toast.makeText(requireContext(), "Lỗi khi lưu Face ID", Toast.LENGTH_SHORT).show();
+                            handleRegisterFace(embeddingJson);
                         }
                     }
                 }
+                isDeleteMode = false;
             });
 
     public SettingAdminFragment() {
@@ -78,16 +85,18 @@ public class SettingAdminFragment extends Fragment {
 
         tvEmail = view.findViewById(R.id.tvEmail);
         userDAO = new UserDAO(requireContext());
+        faceHelper = new FaceRecognitionHelper(requireContext());
 
         setupEmailHeader();
 
         RecyclerView rvSettingAdmin = view.findViewById(R.id.rcvSettingAdmin);
         rvSettingAdmin.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        // Thêm mục "Đăng ký Face ID" vào danh sách
+        // Thêm mục "Xóa Face ID" vào danh sách
         List<String> settingTitles = Arrays.asList(
                 "Đồ uống đi kèm",
                 "Đăng ký Face ID",
+                "Xóa Face ID",
                 "Đăng xuất"
         );
 
@@ -124,48 +133,78 @@ public class SettingAdminFragment extends Fragment {
 
     private void handleItemClick(int position) {
         switch (position) {
-            case 0:
+            case 0: // Topping
                 startActivity(new Intent(requireContext(), ToppingActivity.class));
                 break;
+                
             case 1: // Đăng ký Face ID
-                Intent intent = new Intent(requireContext(), FaceCaptureActivity.class);
-                faceCaptureLauncher.launch(intent);
+                isDeleteMode = false;
+                Intent intentRegister = new Intent(requireContext(), FaceCaptureActivity.class);
+                faceCaptureLauncher.launch(intentRegister);
                 break;
-            case 2: // Đăng xuất (index thay đổi do thêm item mới)
+                
+            case 2: // Xóa Face ID (Command Pattern)
+                User user = userDAO.getUserById(currentUserId);
+                if (user == null || user.getFaceEmbedding() == null) {
+                    Toast.makeText(requireContext(), "Bạn chưa đăng ký Face ID", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                // Sử dụng Command Pattern
+                FaceDeleteReceiver deleteReceiver = new FaceDeleteReceiver(requireContext(), faceCaptureLauncher, () -> {
+                    isDeleteMode = true;
+                });
+                Command deleteFaceCommand = new DeleteFaceCommand(deleteReceiver);
+                deleteFaceCommand.execute();
+                break;
+                
+            case 3: // Đăng xuất
                 confirmLogout();
                 break;
+        }
+    }
+    
+    private void handleRegisterFace(String embeddingJson) {
+        boolean success = userDAO.updateFaceEmbedding(currentUserId, embeddingJson);
+        if (success) {
+            Toast.makeText(requireContext(), "Đăng ký Face ID thành công!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(requireContext(), "Lỗi khi lưu Face ID", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void handleDeleteFace(String capturedEmbeddingJson) {
+        User user = userDAO.getUserById(currentUserId);
+        if (user == null || user.getFaceEmbedding() == null) {
+            Toast.makeText(requireContext(), "Dữ liệu người dùng không hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        float[] currentVector = faceHelper.stringToEmbedding(capturedEmbeddingJson);
+        float[] storedVector = faceHelper.stringToEmbedding(user.getFaceEmbedding());
+
+        double score = faceHelper.calculateCosineSimilarity(currentVector, storedVector);
+        
+        if (score > 0.75) { // Ngưỡng khớp
+            boolean success = userDAO.deleteFaceEmbedding(currentUserId);
+            if (success) {
+                Toast.makeText(requireContext(), "Đã xóa Face ID thành công", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), "Lỗi khi xóa Face ID", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(requireContext(), "Khuôn mặt không khớp! Không thể xóa.", Toast.LENGTH_LONG).show();
         }
     }
 
     // Đăng xuất
 
-    @SuppressLint("CommitPrefEdits")
     private void confirmLogout() {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Đăng xuất")
                 .setMessage("Bạn có chắc muốn đăng xuất không?")
                 .setPositiveButton("Đăng xuất", (dialog, which) -> {
 
-                    SharedPreferences prefs =
-                            requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
-
-                    String token = prefs.getString("session_token", null);
-                    int userId = prefs.getInt("user_id", -1);
-
-                    // XÓA SESSION TRONG DB
-                    SessionDAO sessionDAO = new SessionDAO(requireContext());
-
-                    if (token != null) {
-                        sessionDAO.deleteSession(token);
-                    }
-
-                    if (userId != -1) {
-                        sessionDAO.deleteSessionsByUserId(userId);
-                    }
-
-                    // XÓA SHAREDPREFERENCES
-                    prefs.edit()
-                            .remove("session_token");
                     // XÓA SESSION
                     requireContext()
                             .getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
@@ -174,8 +213,8 @@ public class SettingAdminFragment extends Fragment {
                             .remove("session_token") // Đảm bảo xóa token để tránh auto-login
                             .apply();
 
-                    // QUAY VỀ LOGIN
-                    Intent intent = new Intent(requireContext(), LoginActivity.class);
+                    Intent intent =
+                            new Intent(requireContext(), LoginActivity.class);
                     intent.setFlags(
                             Intent.FLAG_ACTIVITY_NEW_TASK
                                     | Intent.FLAG_ACTIVITY_CLEAR_TASK

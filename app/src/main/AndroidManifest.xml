@@ -79,7 +79,6 @@
         <activity android:name=".activities.cart.SelectAddressActivity"/>
         <activity
             android:name=".activities.login.LoginActivity"
-
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

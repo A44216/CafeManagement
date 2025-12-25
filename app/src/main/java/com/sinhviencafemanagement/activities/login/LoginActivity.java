@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -22,9 +23,6 @@ import com.sinhviencafemanagement.R;
 import com.sinhviencafemanagement.activities.FaceCaptureActivity;
 import com.sinhviencafemanagement.activities.home.AdminHomeActivity;
 import com.sinhviencafemanagement.activities.home.UserHomeActivity;
-import com.sinhviencafemanagement.command.Command;
-import com.sinhviencafemanagement.command.login.AccountCommand;
-import com.sinhviencafemanagement.command.login.LoginInvoker;
 import com.sinhviencafemanagement.dao.SessionDAO;
 import com.sinhviencafemanagement.dao.UserDAO;
 import com.sinhviencafemanagement.database.CreateDatabase;
@@ -32,6 +30,7 @@ import com.sinhviencafemanagement.models.Session;
 import com.sinhviencafemanagement.models.User;
 import com.sinhviencafemanagement.utils.FaceRecognitionHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -152,42 +151,64 @@ public class LoginActivity extends AppCompatActivity {
         float[] currentEmbedding = faceHelper.stringToEmbedding(embeddingJson);
         if (currentEmbedding == null) return;
 
-        // Tạo command và invoker
-        LoginInvoker invoker = new LoginInvoker();
-        Command faceCommand = new com.sinhviencafemanagement.command.login.FaceIdCommand(currentEmbedding, userDAO);
-        invoker.setCommand(faceCommand);
+        // Lấy danh sách tất cả người dùng
+        List<User> allUsers = userDAO.getAllUsers();
+        
+        List<User> matchedUsers = new ArrayList<>();
 
-        boolean faceSuccess = invoker.executeCommand();
-        if (faceSuccess) {
-            // Nếu FaceIdCommand trả true, tìm user có similarity cao nhất
-            List<User> allUsers = userDAO.getAllUsers();
-            User matchedUser = null;
-            double maxScore = 0.0;
-
-            for (User user : allUsers) {
-                String storedEmbeddingJson = user.getFaceEmbedding();
-                if (storedEmbeddingJson != null && !storedEmbeddingJson.isEmpty()) {
-                    float[] storedEmbedding = faceHelper.stringToEmbedding(storedEmbeddingJson);
-                    double score = faceHelper.calculateCosineSimilarity(currentEmbedding, storedEmbedding);
-
-                    if (score > 0.7 && score > maxScore) {
-                        maxScore = score;
-                        matchedUser = user;
-                    }
+        for (User user : allUsers) {
+            String storedEmbeddingJson = user.getFaceEmbedding();
+            if (storedEmbeddingJson != null && !storedEmbeddingJson.isEmpty()) {
+                float[] storedEmbedding = faceHelper.stringToEmbedding(storedEmbeddingJson);
+                double score = faceHelper.calculateCosineSimilarity(currentEmbedding, storedEmbedding);
+                
+                // Ngưỡng nhận diện (ví dụ 0.75)
+                if (score > 0.75) {
+                    matchedUsers.add(user);
                 }
             }
+        }
 
-            if (matchedUser != null) {
-                loginSuccess(matchedUser);
-                showToast("Xin chào " + matchedUser.getFullName());
-            } else {
-                showToast("Không nhận diện được khuôn mặt");
-            }
-        } else {
+        if (matchedUsers.isEmpty()) {
             showToast("Không nhận diện được khuôn mặt");
+        } else if (matchedUsers.size() == 1) {
+            // Chỉ có 1 tài khoản khớp -> Đăng nhập luôn
+            User user = matchedUsers.get(0);
+            
+            // Xóa dòng tự động setChecked
+            // chkRememberLogin.setChecked(true);
+            
+            loginSuccess(user);
+            showToast("Xin chào " + user.getFullName());
+        } else {
+            // Có nhiều tài khoản trùng khớp -> Hiện Dialog chọn
+            showUserSelectionDialog(matchedUsers);
         }
     }
 
+    // Hiển thị Dialog chọn tài khoản khi có xung đột
+    private void showUserSelectionDialog(List<User> users) {
+        String[] userNames = new String[users.size()];
+        for (int i = 0; i < users.size(); i++) {
+            User u = users.get(i);
+            String role = (u.getRoleId() == CreateDatabase.ROLE_ADMIN) ? "Admin" : "User";
+            userNames[i] = u.getUsername() + " (" + role + ")";
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Chọn tài khoản để đăng nhập")
+                .setItems(userNames, (dialog, which) -> {
+                    User selectedUser = users.get(which);
+                    
+                    // Xóa dòng tự động setChecked
+                    // chkRememberLogin.setChecked(true);
+                    
+                    loginSuccess(selectedUser);
+                    showToast("Xin chào " + selectedUser.getFullName());
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
 
     // Xử lý đăng nhập thường
     private void handleLogin() {
@@ -199,48 +220,46 @@ public class LoginActivity extends AppCompatActivity {
         if (!validateInput(input, password)) return;
 
         // Kiểm tra đăng nhập
-        LoginInvoker invoker = new LoginInvoker();
-        Command loginCommand = new AccountCommand(input, password, userDAO);
-        invoker.setCommand(loginCommand);
-
-        boolean success = invoker.executeCommand();
-        if (success) {
-            User user = userDAO.getUserByUsernameOrEmail(input); // lấy đối tượng user
-            if (user != null) loginSuccess(user);
+        if (userDAO.checkLogin(input, password)) {
+            User user = userDAO.getUserByUsernameOrEmail(input);
+            if (user == null) {
+                showToast("Không tìm thấy người dùng tương ứng");
+                return;
+            }
+            loginSuccess(user);
         } else {
             showLoginError();
         }
-
     }
 
     private void loginSuccess(User user) {
         SharedPreferences.Editor editor = prefs.edit();
 
-        // Luôn lưu user_id (chỉ để dùng trong phiên hiện tại)
+        // Luôn lưu user_id
         editor.putInt("user_id", user.getUserId());
-
-        // Luôn lưu username để điền lại
-        editor.putString("saved_username", user.getUsername());
 
         // CHỈ lưu session nếu tích "Ghi nhớ đăng nhập"
         if (chkRememberLogin.isChecked()) {
-            long expiredAt = System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000; // ngày
+            long expiredAt = System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000; // 7 ngày
             String token = sessionDAO.createSession(user.getUserId(), expiredAt);
-
             if (token != null) {
                 editor.putString("session_token", token);
             }
         } else {
-            // Đảm bảo không còn token cũ
             editor.remove("session_token");
         }
 
+        // Luôn lưu username để điền lại EditText lần sau
+        editor.putString("saved_username", user.getUsername());
         editor.apply();
 
-        // Điều hướng theo role
-        Intent intent = (user.getRoleId() == CreateDatabase.ROLE_ADMIN)
-                ? new Intent(this, AdminHomeActivity.class)
-                : new Intent(this, UserHomeActivity.class);
+        // Phân quyền truy cập
+        Intent intent;
+        if (user.getRoleId() == CreateDatabase.ROLE_ADMIN) {
+            intent = new Intent(this, AdminHomeActivity.class);
+        } else {
+            intent = new Intent(this, UserHomeActivity.class);
+        }
 
         startActivity(intent);
         finish();

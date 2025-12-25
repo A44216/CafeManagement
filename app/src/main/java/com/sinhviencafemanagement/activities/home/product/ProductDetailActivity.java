@@ -255,7 +255,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         // Tạo CartItem
         CartItem item = new CartItem(
                 itemId,
-                customizedProduct.getProductId(),
+                product.getProductId(), // Fix: Sử dụng ID gốc của sản phẩm
                 customizedProduct.getProductName(),
                 customizedProduct.getDescription(),
                 customizedProduct.getPrice(),
